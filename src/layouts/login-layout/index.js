@@ -1,4 +1,4 @@
-import s from './login-layout.less'
+import s from './index.less'
 
 export default function({children}) {
   return (

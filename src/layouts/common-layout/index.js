@@ -1,8 +1,9 @@
-import { useState } from 'react'
 import { Layout, Menu, Icon, Badge, Avatar } from 'antd'
-import s from './common-layout.less'
+import s from './index.less'
 import cn from 'classnames'
 import Link from 'umi/link';
+import { connect } from 'react-redux'
+import { changeSiderCollapsed } from './redux/actions'
 
 const { Header, Content, Footer, Sider } = Layout
 
@@ -21,11 +22,7 @@ const menus = [
   },
 ]
 
-const CommonLayout = ({ children }) => {
-  const [collapsed, setCollapsed] = useState(false)
-
-  const handleCollapsed = () => setCollapsed(!collapsed)
-
+const CommonLayout = ({ children, collapsed, handleCollapsed }) => {
   const renderMenus = () => {
     return (
       <Menu
@@ -53,7 +50,7 @@ const CommonLayout = ({ children }) => {
       </Sider>
       <Layout className={s.wrapper}>
         <Header className={s.header}>
-          <div className={s.headerLeft} onClick={handleCollapsed}>
+          <div className={s.headerLeft} onClick={() => handleCollapsed(!collapsed)}>
             <Icon type={collapsed ? 'menu-unfold' : 'menu-fold'} />
           </div>
           <div className={s.headerRight}>
@@ -75,4 +72,7 @@ const CommonLayout = ({ children }) => {
   )
 }
 
-export default CommonLayout
+export default connect(
+  store => ({ collapsed: store.commonLayoutReducer.collapsed }),
+  dispatch => ({ handleCollapsed: collapsed => dispatch(changeSiderCollapsed(collapsed))})
+)(CommonLayout)
