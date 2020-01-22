@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Layout, Menu, Icon, Badge, Avatar } from 'antd'
 import s from './common-layout.less'
 import cn from 'classnames'
+import Link from 'umi/link';
 
 const { Header, Content, Footer, Sider } = Layout
 
@@ -10,11 +11,13 @@ const menus = [
     id: 1,
     name: '首页',
     icon: 'home',
+    path:'/'
   },
   {
     id: 2,
     name: '项目',
     icon: 'project',
+    path:'/project'
   },
 ]
 
@@ -30,9 +33,11 @@ const CommonLayout = ({ children }) => {
         mode='inline'>
         {
           menus.map(menu => (
-            <Menu.Item key={menu.id}>
-              <Icon type={menu.icon} />
-              <span className="nav-text">{menu.name}</span>
+            <Menu.Item key={menu.id} >
+              <Link to={menu.path}>
+                <Icon type={menu.icon} />
+                <span className="nav-text">{menu.name}</span>
+              </Link>
             </Menu.Item>
           ))
         }

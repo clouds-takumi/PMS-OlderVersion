@@ -10,6 +10,7 @@ export default {
         { path: '/', component: '../pages/home' },
         { path: '/login', component: '../pages/login' },
         { path: '/register', component: '../pages/register' },
+        { path: '/project', component: '../pages/project' }
       ]
     }
   ],
