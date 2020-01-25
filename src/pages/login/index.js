@@ -1,7 +1,7 @@
 import { Input, Button } from 'antd'
 import s from './index.less'
 
-export default function(props) {
+export default function (props) {
   return (
     <div className={s.login}>
       <div className={s.loginLine}>

@@ -5,7 +5,7 @@ import Link from 'umi/link';
 import { connect } from 'react-redux'
 import { changeSiderCollapsed } from './redux/actions'
 
-const { Header, Content, Footer, Sider } = Layout
+const { Header, Content, Sider } = Layout
 
 const menus = [
   {
@@ -66,7 +66,6 @@ const CommonLayout = ({ children, collapsed, handleCollapsed }) => {
           </div>
         </Header>
         <Content className={s.body}>{children}</Content>
-        <Footer></Footer>
       </Layout>
     </Layout>
   )
