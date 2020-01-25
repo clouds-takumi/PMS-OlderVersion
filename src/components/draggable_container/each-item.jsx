@@ -15,8 +15,15 @@ export default ({ data, add, handleCancel, handleAdd }) => {
             setFlag(false)
         }
     }
-    const handleItemAdd = () => {
+    const handleItemAdd = (e) => {
         if (!!value) {
+            const item = { id: '100', title: value, level: 'middle', assign: 'd' }
+            handleAdd(item)
+            setValue('')
+        }
+    }
+    const handleInputAdd = (e) => {
+        if ((e.keyCode === 13) && !!value) {
             const item = { id: '100', title: value, level: 'middle', assign: 'd' }
             handleAdd(item)
             setValue('')
@@ -29,7 +36,7 @@ export default ({ data, add, handleCancel, handleAdd }) => {
                     {data.title}
                 </div>
                 <div className={style.info}>
-                    <div>{data.id}</div>
+                    <div>#{data.id}</div>
                     <div className={style.right}>
                         <div>{data.level}</div>
                         <div>{data.assign}</div>
@@ -43,8 +50,14 @@ export default ({ data, add, handleCancel, handleAdd }) => {
             <div className={style.add}>
                 <span >add</span>
                 <span className={style.divider}></span>
-                <Input placeholder="输入事件标题，可按回车创建" size='small' onChange={handleInput} value={value} />
-                <div className={style.btn} style={cur} onClick={handleItemAdd}>创建</div>
+                <Input
+                    placeholder="输入事件标题，可按回车创建"
+                    size='small'
+                    onChange={handleInput}
+                    value={value}
+                    onKeyUp={handleInputAdd}
+                />
+                <div className={style.btn} style={cur} onClick={handleItemAdd} >创建</div>
                 <div className={style.btn} onClick={() => handleCancel()}>取消</div>
             </div>
         )
