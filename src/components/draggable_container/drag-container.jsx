@@ -1,4 +1,4 @@
-import { PureComponent } from 'react'
+import { PureComponent, Fragment } from 'react'
 import style from './drag-container.less'
 import Item from './each-item'
 import AddItem from './add-item'
@@ -9,7 +9,8 @@ class DraggableContainer extends PureComponent {
         this.state = {
             dataList: [],
             containerName: 'Main',
-            show: true
+            show: true,
+            showDelList: false
         }
     }
 
@@ -22,6 +23,11 @@ class DraggableContainer extends PureComponent {
 
     changeArrow = () => {
         this.setState({ show: !this.state.show })
+    }
+
+    handleshowDelList = (e) => {
+        e.stopPropagation()
+        this.setState({ showDelList: true })
     }
 
     componentDidMount() {
@@ -42,9 +48,10 @@ class DraggableContainer extends PureComponent {
     }
 
     render() {
-        let { dataList, containerName, show } = this.state
+        let { dataList, containerName, show, showDelList } = this.state
         containerName = !!this.props.name ? this.props.name : containerName
         const ln = dataList.length
+        const { id, delContainer } = this.props
         return (
             <div className={style.container} >
                 <div className={style.header} onClick={this.changeArrow}>
@@ -58,7 +65,25 @@ class DraggableContainer extends PureComponent {
                     <span>{containerName}</span>
                     <span className={style.count}>{ln}个事项</span>
                     <span className={style.divider}></span>
-                    <span >?</span>
+                    {
+                        containerName === 'Main' ? <span >?</span> :
+                            (
+                                <Fragment className={style.del}>
+                                    <span onClick={(event) => this.handleshowDelList(event)}>...</span>
+                                    {
+                                        showDelList ? (
+                                            <>
+                                                <div className={style.delList}>
+                                                    <span onClick={(e) => delContainer(e, id)}>删除</span>
+                                                </div>
+                                            </>
+                                        ) : null
+
+                                    }
+                                </Fragment>
+                            )
+                    }
+
                     <span className={style.classify}><span >未定位</span></span>
                 </div>
                 {
