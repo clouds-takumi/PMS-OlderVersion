@@ -1,13 +1,17 @@
 import DraggableContainer from './drag-container'
 import AddContainer from './add-container'
 import style from './index.less'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { reqClassLists } from '../../services'
+// import { AutoSizer } from 'react-virtualized/dist/commonjs/AutoSizer'
+// import { List as VList } from 'react-virtualized/dist/commonjs/List'
 
 export default () => {
-    const [containerLists, setContainerLists] = useState(['da', 'das'])
+    const [containerLists, setContainerLists] = useState(['dasd','fas'])
 
     const addContainer = (listTitle) => {
-        setContainerLists([...containerLists, listTitle])
+        const newContainer = { name: listTitle }
+        setContainerLists([...containerLists, newContainer])
     }
 
     const delContainer = (e, index) => {
@@ -17,15 +21,62 @@ export default () => {
         setContainerLists(newLists)
     }
 
+    useEffect(() => {
+        (async () => {
+            const res = await reqClassLists()
+            setContainerLists(res.data)
+        })()
+    }, [])
+
+    // const renderContainer = (item, index) => {
+    //     return (
+    //         <div className={style.eachcontainer} key={index}>
+    //             <DraggableContainer
+    //                 name={item.name} id={index} delContainer={delContainer}
+    //             />
+    //         </div>
+    //     )
+    // }
+
     return (
         <div className={style.proContainer}>
-            <DraggableContainer />
+            <DraggableContainer name='Main' />
             <div>
                 {
                     containerLists.map((item, index) => {
-                        return <DraggableContainer name={item} key={index} id={index} delContainer={delContainer} />
+                        return (
+                            <div className={style.eachcontainer} key={index}>
+                                <DraggableContainer
+                                    name={item.name} id={index} delContainer={delContainer}
+                                />
+                            </div>
+                        )
                     })
                 }
+
+
+                {/* {
+                    !!containerLists && (
+                        <div style={{ width: '500px', height: '580px' }}>
+                            {
+
+                                <AutoSizer>
+                                    {({ width = 500, height = 800 }) => (
+                                        <VList
+                                            width={width}
+                                            height={height}
+                                            overscanRowCount={20}
+                                            rowCount={containerLists.length}
+                                            rowHeight={200}
+                                            rowRenderer={renderContainer}
+                                        />
+                                    )}
+                                </AutoSizer>
+
+                            }
+                        </div>
+                    )
+                } */}
                 <AddContainer addContainer={addContainer} />
             </div>
 

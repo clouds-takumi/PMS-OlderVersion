@@ -17,6 +17,7 @@ export default ({addContainer}) => {
 
     const handleCancel = () => {
         setFlag(true)
+        setValue('')
     }
 
     const handleItemAdd = () => {

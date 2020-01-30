@@ -1,8 +1,11 @@
+.wrapper {
+  overflow: auto;
+}
+
 .container {
   background: #eff0f1;
   width: 500px;
   padding: 10px 10px 2px 10px;
-  height: 100%;
 
   .header {
     cursor: pointer;
@@ -73,9 +76,19 @@
 
 .delList {
   position: absolute;
-  // left: -100px;
-  // top: 10px;
   width: 130px;
-  // background: #fff;
   z-index: 1001;
+}
+
+
+.mainEmpty {
+  background: #edeff2;
+  border-radius: 3px;
+  border: 2px dashed #cdd1da;
+  width: 100%;
+  margin: 2px;
+  text-align: center;
+  line-height: 32px;
+  color: #8592a6;
+  font-size: 13px;
 }
