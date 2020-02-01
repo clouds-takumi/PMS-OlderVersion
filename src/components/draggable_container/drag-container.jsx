@@ -128,8 +128,8 @@ class DraggableContainer extends PureComponent {
                                     })
                                 } */}
 
-                                <div style={{ height: "580px" }}>
-                                    <AutoSizer>
+                                <div style={{ height: '500px' }}>
+                                    <AutoSizer >
                                         {({ width = 500, height = 800 }) => (
                                             <VList
                                                 width={width}
