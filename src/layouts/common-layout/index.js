@@ -20,6 +20,12 @@ const menus = [
     icon: 'project',
     path:'/project'
   },
+  {
+    id: 3,
+    name: '待规划',
+    icon: 'block',
+    path: '/backlog'
+  }
 ]
 
 const CommonLayout = ({ children, collapsed, handleCollapsed }) => {
