@@ -1,10 +1,10 @@
 import { Component } from 'react'
 import s from './index.less'
 import Collapse from './components/collapse'
-import { Avatar, Icon } from 'antd'
+import { Avatar, Icon, message } from 'antd'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 
-const getRandomColor = () => `#${Math.floor(Math.random()*16777215).toString(16)}`
+const getRandomColor = () => `#${Math.floor(Math.random() * 16777215).toString(16)}`
 const issues = {
   backlog: [...Array(5).keys()].map(i => ({
     id: `a${i}`,
@@ -37,8 +37,8 @@ class Backlog extends Component {
     issues,
     iterationExpand: {
       i1: true,
-      i2: true,
-      i3: true,
+      i2: false,
+      i3: false,
     },
     iterations: [
       {
@@ -63,6 +63,13 @@ class Backlog extends Component {
         endDate: '2020/02/16',
       },
     ]
+  }
+
+  handleAdd = item => {
+    console.log(item)
+    const oldIterData = this.state.iterations
+    const newIterData = [...oldIterData, item]
+    message.success('更新成功')
   }
 
   handleExpand = id => {
@@ -185,6 +192,8 @@ class Backlog extends Component {
                   status={iteration.status}
                   startDate={iteration.startDate}
                   endDate={iteration.endDate}>
+                  {/* TODO */}
+                  handleAdd={this.handleAdd}
                   {this.renderLists(iteration.id)}
                 </Collapse>
               ))

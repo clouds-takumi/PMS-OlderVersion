@@ -1,5 +1,6 @@
+import { useState } from 'react'
 import s from './index.less'
-import { Icon, Tag, Dropdown, Menu, Divider, Tooltip } from 'antd'
+import { Icon, Tag, Dropdown, Menu, Divider, Tooltip, Input } from 'antd'
 import cn from 'classnames'
 
 const Collapse = ({
@@ -13,7 +14,49 @@ const Collapse = ({
   status,
   startDate,
   endDate,
+  handleAdd
 }) => {
+  const [addFlag, setAddFlag] = useState(false)
+  const [addValueFlag, setAddValueFlag] = useState(false)
+  const [inputValue, setInputValue] = useState('')
+
+  const changeAddFlag = () => { setAddFlag(true) }
+  const handleCancel = () => {
+    setInputValue('')
+    setAddFlag(false)
+    setAddValueFlag(false)
+  }
+
+  let curponiter = addValueFlag ? 'pointer' : 'not-allowed'
+  let curcolor = addValueFlag ? '#4682B4' : '#bcc0c5'
+  const cur = { cursor: curponiter, backgroundColor: curcolor, color: "white" }
+
+  const handleInput = (e) => {
+    setInputValue(e.target.value)
+    setAddValueFlag(true)
+    if (!e.target.value) {
+      setAddValueFlag(false)
+    }
+  }
+
+  const handleBtnAdd = (e) => {
+    if (!!inputValue) {
+      const item = {}
+      // handleAdd(item)
+      setInputValue('')
+      setAddValueFlag(false)
+    }
+  }
+
+  const handleEnterAdd = (e) => {
+    if ((e.keyCode === 13) && !!inputValue) {
+      const item = {}
+      // handleAdd(item)
+      setInputValue('')
+      setAddValueFlag(false)
+    }
+  }
+
   const handleExpand = () => {
     if (typeof onExpand === 'function') {
       onExpand()
@@ -30,6 +73,24 @@ const Collapse = ({
       <Menu.Item key='3'>删除迭代</Menu.Item>
     </Menu>
   )
+
+  const renderAddMenu = () => {
+    return (
+      <div className={s.addItemContainer}>
+        <span >add</span>
+        <span className={s.divider}></span>
+        <Input
+          placeholder="输入事件标题，可按回车创建"
+          size='small'
+          onChange={handleInput}
+          value={inputValue}
+          onKeyUp={handleEnterAdd}
+        />
+        <div className={s.btn} style={cur} onClick={handleBtnAdd}>创建</div>
+        <div className={s.btn} onClick={() => handleCancel()} >取消</div>
+      </div>
+    )
+  }
 
   return (
     <div className={cn(s.collapse, className)}>
@@ -70,6 +131,16 @@ const Collapse = ({
         {(expand || type === 'backlog') && children}
         <div className={s.operate}></div>
       </div>
+      {
+        addFlag
+          ?
+          renderAddMenu()
+          :
+          <div className={s.addFooter}>
+            <Icon type='plus' />
+            <span onClick={changeAddFlag}>新建事项</span>
+          </div>
+      }
     </div>
   )
 }
