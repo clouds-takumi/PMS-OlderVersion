@@ -118,7 +118,6 @@ class Backlog extends Component {
     this.setState({ iterations: newIterations })
     newIssues[id] = []
     this.setState({ issues: newIssues })
-    message.success('更新成功')
   }
 
   handleExpand = id => {
