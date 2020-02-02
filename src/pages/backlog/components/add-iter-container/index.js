@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { Icon, Input } from 'antd'
+import { Input, message } from 'antd'
 import s from './index.less'
 
-const AddIterContainer = () => {
+const AddIterContainer = ({ handleAddIter }) => {
     const [flag, setFlag] = useState(true)
     const [value, setValue] = useState('')
     const [btnFlag, setBtnFlag] = useState(false)
@@ -31,8 +31,9 @@ const AddIterContainer = () => {
 
     const handleItemAdd = () => {
         if (!!value) {
-            // addContainer(value)
+            handleAddIter(value)
             setValue('')
+            message.success('增加迭代成功')
         }
     }
 
@@ -42,7 +43,7 @@ const AddIterContainer = () => {
                 flag
                     ? (
                         <div className={s.addcontainer} onClick={changeFlag}>
-                            <span className={s.btn}>+增加迭代+</span>
+                            <span className={s.btn}>+ 增加迭代 +</span>
                         </div>
                     )
                     : (

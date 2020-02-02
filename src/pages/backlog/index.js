@@ -49,10 +49,7 @@ class Backlog extends Component {
   state = {
     issues,
     iterationExpand: {
-      i1: true,
-      i2: false,
-      i3: false,
-      i4: false
+      i1: true
     },
     iterations: [
       {
@@ -108,6 +105,19 @@ class Backlog extends Component {
       newData[type].push(newItem)
     }
     this.setState({ issues: newData })
+    message.success('更新成功')
+  }
+
+  handleAddIter = title => {
+    let id, newIter
+    const newIterations = JSON.parse(JSON.stringify(this.state.iterations))
+    const newIssues = JSON.parse(JSON.stringify(this.state.issues))
+    id = 'i' + newIterations.length
+    newIter = { id, name: title, status: 0, startDate: '2020/02/01', endDate: '2020/02/16' }
+    newIterations.push(newIter)
+    this.setState({ iterations: newIterations })
+    newIssues[id] = []
+    this.setState({ issues: newIssues })
     message.success('更新成功')
   }
 
@@ -239,7 +249,7 @@ class Backlog extends Component {
               ))
             }
             <div className={s.addContainer}>
-              <AddIterContainer />
+              <AddIterContainer handleAddIter={this.handleAddIter} />
             </div>
           </div>
         </div>
