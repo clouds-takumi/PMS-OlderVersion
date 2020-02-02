@@ -238,9 +238,9 @@ class Backlog extends Component {
                 </Collapse>
               ))
             }
-          </div>
-          <div>
-            <AddIterContainer />
+            <div className={s.addContainer}>
+              <AddIterContainer />
+            </div>
           </div>
         </div>
       </DragDropContext>
