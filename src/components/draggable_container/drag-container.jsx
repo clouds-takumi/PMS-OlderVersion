@@ -45,13 +45,13 @@ class DraggableContainer extends PureComponent {
     }
 
     componentDidMount() {
-        reqMainLists().then((res) => {
-            this.setState({ mainData: res.data })
-        })
-        const { id } = this.props
-        if (id === 0) {
-            this.setState({ show: true })
-        }
+        // reqMainLists().then((res) => {
+        //     this.setState({ mainData: res.data })
+        // })
+        // const { id } = this.props
+        // if (id === 0) {
+        //     this.setState({ show: true })
+        // }
     }
 
     render() {

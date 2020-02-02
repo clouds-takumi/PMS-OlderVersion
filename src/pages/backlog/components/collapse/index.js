@@ -7,6 +7,7 @@ const Collapse = ({
   className,
   children,
   type,
+  iterContainerId = null,
   name,
   issuesNum,
   expand,
@@ -41,8 +42,8 @@ const Collapse = ({
 
   const handleBtnAdd = (e) => {
     if (!!inputValue) {
-      const item = {}
-      // handleAdd(item)
+      const item = { iterContainerId, type, itemTitle: inputValue }
+      handleAdd(item)
       setInputValue('')
       setAddValueFlag(false)
     }
@@ -50,8 +51,8 @@ const Collapse = ({
 
   const handleEnterAdd = (e) => {
     if ((e.keyCode === 13) && !!inputValue) {
-      const item = {}
-      // handleAdd(item)
+      const item = { iterContainerId, type, itemTitle: inputValue }
+      handleAdd(item)
       setInputValue('')
       setAddValueFlag(false)
     }
@@ -128,18 +129,34 @@ const Collapse = ({
         }
       </div>
       <div className={s.body}>
+        {(type === 'backlog') && issuesNum === 0 && (
+          <div className={s.mainEmpty}>
+            <span>新建需求事项</span>
+          </div>
+        )}
+        {expand && type === 'iteration' && issuesNum === 0 && (
+          <div className={s.mainEmpty}>
+            <span>从Backlog中拖动需求事项到此处进行分类</span>
+          </div>
+        )}
         {(expand || type === 'backlog') && children}
         <div className={s.operate}></div>
       </div>
       {
-        addFlag
-          ?
-          renderAddMenu()
-          :
-          <div className={s.addFooter}>
-            <Icon type='plus' />
-            <span onClick={changeAddFlag}>新建事项</span>
-          </div>
+        (expand === true || type === 'backlog') && (
+          <>
+            {
+              addFlag
+                ?
+                renderAddMenu()
+                :
+                <div className={s.addFooter}>
+                  <Icon type='plus' />
+                  <span onClick={changeAddFlag}>新建事项</span>
+                </div>
+            }
+          </>
+        )
       }
     </div>
   )

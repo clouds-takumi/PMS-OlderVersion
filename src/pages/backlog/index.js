@@ -1,12 +1,13 @@
 import { Component } from 'react'
 import s from './index.less'
 import Collapse from './components/collapse'
+import AddIterContainer from './components/add-iter-container'
 import { Avatar, Icon, message } from 'antd'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 
 const getRandomColor = () => `#${Math.floor(Math.random() * 16777215).toString(16)}`
 const issues = {
-  backlog: [...Array(5).keys()].map(i => ({
+  backlog: [...Array(8).keys()].map(i => ({
     id: `a${i}`,
     name: `issues-a${i}`,
     bgColor: getRandomColor(),
@@ -24,12 +25,24 @@ const issues = {
     bgColor: getRandomColor(),
     color: getRandomColor(),
   })),
-  i3: [...Array(7).keys()].map(i => ({
+  i3: [...Array(3).keys()].map(i => ({
     id: `d${i}`,
     name: `issues-d${i}`,
     bgColor: getRandomColor(),
     color: getRandomColor(),
   })),
+  i4: [...Array(2).keys()].map(i => ({
+    id: `e${i}`,
+    name: `issues-d${i}`,
+    bgColor: getRandomColor(),
+    color: getRandomColor(),
+  })),
+  i5: [...Array(0).keys()].map(i => ({
+    id: `e${i}`,
+    name: `issues-d${i}`,
+    bgColor: getRandomColor(),
+    color: getRandomColor(),
+  }))
 }
 
 class Backlog extends Component {
@@ -39,6 +52,7 @@ class Backlog extends Component {
       i1: true,
       i2: false,
       i3: false,
+      i4: false
     },
     iterations: [
       {
@@ -62,13 +76,38 @@ class Backlog extends Component {
         startDate: '2020/02/01',
         endDate: '2020/02/16',
       },
+      {
+        id: 'i4',
+        name: '[Mobile] 钓鱼市场',
+        status: 0,
+        startDate: '2020/02/01',
+        endDate: '2020/02/16',
+      },
+      {
+        id: 'i5',
+        name: '[PC] 空',
+        status: 0,
+        startDate: '2020/02/01',
+        endDate: '2020/02/16',
+      },
     ]
   }
 
-  handleAdd = item => {
-    console.log(item)
-    const oldIterData = this.state.iterations
-    const newIterData = [...oldIterData, item]
+  handleAdd = ({ iterContainerId, type, itemTitle }) => {
+    let id, name, newItem
+    let newData = JSON.parse(JSON.stringify(this.state.issues))
+    if (iterContainerId && type === 'iteration') {
+      id = 'new' + newData[iterContainerId].length
+      name = 'issues-new-' + itemTitle
+      newItem = { id, name, bgColor: getRandomColor(), color: getRandomColor() }
+      newData[iterContainerId].push(newItem)
+    } else {
+      id = 'new' + newData[type].length
+      name = 'issues-new-' + itemTitle
+      newItem = { id, name, bgColor: getRandomColor(), color: getRandomColor() }
+      newData[type].push(newItem)
+    }
+    this.setState({ issues: newData })
     message.success('更新成功')
   }
 
@@ -174,7 +213,8 @@ class Backlog extends Component {
             <Collapse
               type='backlog'
               name='Backlog'
-              issuesNum={issues['backlog'].length}>
+              issuesNum={issues['backlog'].length}
+              handleAdd={this.handleAdd}>
               {this.renderLists('backlog')}
             </Collapse>
           </div>
@@ -185,23 +225,25 @@ class Backlog extends Component {
                   key={iteration.id}
                   className={s.collapse}
                   type='iteration'
+                  iterContainerId={iteration.id}
                   name={iteration.name}
                   issuesNum={issues[iteration.id].length}
                   expand={iterationExpand[iteration.id]}
                   onExpand={() => this.handleExpand(iteration.id)}
                   status={iteration.status}
                   startDate={iteration.startDate}
-                  endDate={iteration.endDate}>
-                  {/* TODO */}
-                  handleAdd={this.handleAdd}
+                  endDate={iteration.endDate}
+                  handleAdd={this.handleAdd}>
                   {this.renderLists(iteration.id)}
                 </Collapse>
               ))
             }
           </div>
+          <div>
+            <AddIterContainer />
+          </div>
         </div>
       </DragDropContext>
-
     )
   }
 }
