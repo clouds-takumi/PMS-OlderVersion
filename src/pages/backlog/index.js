@@ -127,6 +127,10 @@ class Backlog extends Component {
     this.setState({ iterationExpand })
   }
 
+  showDetail = eachItem => {
+    this.props.history.push(`/detail/${eachItem.id}`)
+  }
+
   renderLists = (droppableId) => {
     const { issues } = this.state
     const lists = issues[droppableId]
@@ -142,6 +146,7 @@ class Backlog extends Component {
                     {
                       (draggableProvided, draggableSnapshot) => (
                         <div
+                          onClick={() => this.showDetail(list)}
                           className={s.list}
                           ref={draggableProvided.innerRef}
                           {...draggableProvided.draggableProps}

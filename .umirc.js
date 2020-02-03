@@ -11,7 +11,8 @@ export default {
         { path: '/login', component: '../pages/login' },
         { path: '/register', component: '../pages/register' },
         { path: '/project', component: '../pages/project' },
-        { path: '/backlog', component: '../pages/backlog' }
+        { path: '/backlog', component: '../pages/backlog' },
+        { path: '/detail/:id', component: '../pages/detail' }
       ]
     }
   ],
