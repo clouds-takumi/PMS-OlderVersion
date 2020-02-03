@@ -15,7 +15,7 @@ const Collapse = ({
   status,
   startDate,
   endDate,
-  handleAdd
+  handleAdd,
 }) => {
   const [addFlag, setAddFlag] = useState(false)
   const [addValueFlag, setAddValueFlag] = useState(false)
@@ -132,11 +132,6 @@ const Collapse = ({
         {(type === 'backlog') && issuesNum === 0 && (
           <div className={s.mainEmpty}>
             <span>新建需求事项</span>
-          </div>
-        )}
-        {expand && type === 'iteration' && issuesNum === 0 && (
-          <div className={s.mainEmpty}>
-            <span>从Backlog中拖动需求事项到此处进行分类</span>
           </div>
         )}
         {(expand || type === 'backlog') && children}
