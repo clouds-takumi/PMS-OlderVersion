@@ -4,10 +4,11 @@ import Collapse from './components/collapse'
 import AddIterContainer from './components/add-iter-container'
 import { Avatar, Icon, message } from 'antd'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
+import { FixedSizeList } from 'react-window'
 
 const getRandomColor = () => `#${Math.floor(Math.random() * 16777215).toString(16)}`
 const issues = {
-  backlog: [...Array(8).keys()].map(i => ({
+  backlog: [...Array(80).keys()].map(i => ({
     id: `a${i}`,
     name: `issues-a${i}`,
     bgColor: getRandomColor(),
@@ -33,13 +34,13 @@ const issues = {
   })),
   i4: [...Array(2).keys()].map(i => ({
     id: `e${i}`,
-    name: `issues-d${i}`,
+    name: `issues-e${i}`,
     bgColor: getRandomColor(),
     color: getRandomColor(),
   })),
   i5: [...Array(0).keys()].map(i => ({
-    id: `e${i}`,
-    name: `issues-d${i}`,
+    id: `f${i}`,
+    name: `issues-f${i}`,
     bgColor: getRandomColor(),
     color: getRandomColor(),
   }))
@@ -131,6 +132,38 @@ class Backlog extends Component {
     // this.props.history.push(`/detail/${eachItem.id}`)
     this.props.history.push({ pathname: `/detail/${eachItem.id}`, state: { name: eachItem.name } })
   }
+  renderList = (list, provided, isDragging, style) => {
+    return (
+      <div
+        className={s.list}
+        onClick={() => this.showDetail(list)}
+        ref={provided.innerRef}
+        {...provided.draggableProps}
+        {...provided.dragHandleProps}
+        style={{
+          boxShadow: isDragging && '0 8px 24px 0 rgba(0, 0, 0, 0.15), 0 0 1px 0 rgba(0, 0, 0, 0.05)',
+          borderBottom: isDragging && 'none',
+          ...provided.draggableProps.style,
+          ...style,
+        }}>
+        <div className={s.listTitle}>{list.name}</div>
+        <div className={s.listExtra}>
+          <div className={s.listCode}>
+            <Icon type="filter" theme="twoTone" />&nbsp;#{list.id}
+          </div>
+          <Avatar
+            size='small'
+            icon='user'
+            style={{
+              background: list.bgColor,
+              color: list.color,
+            }}>
+            {list.name}
+          </Avatar>
+        </div>
+      </div>
+    )
+  }
 
   renderLists = (droppableId) => {
     const { issues } = this.state
@@ -139,46 +172,22 @@ class Backlog extends Component {
     return (
       <Droppable droppableId={droppableId}>
         {
-          (droppableProvided) => (
+          (droppableProvided) => lists.length ? (
             <div className={s.lists} ref={droppableProvided.innerRef}>
               {
                 lists.map((list, index) => (
                   <Draggable draggableId={list.id} index={index} key={list.id}>
                     {
-                      (draggableProvided, draggableSnapshot) => (
-                        <div
-                          onClick={() => this.showDetail(list)}
-                          className={s.list}
-                          ref={draggableProvided.innerRef}
-                          {...draggableProvided.draggableProps}
-                          {...draggableProvided.dragHandleProps}
-                          style={{
-                            boxShadow: draggableSnapshot.isDragging && '0 8px 24px 0 rgba(0, 0, 0, 0.15), 0 0 1px 0 rgba(0, 0, 0, 0.05)',
-                            borderBottom: draggableSnapshot.isDragging && 'none',
-                            ...draggableProvided.draggableProps.style,
-                          }}>
-                          <div className={s.listTitle}>{list.name}</div>
-                          <div className={s.listExtra}>
-                            <div className={s.listCode}>
-                              <Icon type="filter" theme="twoTone" />&nbsp;#{list.id}
-                            </div>
-                            <Avatar
-                              size='small'
-                              icon='user'
-                              style={{
-                                background: list.bgColor,
-                                color: list.color,
-                              }}>
-                              {list.name}
-                            </Avatar>
-                          </div>
-                        </div>
-                      )
+                      (draggableProvided, draggableSnapshot) => this.renderList(list, draggableProvided, draggableSnapshot.isDragging)
                     }
                   </Draggable>
                 ))
               }
               {droppableProvided.placeholder}
+            </div>
+          ) : (
+            <div className={s.mainEmpty} ref={droppableProvided.innerRef}>
+              <span>从Backlog中拖动需求事项到此处进行分类</span>
             </div>
           )
         }
@@ -186,7 +195,7 @@ class Backlog extends Component {
     )
   }
 
-  handleDragEnd = result => {
+  handleDragEnd = (result, a) => {
     if (!result.destination) {
       return
     }
@@ -230,7 +239,36 @@ class Backlog extends Component {
               name='Backlog'
               issuesNum={issues['backlog'].length}
               handleAdd={this.handleAdd}>
+              <div className={s.backlogBox}>
               {this.renderLists('backlog')}
+              {/* <Droppable
+                droppableId='backlog'
+                mode='virtual'
+                renderClone={(provided, snapshot, rubric) => this.renderList(issues['backlog'][rubric.source.index], provided, snapshot.isDragging)}
+              >
+                {
+                  droppableProvided => (
+                    <FixedSizeList
+                      outerRef={droppableProvided.innerRef}
+                      width={400}
+                      height={400}
+                      itemCount={issues['backlog'].length}
+                      itemSize={60}
+                      itemData={issues['backlog']}>
+                      {
+                        ({data, index, style}) => (
+                          <Draggable draggableId={data[index].id} index={index} key={data[index].id}>
+                            {
+                              (draggableProvided, draggableSnapshot) => this.renderList(data[index], draggableProvided, draggableSnapshot.isDragging, style)
+                            }
+                          </Draggable>
+                        )
+                      }
+                    </FixedSizeList>
+                  )
+                }
+              </Droppable> */}
+              </div>
             </Collapse>
           </div>
           <div className={s.iteration}>
