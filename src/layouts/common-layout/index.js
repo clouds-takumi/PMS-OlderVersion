@@ -22,9 +22,27 @@ const menus = [
   },
   {
     id: 3,
+    name: '迭代',
+    icon: 'build',
+    path:'/iteration'
+  },
+  {
+    id: 4,
     name: '待规划',
     icon: 'block',
     path: '/backlog'
+  },
+  {
+    id: 5,
+    name: '事项',
+    icon: 'filter',
+    path: '/issues'
+  },
+  {
+    id: 6,
+    name: '系统',
+    icon: 'setting',
+    path: '/system'
   }
 ]
 
