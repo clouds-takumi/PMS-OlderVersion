@@ -82,6 +82,7 @@ const Detail = (props) => {
                 <div className={s.detailBody}>
                     <div>属性</div>
                     <div>描述</div>
+                    <div>描述</div>
                 </div>
             </div>
         </div>
