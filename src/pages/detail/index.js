@@ -4,28 +4,33 @@ import { Icon, Menu, Dropdown } from 'antd'
 
 const Detail = (props) => {
     const detailId = props.match.params.id
-    const [data, setData] = useState([])
+    const [detailData, setDetailData] = useState([])
     const [title, setTitle] = useState('')
 
     useEffect(() => {
-        const resData = [
-            {
-                id: detailId,
-                name: ''
-            }
-        ]
-        setData(resData)
+        const resData =
+        {
+            id: detailId,
+            name: '',
+            createAuthor: 'Jane',
+            createTime: '2020/12/12'
+        }
+
+        setDetailData(resData)
         setTitle(props.location.state.name)
     }, [detailId, props.location.state.name])
 
     const goback = () => props.history.goBack()
 
-    const handleInput =()=>{
-
+    const handleInput = (e) => {
+        let value = e.target.value
+        if (!!value) {
+            setTitle(value)
+        }
     }
 
     const deleteItem = () => {
-
+        alert('确认删除吗？')
     }
 
     const dropDownMenu = (
@@ -60,21 +65,23 @@ const Detail = (props) => {
                         <div className={s.titleContainer}>
                             <input
                                 type='text'
-                                defaultValue=''
-                                // value={title}
+                                value={title}
                                 onChange={handleInput}
                                 className={s.titleInput} />
                         </div>
                         <div className={s.briefInfo}>
-                            <div>left</div>
-                            <div>right</div>
+                            <div className={s.info}>
+                                <div className={s.infoCreate}>create</div>
+                                <div className={s.infoAss}>assign</div>
+                            </div>
+                            <div className={s.tim}>{detailData.createAuthor} 创建于 {detailData.createTime}</div>
                         </div>
                     </div>
                 </div>
 
                 <div className={s.detailBody}>
-                    {/* <div>title</div>
-                    <div>main</div> */}
+                    <div>属性</div>
+                    <div>描述</div>
                 </div>
             </div>
         </div>

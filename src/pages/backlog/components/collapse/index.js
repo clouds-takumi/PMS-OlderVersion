@@ -77,18 +77,19 @@ const Collapse = ({
 
   const renderAddMenu = () => {
     return (
-      <div className={s.addItemContainer}>
-        <span >add</span>
-        <span className={s.divider}></span>
-        <Input
-          placeholder="输入事件标题，可按回车创建"
-          size='small'
-          onChange={handleInput}
-          value={inputValue}
-          onKeyUp={handleEnterAdd}
-        />
-        <div className={s.btn} style={cur} onClick={handleBtnAdd}>创建</div>
-        <div className={s.btn} onClick={() => handleCancel()} >取消</div>
+      <div className={s.addRoot}>
+        <div className={s.addItemContainer}>
+          <span className={s.addMenu}>add</span>
+          <input
+            placeholder="输入事件标题，可按回车创建"
+            onChange={handleInput}
+            value={inputValue}
+            onKeyUp={handleEnterAdd}
+            className={s.addItemInput}
+          />
+          <div className={s.btn} style={cur} onClick={handleBtnAdd}>创建</div>
+          <div className={s.btn} onClick={() => handleCancel()} >取消</div>
+        </div>
       </div>
     )
   }
@@ -145,9 +146,11 @@ const Collapse = ({
                 ?
                 renderAddMenu()
                 :
-                <div className={s.addFooter}>
-                  <Icon type='plus' />
-                  <span onClick={changeAddFlag}>新建事项</span>
+                <div className={s.addFooter} >
+                  <div onClick={changeAddFlag}>
+                    <Icon type='plus' />
+                    <span >新建事项</span>
+                  </div>
                 </div>
             }
           </>

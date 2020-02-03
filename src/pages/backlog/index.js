@@ -113,7 +113,7 @@ class Backlog extends Component {
     let id, newIter
     const newIterations = JSON.parse(JSON.stringify(this.state.iterations))
     const newIssues = JSON.parse(JSON.stringify(this.state.issues))
-    id = 'i' + newIterations.length
+    id = 'i' + newIterations.length + 1
     newIter = { id, name: title, status: 0, startDate: '2020/02/01', endDate: '2020/02/16' }
     newIterations.push(newIter)
     this.setState({ iterations: newIterations })
@@ -186,10 +186,10 @@ class Backlog extends Component {
               {droppableProvided.placeholder}
             </div>
           ) : (
-            <div className={s.mainEmpty} ref={droppableProvided.innerRef}>
-              <span>从Backlog中拖动需求事项到此处进行分类</span>
-            </div>
-          )
+              <div className={s.mainEmpty} ref={droppableProvided.innerRef}>
+                <span>从Backlog中拖动需求事项到此处进行分类</span>
+              </div>
+            )
         }
       </Droppable>
     )
@@ -240,8 +240,8 @@ class Backlog extends Component {
               issuesNum={issues['backlog'].length}
               handleAdd={this.handleAdd}>
               <div className={s.backlogBox}>
-              {this.renderLists('backlog')}
-              {/* <Droppable
+                {this.renderLists('backlog')}
+                {/* <Droppable
                 droppableId='backlog'
                 mode='virtual'
                 renderClone={(provided, snapshot, rubric) => this.renderList(issues['backlog'][rubric.source.index], provided, snapshot.isDragging)}

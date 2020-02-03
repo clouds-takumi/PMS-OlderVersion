@@ -55,10 +55,6 @@
   width: 100%;
   padding: 8px 24px 0 28px;
   background: #fff;
-  // position: absolute;
-  // z-index: 1001;
-  // left: 0;
-  // top: 0;
 }
 
 .detailMenu {
@@ -110,7 +106,6 @@
   line-height: 24px;
   font-weight: 700;
   border: 1px solid transparent;
-  // outline: none;
   color: #202d40;
   width: 100%;
 }
@@ -139,16 +134,32 @@
 
 .briefInfo {
   margin-bottom: 4px;
-  display: -ms-flexbox;
   display: flex;
-  -ms-flex-align: center;
   align-items: center;
-  -ms-flex-pack: justify;
   justify-content: space-between;
   height: 26px;
+
+  .info {
+    display: flex;
+  }
+
+  .infoCreate {}
+
+  .infoAss {
+    margin-left: 20px;
+  }
+
+  .tim {
+    max-width: 260px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    color: #8592a6;
+    font-size: 12px;
+    line-height: 26px;
+  }
 }
 
 .detailBody {
-  padding-top: 12px;
-  // background-color: rosybrown;
+  padding: 0 24px 0 28px;
 }
