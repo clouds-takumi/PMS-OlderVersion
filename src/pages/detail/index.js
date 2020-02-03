@@ -1,22 +1,38 @@
 import { useState, useEffect } from 'react'
 import s from './index.less'
-import { Icon } from 'antd'
+import { Icon, Menu, Dropdown } from 'antd'
 
 const Detail = (props) => {
     const detailId = props.match.params.id
     const [data, setData] = useState([])
+    const [title, setTitle] = useState('')
 
     useEffect(() => {
         const resData = [
             {
                 id: detailId,
-
+                name: ''
             }
         ]
         setData(resData)
-    }, [detailId])
+        setTitle(props.location.state.name)
+    }, [detailId, props.location.state.name])
 
     const goback = () => props.history.goBack()
+
+    const handleInput =()=>{
+
+    }
+
+    const deleteItem = () => {
+
+    }
+
+    const dropDownMenu = (
+        <Menu>
+            <Menu.Item key='0' onClick={deleteItem}>删除</Menu.Item>
+        </Menu>
+    )
 
     return (
         <div className={s.root}>
@@ -35,12 +51,19 @@ const Detail = (props) => {
                                 <div></div>
                                 <div></div>
                                 <div className={s.trigger}>
-                                    <Icon type='more' />
+                                    <Dropdown overlay={dropDownMenu} trigger={['click']}>
+                                        <Icon type='ellipsis' onClick={e => e.stopPropagation()} />
+                                    </Dropdown>
                                 </div>
                             </div>
                         </div>
                         <div className={s.titleContainer}>
-                            <input type='text' value='title' className={s.titleInput} />
+                            <input
+                                type='text'
+                                defaultValue=''
+                                // value={title}
+                                onChange={handleInput}
+                                className={s.titleInput} />
                         </div>
                         <div className={s.briefInfo}>
                             <div>left</div>

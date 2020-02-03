@@ -128,7 +128,8 @@ class Backlog extends Component {
   }
 
   showDetail = eachItem => {
-    this.props.history.push(`/detail/${eachItem.id}`)
+    // this.props.history.push(`/detail/${eachItem.id}`)
+    this.props.history.push({ pathname: `/detail/${eachItem.id}`, state: { name: eachItem.name } })
   }
 
   renderLists = (droppableId) => {
