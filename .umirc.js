@@ -12,7 +12,10 @@ export default {
         { path: '/register', component: '../pages/register' },
         { path: '/project', component: '../pages/project' },
         { path: '/backlog', component: '../pages/backlog' },
-        { path: '/detail/:id', component: '../pages/detail' }
+        { path: '/detail/:id', component: '../pages/detail' },
+        { path: '/iteration', component: '../pages/iteration' },
+        { path: '/issues', component: '../pages/issues' },
+        { path: '/system', component: '../pages/system' }
       ]
     }
   ],

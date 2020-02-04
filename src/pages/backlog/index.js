@@ -2,13 +2,14 @@ import { Component } from 'react'
 import s from './index.less'
 import Collapse from './components/collapse'
 import AddIterContainer from './components/add-iter-container'
+import DrawContainer from '../../components/drawer_container'
 import { Avatar, Icon, message } from 'antd'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import { FixedSizeList } from 'react-window'
 
 const getRandomColor = () => `#${Math.floor(Math.random() * 16777215).toString(16)}`
 const issues = {
-  backlog: [...Array(80).keys()].map(i => ({
+  backlog: [...Array(6).keys()].map(i => ({
     id: `a${i}`,
     name: `issues-a${i}`,
     bgColor: getRandomColor(),
@@ -88,7 +89,9 @@ class Backlog extends Component {
         startDate: '2020/02/01',
         endDate: '2020/02/16',
       },
-    ]
+    ],
+    drawerVisible: false,
+    itemId: null
   }
 
   handleAdd = ({ iterContainerId, type, itemTitle }) => {
@@ -123,20 +126,27 @@ class Backlog extends Component {
 
   handleExpand = id => {
     const { iterationExpand } = this.state
-
     iterationExpand[id] = !iterationExpand[id]
     this.setState({ iterationExpand })
   }
 
-  showDetail = eachItem => {
-    // this.props.history.push(`/detail/${eachItem.id}`)
-    this.props.history.push({ pathname: `/detail/${eachItem.id}`, state: { name: eachItem.name } })
+  // showDetail = eachItem => {
+  //   // this.props.history.push(`/detail/${eachItem.id}`)
+  //   this.props.history.push({ pathname: `/detail/${eachItem.id}`, state: { name: eachItem.name } })
+  // }
+
+  showDrawer = eachItem => {
+    this.setState({ itemId: eachItem.id })
+    this.setState({ drawerVisible: true })
   }
+
+  closeDrawer = () => this.setState({ drawerVisible: false })
+
   renderList = (list, provided, isDragging, style) => {
     return (
       <div
         className={s.list}
-        onClick={() => this.showDetail(list)}
+        onClick={() => this.showDrawer(list)}
         ref={provided.innerRef}
         {...provided.draggableProps}
         {...provided.dragHandleProps}
@@ -231,17 +241,18 @@ class Backlog extends Component {
     const { issues, iterations, iterationExpand } = this.state
 
     return (
-      <DragDropContext onDragEnd={this.handleDragEnd}>
-        <div className={s.wrapper}>
-          <div className={s.backlog}>
-            <Collapse
-              type='backlog'
-              name='Backlog'
-              issuesNum={issues['backlog'].length}
-              handleAdd={this.handleAdd}>
-              <div className={s.backlogBox}>
-                {this.renderLists('backlog')}
-                {/* <Droppable
+      <>
+        <DragDropContext onDragEnd={this.handleDragEnd}>
+          <div className={s.wrapper}>
+            <div className={s.backlog}>
+              <Collapse
+                type='backlog'
+                name='Backlog'
+                issuesNum={issues['backlog'].length}
+                handleAdd={this.handleAdd}>
+                <div className={s.backlogBox}>
+                  {this.renderLists('backlog')}
+                  {/* <Droppable
                 droppableId='backlog'
                 mode='virtual'
                 renderClone={(provided, snapshot, rubric) => this.renderList(issues['backlog'][rubric.source.index], provided, snapshot.isDragging)}
@@ -268,35 +279,43 @@ class Backlog extends Component {
                   )
                 }
               </Droppable> */}
+                </div>
+              </Collapse>
+            </div>
+            <div className={s.iteration}>
+              {
+                iterations.map(iteration => (
+                  <Collapse
+                    key={iteration.id}
+                    className={s.collapse}
+                    type='iteration'
+                    iterContainerId={iteration.id}
+                    name={iteration.name}
+                    issuesNum={issues[iteration.id].length}
+                    expand={iterationExpand[iteration.id]}
+                    onExpand={() => this.handleExpand(iteration.id)}
+                    status={iteration.status}
+                    startDate={iteration.startDate}
+                    endDate={iteration.endDate}
+                    handleAdd={this.handleAdd}>
+                    {this.renderLists(iteration.id)}
+                  </Collapse>
+                ))
+              }
+              <div className={s.addContainer}>
+                <AddIterContainer handleAddIter={this.handleAddIter} />
               </div>
-            </Collapse>
-          </div>
-          <div className={s.iteration}>
-            {
-              iterations.map(iteration => (
-                <Collapse
-                  key={iteration.id}
-                  className={s.collapse}
-                  type='iteration'
-                  iterContainerId={iteration.id}
-                  name={iteration.name}
-                  issuesNum={issues[iteration.id].length}
-                  expand={iterationExpand[iteration.id]}
-                  onExpand={() => this.handleExpand(iteration.id)}
-                  status={iteration.status}
-                  startDate={iteration.startDate}
-                  endDate={iteration.endDate}
-                  handleAdd={this.handleAdd}>
-                  {this.renderLists(iteration.id)}
-                </Collapse>
-              ))
-            }
-            <div className={s.addContainer}>
-              <AddIterContainer handleAddIter={this.handleAddIter} />
             </div>
           </div>
-        </div>
-      </DragDropContext>
+        </DragDropContext>
+        {
+          this.state.drawerVisible &&
+          <DrawContainer
+            id={this.state.itemId}
+            visible={this.state.drawerVisible}
+            closeDrawer={this.closeDrawer} />
+        }
+      </>
     )
   }
 }

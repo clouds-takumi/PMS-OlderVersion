@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import s from './index.less'
-import { Icon, Tag, Dropdown, Menu, Divider, Tooltip, Input } from 'antd'
+import { Icon, Tag, Dropdown, Menu, Divider, Tooltip } from 'antd'
 import cn from 'classnames'
 
 const Collapse = ({
