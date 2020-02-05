@@ -90,8 +90,7 @@ class Backlog extends Component {
         endDate: '2020/02/16',
       },
     ],
-    drawerVisible: false,
-    itemId: null
+    drawerVisible: false
   }
 
   handleAdd = ({ iterContainerId, type, itemTitle }) => {
@@ -136,7 +135,7 @@ class Backlog extends Component {
   // }
 
   showDrawer = eachItem => {
-    this.setState({ itemId: eachItem.id })
+    this.props.history.push(`/backlog/issues/${eachItem.id}`)
     this.setState({ drawerVisible: true })
   }
 
@@ -311,7 +310,8 @@ class Backlog extends Component {
         {
           this.state.drawerVisible &&
           <DrawContainer
-            id={this.state.itemId}
+            type='Item'
+            id={this.props.match.params.id}
             visible={this.state.drawerVisible}
             closeDrawer={this.closeDrawer} />
         }

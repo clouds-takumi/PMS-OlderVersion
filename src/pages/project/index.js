@@ -6,6 +6,7 @@
 import { Component } from 'react'
 import { Table, Tag, Divider, Form, Select, Button, Input, DatePicker } from 'antd'
 import s from './index.less'
+import DrawContainer from '../../components/drawer_container'
 
 const projects = [...Array(15).keys()].map(i => ({
   id: i,
@@ -74,18 +75,21 @@ const createdOptions = [
   },
   {
     id: 1,
-    name: 'JM',
+    name: 'Jane',
   }
 ]
 
 class Project extends Component {
   state = {
+    drawerVisible: false,
+    proName: '',
     projects,
     columns: [
       {
         title: '项目名称',
         dataIndex: 'name',
         key: 'name',
+        render: (dataIndex) => <span className={s.proName} onClick={() => this.showDrawer(dataIndex)}>{dataIndex}</span>
       },
       {
         title: '项目状态',
@@ -137,35 +141,42 @@ class Project extends Component {
     ]
   }
 
+  showDrawer = (dataIndex) => {
+    // TODO
+    this.setState({ drawerVisible: true })
+  }
+
+  closeDrawer = () => this.setState({ drawerVisible: false })
+
   render() {
     const { projects, columns } = this.state
 
     return (
       <div className={s.project}>
-        <Form layout='inline' style={{marginBottom: 24}}>
+        <Form layout='inline' style={{ marginBottom: 24 }}>
           <Form.Item label='名称'>
             <Input placeholder='请输入项目名称' />
           </Form.Item>
           <Form.Item label='项目状态'>
-            <Select placeholder='请选择' style={{width: 140}}>
+            <Select placeholder='请选择' style={{ width: 140 }}>
               {statusOptions.map(status => <Select.Option key={status.id}>{status.name}</Select.Option>)}
             </Select>
           </Form.Item>
           <Form.Item label='项目日期'>
-            <DatePicker  />
+            <DatePicker />
           </Form.Item>
           <Form.Item label='创建人'>
-            <Select placeholder='请选择' style={{width: 140}}>
+            <Select placeholder='请选择' style={{ width: 140 }}>
               {createdOptions.map(created => <Select.Option key={created.id}>{created.name}</Select.Option>)}
             </Select>
           </Form.Item>
           <Form.Item label='标签'>
-            <Select placeholder='请选择' style={{width: 140}}>
+            <Select placeholder='请选择' style={{ width: 140 }}>
               {tagOptions.map(tag => <Select.Option key={tag.id}>{tag.name}</Select.Option>)}
             </Select>
           </Form.Item>
           <Form.Item label=' ' colon={false}>
-            <Button type='primary' style={{marginRight: 12}}>筛选</Button>
+            <Button type='primary' style={{ marginRight: 12 }}>筛选</Button>
             <Button>重置</Button>
           </Form.Item>
         </Form>
@@ -174,6 +185,14 @@ class Project extends Component {
           columns={columns}
           rowKey='id'
           pagination />
+        {
+          this.state.drawerVisible &&
+          <DrawContainer
+            type='Project'
+            id={this.state.proName}
+            visible={this.state.drawerVisible}
+            closeDrawer={this.closeDrawer} />
+        }
       </div>
     )
   }

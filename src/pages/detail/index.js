@@ -17,8 +17,8 @@ const Detail = (props) => {
         }
 
         setDetailData(resData)
-        setTitle(props.location.state.name)
-    }, [detailId, props.location.state.name])
+        // setTitle(props.location.state.name)
+    }, [detailId])
 
     const goback = () => props.history.goBack()
 

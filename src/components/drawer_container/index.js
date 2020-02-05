@@ -5,13 +5,16 @@ import s from './index.less'
 class DrawContainer extends PureComponent {
     state = {
         detailData: {},
-        titleValue: ''
+        titleValue: '',
+        expandProp: true,
+        expandDesc: true
     }
 
     handleInput = (e) => {
         let value = e.target.value
+        this.setState({ titleValue: value })
         if (!!value) {
-            this.setState({ titleValue: value })
+            // TODO4：value不为空允许提交修改，或者添加value为空时的提示
         }
     }
 
@@ -28,9 +31,15 @@ class DrawContainer extends PureComponent {
         )
     }
 
-    goback = () => {
-        this.props.closeDrawer()
-    }
+    goback = () => this.props.closeDrawer()
+
+    changeProp = () => this.setState((state) => {
+        return { expandProp: !state.expandProp }
+    })
+
+    chageDesc = () => this.setState((state) => {
+        return { expandDesc: !state.expandDesc }
+    })
 
     componentDidMount() {
         const detailId = this.props.id
@@ -42,12 +51,28 @@ class DrawContainer extends PureComponent {
             createTime: '2020/12/12'
         }
         // TODO1:根据id获取数据
-        this.setState({ detailData: resData })
-        this.setState({ titleValue: resData.name })
+        this.setState({ detailData: resData, titleValue: resData.name })
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.id !== this.props.id) {
+            // 重新获取数据
+            const detailId = this.props.id
+            const resData =
+            {
+                id: detailId,
+                name: '该需求的名称',
+                createAuthor: 'Jane',
+                createTime: '2020/12/12'
+            }
+            this.setState({ detailData: resData, titleValue: resData.name })
+        }
     }
 
     render() {
-        const { detailData, titleValue } = this.state
+        const { detailData, titleValue, expandProp, expandDesc } = this.state
+        const { type } = this.props
+        // Project Iteration Issues Item
         return (
             <div className={s.drawerRoot}>
                 <Drawer
@@ -67,8 +92,7 @@ class DrawContainer extends PureComponent {
                                     <div className={s.detailMenu}>
                                         <div className={s.detailId}>
                                             <span className={s.code}>
-                                                {/* TODO3：this.props.id 换成 detailData.id 达不到点击其他iem，此处切换对象显示的效果 */}
-                                                <Icon type="filter" theme="twoTone" />&nbsp;#{this.props.id}
+                                                <Icon type="filter" theme="twoTone" />&nbsp;#{detailData.id}
                                             </span>
                                             <span></span>
                                         </div>
@@ -100,14 +124,40 @@ class DrawContainer extends PureComponent {
                             </div>
 
                             <div className={s.detailBody}>
-                                <div>属性-需求的截至日期 / 预估时间 </div>
-                                <div>描述-编辑</div>
+                                <div className={s.partTitle}>
+                                    属性
+                                        <Icon
+                                        type={expandProp ? 'down' : 'right'}
+                                        className={s.expandIcon}
+                                        style={!expandProp ? { color: "#3385ff" } : null}
+                                        onClick={this.changeProp}
+                                        size='small' />
+                                </div>
+                                {
+                                    expandProp && (
+                                        <div> asd </div>
+                                    )
+                                }
+                                <div className={s.partTwo}>
+                                    <div className={s.partTitle}>
+                                        描述
+                                        <Icon
+                                            type={expandDesc ? 'down' : 'right'}
+                                            className={s.expandIcon}
+                                            style={!expandDesc ? { color: "#3385ff" } : null}
+                                            onClick={this.chageDesc}
+                                            size='small' />
+                                    </div>
+                                    {
+                                        expandDesc && 'das'
+                                    }
+                                </div>
+
                             </div>
                         </div>
                     </div>
                 </Drawer>
             </div>
-
         )
     }
 }
