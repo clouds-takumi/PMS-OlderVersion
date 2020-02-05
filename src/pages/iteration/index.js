@@ -38,7 +38,7 @@ class Iteration extends PureComponent {
                 width: 120,
             },
             {
-                title: '项目状态',
+                title: '迭代状态',
                 dataIndex: 'status',
                 key: 'status',
                 width: 120,

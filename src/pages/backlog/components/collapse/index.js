@@ -129,6 +129,7 @@ const Collapse = ({
             )
         }
       </div>
+
       <div className={s.body}>
         {(type === 'backlog') && issuesNum === 0 && (
           <div className={s.mainEmpty}>
@@ -138,6 +139,7 @@ const Collapse = ({
         {(expand || type === 'backlog') && children}
         <div className={s.operate}></div>
       </div>
+
       {
         (expand === true || type === 'backlog') && (
           <>

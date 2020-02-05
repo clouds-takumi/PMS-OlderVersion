@@ -194,6 +194,7 @@ class Backlog extends Component {
               }
               {droppableProvided.placeholder}
             </div>
+
           ) : (
               <div className={s.mainEmpty} ref={droppableProvided.innerRef}>
                 <span>从Backlog中拖动需求事项到此处进行分类</span>
@@ -281,26 +282,28 @@ class Backlog extends Component {
                 </div>
               </Collapse>
             </div>
-            <div className={s.iteration}>
-              {
-                iterations.map(iteration => (
-                  <Collapse
-                    key={iteration.id}
-                    className={s.collapse}
-                    type='iteration'
-                    iterContainerId={iteration.id}
-                    name={iteration.name}
-                    issuesNum={issues[iteration.id].length}
-                    expand={iterationExpand[iteration.id]}
-                    onExpand={() => this.handleExpand(iteration.id)}
-                    status={iteration.status}
-                    startDate={iteration.startDate}
-                    endDate={iteration.endDate}
-                    handleAdd={this.handleAdd}>
-                    {this.renderLists(iteration.id)}
-                  </Collapse>
-                ))
-              }
+            <div className={s.rightContainer}>
+              <div className={s.iteration}>
+                {
+                  iterations.map(iteration => (
+                    <Collapse
+                      key={iteration.id}
+                      className={s.collapse}
+                      type='iteration'
+                      iterContainerId={iteration.id}
+                      name={iteration.name}
+                      issuesNum={issues[iteration.id].length}
+                      expand={iterationExpand[iteration.id]}
+                      onExpand={() => this.handleExpand(iteration.id)}
+                      status={iteration.status}
+                      startDate={iteration.startDate}
+                      endDate={iteration.endDate}
+                      handleAdd={this.handleAdd}>
+                      {this.renderLists(iteration.id)}
+                    </Collapse>
+                  ))
+                }
+              </div>
               <div className={s.addContainer}>
                 <AddIterContainer handleAddIter={this.handleAddIter} />
               </div>
