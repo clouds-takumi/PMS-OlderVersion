@@ -8,11 +8,13 @@ const Collapse = ({
   children,
   type,
   iterContainerId = null,
+  delIterContainer,
   name,
   issuesNum,
   expand,
   onExpand,
   status,
+  changeStatus,
   startDate,
   endDate,
   handleAdd,
@@ -66,13 +68,24 @@ const Collapse = ({
 
   const dropDownMenu = (
     <Menu>
-      <Menu.Item key='0'>开始迭代</Menu.Item>
+      <Menu.Item key='0' onClick={(eve) => {
+        eve.domEvent.stopPropagation()
+        changeStatus(iterContainerId, 1)
+      }} style={status ? { cursor: " not-allowed" } : null}>开始迭代</Menu.Item>
+      {/* <Menu.Divider /> */}
+      {/* <Menu.Item key='1'
+        onClick={(eve) => {
+          eve.domEvent.stopPropagation()
+          // this.props.history.push(`/detail/${eachItem.id}`)
+        }
+        }>在新标签页打开</Menu.Item> */}
+      {/* <Menu.Item key='2'>编辑迭代</Menu.Item> */}
       <Menu.Divider />
-      <Menu.Item key='1'>在新标签页打开</Menu.Item>
-      <Menu.Item key='2'>编辑迭代</Menu.Item>
-      <Menu.Divider />
-      <Menu.Item key='3'>删除迭代</Menu.Item>
-    </Menu>
+      <Menu.Item key='3' onClick={eve => {
+        eve.domEvent.stopPropagation()
+        delIterContainer(iterContainerId)
+      }}>删除迭代</Menu.Item>
+    </Menu >
   )
 
   const renderAddMenu = () => {
@@ -139,7 +152,6 @@ const Collapse = ({
         {(expand || type === 'backlog') && children}
         <div className={s.operate}></div>
       </div>
-
       {
         (expand === true || type === 'backlog') && (
           <>

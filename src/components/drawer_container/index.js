@@ -1,5 +1,6 @@
 import { PureComponent } from 'react'
 import { Drawer, Icon, Dropdown, Menu } from 'antd'
+import router from 'umi/router'
 import s from './index.less'
 
 class DrawContainer extends PureComponent {
@@ -31,7 +32,8 @@ class DrawContainer extends PureComponent {
         )
     }
 
-    goback = () => this.props.closeDrawer()
+    // goback = () => this.props.closeDrawer()
+    goback = () => router.push('/backlog')
 
     changeProp = () => this.setState((state) => {
         return { expandProp: !state.expandProp }

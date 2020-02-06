@@ -15,7 +15,7 @@ const issues = {
     bgColor: getRandomColor(),
     color: getRandomColor(),
   })),
-  i1: [...Array(6).keys()].map(i => ({
+  i1: [...Array(3).keys()].map(i => ({
     id: `b${i}`,
     name: `issues-b${i}`,
     bgColor: getRandomColor(),
@@ -54,41 +54,41 @@ class Backlog extends Component {
       i1: true
     },
     iterations: [
-      {
-        id: 'i1',
-        name: '[PC] 广告平台',
-        status: 0,
-        startDate: '2020/02/01',
-        endDate: '2020/02/16',
-      },
-      {
-        id: 'i2',
-        name: '[Mobile] 手机版微店',
-        status: 1,
-        startDate: '2020/02/01',
-        endDate: '2020/02/16',
-      },
-      {
-        id: 'i3',
-        name: '[PC] 宠物商店',
-        status: 0,
-        startDate: '2020/02/01',
-        endDate: '2020/02/16',
-      },
-      {
-        id: 'i4',
-        name: '[Mobile] 钓鱼市场',
-        status: 0,
-        startDate: '2020/02/01',
-        endDate: '2020/02/16',
-      },
-      {
-        id: 'i5',
-        name: '[PC] 空',
-        status: 0,
-        startDate: '2020/02/01',
-        endDate: '2020/02/16',
-      },
+      // {
+      //   id: 'i1',
+      //   name: '[PC] 广告平台',
+      //   status: 0,
+      //   startDate: '2020/02/01',
+      //   endDate: '2020/02/16',
+      // },
+      // {
+      //   id: 'i2',
+      //   name: '[Mobile] 手机版微店',
+      //   status: 1,
+      //   startDate: '2020/02/01',
+      //   endDate: '2020/02/16',
+      // },
+      // {
+      //   id: 'i3',
+      //   name: '[PC] 宠物商店',
+      //   status: 0,
+      //   startDate: '2020/02/01',
+      //   endDate: '2020/02/16',
+      // },
+      // {
+      //   id: 'i4',
+      //   name: '[Mobile] 钓鱼市场',
+      //   status: 0,
+      //   startDate: '2020/02/01',
+      //   endDate: '2020/02/16',
+      // },
+      // {
+      //   id: 'i5',
+      //   name: '[PC] 预研项目',
+      //   status: 0,
+      //   startDate: '2020/02/01',
+      //   endDate: '2020/02/16',
+      // },
     ],
     drawerVisible: false
   }
@@ -237,6 +237,22 @@ class Backlog extends Component {
     this.setState({ issues });
   }
 
+  handleStatus = (iterationId, code) => {
+    const newData = this.state.iterations.map(item => {
+      let newItem = item
+      if (item.id === iterationId) {
+        item.status = code
+      }
+      return newItem
+    })
+    this.setState({ iterations: newData })
+  }
+
+  delIterContainer = (iterationId) => {
+    const newData = this.state.iterations.filter(item => item.id !== iterationId)
+    this.setState({ iterations: newData })
+  }
+
   render() {
     const { issues, iterations, iterationExpand } = this.state
 
@@ -291,11 +307,13 @@ class Backlog extends Component {
                       className={s.collapse}
                       type='iteration'
                       iterContainerId={iteration.id}
+                      delIterContainer={this.delIterContainer}
                       name={iteration.name}
                       issuesNum={issues[iteration.id].length}
                       expand={iterationExpand[iteration.id]}
                       onExpand={() => this.handleExpand(iteration.id)}
                       status={iteration.status}
+                      changeStatus={this.handleStatus}
                       startDate={iteration.startDate}
                       endDate={iteration.endDate}
                       handleAdd={this.handleAdd}>
@@ -305,7 +323,7 @@ class Backlog extends Component {
                 }
               </div>
               <div className={s.addContainer}>
-                <AddIterContainer handleAddIter={this.handleAddIter} />
+                <AddIterContainer handleAddIter={this.handleAddIter} emptyFlag={iterations.length === 0 ? true : false} />
               </div>
             </div>
           </div>
