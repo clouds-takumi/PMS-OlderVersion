@@ -1,14 +1,10 @@
 import { useState } from 'react'
 import s from './index.less'
-import { Icon, Tag, Dropdown, Menu, Divider, Tooltip, Modal, Button, DatePicker, message } from 'antd'
+import { Icon, Tag, Dropdown, Menu, Divider, Tooltip, Modal, Button, DatePicker, message, Input } from 'antd'
 import cn from 'classnames'
 import moment from 'moment';
 import 'moment/locale/zh-cn';
 moment.locale('zh-cn');
-
-/**
- * TODO: 编辑迭代的modal
- */
 
 const Collapse = ({
   className,
@@ -33,7 +29,7 @@ const Collapse = ({
   const [timeEnd, setTimeEnd] = useState(null)
   const [timeComp, setTimeComp] = useState(moment().format('YYYY-MM-DD'))
   /**
-   * @ 0 - begin 1 - delete 2-complete
+   * @ 0-begin 1-delete 2-complete 3-edit
    */
   const [modalFlag, setModalFlag] = useState(null)
 
@@ -96,7 +92,10 @@ const Collapse = ({
           }} style={status ? { cursor: " not-allowed" } : null}>开始迭代</Menu.Item>
       }
       <Menu.Divider />
-      <Menu.Item key='2' onClick={(eve) => eve.domEvent.stopPropagation()}>编辑迭代</Menu.Item>
+      <Menu.Item key='2' onClick={(eve) => {
+        eve.domEvent.stopPropagation()
+        setModalFlag(3)
+      }}>编辑迭代</Menu.Item>
       <Menu.Divider />
       <Menu.Item key='3' onClick={eve => {
         eve.domEvent.stopPropagation()
@@ -113,7 +112,7 @@ const Collapse = ({
       message.info({ content: '请选择迭代结束时间', key: 'dex' })
     } else {
       changeStatus(iterContainerId, 1)
-      const data = { timeStart, timeEnd }
+      const data = { timeStart, timeEnd, status: 1 }
       // TODO: 更新迭代对象起始时间接口，头部时间信息为datepick的value
       setModalFlag(null)
       message.info({ content: `${iterContainerId}已经开始`, key: 'dex' })
@@ -148,7 +147,7 @@ const Collapse = ({
     return (
       <Modal
         title={null}
-        visible={modalFlag === 0 || modalFlag === 1 || modalFlag === 2}
+        visible={modalFlag === 0 || modalFlag === 1 || modalFlag === 2 || modalFlag === 3}
         closable={false}
         footer={null}
         className={s.modal}
@@ -244,6 +243,51 @@ const Collapse = ({
                     setModalFlag(null)
                   }}>取消</Button>
               </div>
+            </div>
+          )
+        }
+        {
+          modalFlag === 3 && (
+            <div onClick={(eve) => eve.stopPropagation()}>
+              <div className={s.modalTitle}>编辑迭代</div>
+              <div className={s.modalMsgTime}>标题</div>
+              {/* TODO: 待改 可控 数据操作 */}
+              <Input value={name} />
+              <div className={s.modalDate}>
+                <div className={s.modalLeft}>
+                  <div className={s.modalMsgTime}>开始时间</div>
+                  <DatePicker
+                    disabled={status ? true : false}
+                    placeholder={status ? '' : '请选择迭代开始时间'}
+                    // TODO: 此处的默认值 应该为status被设为1之后保存的时间数据 开始 和 结束
+                    defaultValue={status ? moment() : null}
+                    format={'YYYY-MM-DD'}
+                    onChange={onCompChange}
+                    suffixIcon={<Icon type='down' />} />
+                </div>
+                <div className={s.modalRight}>
+                  <div className={s.modalMsgTime}>结束时间</div>
+                  <DatePicker
+                    placeholder='请选择迭代结束时间'
+                    // TODO: 此处的默认值 应该为status被设为1之后保存的时间数据 开始 和 结束
+                    defaultValue={status ? moment() : null}
+                    onChange={onCompChange}
+                    suffixIcon={<Icon type='down' />} />
+                </div>
+              </div>
+              {/* TODO: 保存操作待完善 */}
+              <Button
+                type='primary'
+                className={cn(s.btn, s.sureBtn)}
+                style={{ width: '60px', marginRight: '20px' }}>保存</Button>
+              <Button
+                type='primary'
+                className={cn(s.btn, s.rightBtn)}
+                onClick={(eve) => {
+                  eve.stopPropagation()
+                  setModalFlag(null)
+                }}
+                style={{ width: '60px' }}>取消</Button>
             </div>
           )
         }
