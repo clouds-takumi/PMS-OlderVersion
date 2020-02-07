@@ -1,9 +1,12 @@
-import { Layout, Menu, Icon, Badge, Avatar } from 'antd'
+import { Component } from 'react'
+import { Layout, Menu, Icon, Badge, Avatar, Dropdown } from 'antd'
 import s from './index.less'
 import cn from 'classnames'
 import Link from 'umi/link';
 import { connect } from 'react-redux'
-import { changeSiderCollapsed } from './redux/actions'
+import { changeSiderCollapsed, setUserInfo } from './redux/actions'
+import { getUserInfo } from './service'
+import router from 'umi/router'
 
 const { Header, Content, Sider } = Layout
 
@@ -46,8 +49,19 @@ const menus = [
   }
 ]
 
-const CommonLayout = ({ children, collapsed, handleCollapsed }) => {
-  const renderMenus = () => {
+class CommonLayout extends Component {
+  componentDidMount() {
+    const { setUserInfo } = this.props
+
+    getUserInfo().then(data => {
+      if (data) {
+        setUserInfo(data)
+      } else {
+        router.replace('/login')
+      }
+    })
+  }
+  renderMenus = () => {
     return (
       <Menu
         theme='dark'
@@ -65,37 +79,60 @@ const CommonLayout = ({ children, collapsed, handleCollapsed }) => {
       </Menu>
     )
   }
+  handleLogout = () => {
+    localStorage.removeItem('token')
+    router.replace('/login')
+  }
+  render() {
+    const { children, collapsed, handleCollapsed, userInfo } = this.props
 
-  return (
-    <Layout className={cn(collapsed && s.appCollapsed)}>
-      <Sider className={s.sider} width={256} collapsed={collapsed}>
-        <div className={s.logo}>PMS</div>
-        {renderMenus()}
-      </Sider>
-      <Layout className={s.wrapper}>
-        <Header className={s.header}>
-          <div className={s.headerLeft} onClick={() => handleCollapsed(!collapsed)}>
-            <Icon type={collapsed ? 'menu-unfold' : 'menu-fold'} />
-          </div>
-          <div className={s.headerRight}>
-            <div className={s.headerBadge}>
-              <Badge count={5}>
-                <Icon type='bell' />
-              </Badge>
+    return (
+      <Layout className={cn(collapsed && s.appCollapsed)}>
+        <Sider className={s.sider} width={256} collapsed={collapsed}>
+          <div className={s.logo}>PMS</div>
+          {this.renderMenus()}
+        </Sider>
+        <Layout className={s.wrapper}>
+          <Header className={s.header}>
+            <div className={s.headerLeft} onClick={() => handleCollapsed(!collapsed)}>
+              <Icon type={collapsed ? 'menu-unfold' : 'menu-fold'} />
             </div>
-            <div className={s.headerAvatar}>
-              <Avatar>J</Avatar>
-              <span className={s.headerAvatarName}>jason</span>
+            <div className={s.headerRight}>
+              <div className={s.headerBadge}>
+                <Badge count={5}>
+                  <Icon type='bell' />
+                </Badge>
+              </div>
+              {
+                userInfo && (
+                  <Dropdown overlay={
+                    <Menu>
+                      <Menu.Item onClick={this.handleLogout}>退出登录</Menu.Item>
+                    </Menu>
+                  }>
+                    <div className={s.headerAvatar}>
+                      <Avatar>{userInfo.username[0]}</Avatar>
+                      <span className={s.headerAvatarName}>{userInfo.username}</span>
+                    </div>
+                  </Dropdown>
+                )
+              }
             </div>
-          </div>
-        </Header>
-        <Content className={s.body}>{children}</Content>
+          </Header>
+          <Content className={s.body}>{children}</Content>
+        </Layout>
       </Layout>
-    </Layout>
-  )
+    )
+  }
 }
 
 export default connect(
-  store => ({ collapsed: store.commonLayoutReducer.collapsed }),
-  dispatch => ({ handleCollapsed: collapsed => dispatch(changeSiderCollapsed(collapsed))})
+  store => ({
+    collapsed: store.commonLayoutReducer.collapsed,
+    userInfo: store.commonLayoutReducer.userInfo,
+  }),
+  dispatch => ({
+    handleCollapsed: collapsed => dispatch(changeSiderCollapsed(collapsed)),
+    setUserInfo: userInfo => dispatch(setUserInfo(userInfo)),
+  })
 )(CommonLayout)
