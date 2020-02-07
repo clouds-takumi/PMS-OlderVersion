@@ -1,10 +1,14 @@
 import { useState } from 'react'
 import s from './index.less'
-import { Icon, Tag, Dropdown, Menu, Divider, Tooltip, Modal, Button, DatePicker } from 'antd'
+import { Icon, Tag, Dropdown, Menu, Divider, Tooltip, Modal, Button, DatePicker, message } from 'antd'
 import cn from 'classnames'
 import moment from 'moment';
 import 'moment/locale/zh-cn';
 moment.locale('zh-cn');
+
+/**
+ * TODO: 编辑迭代的modal
+ */
 
 const Collapse = ({
   className,
@@ -25,6 +29,9 @@ const Collapse = ({
   const [addFlag, setAddFlag] = useState(false)
   const [addValueFlag, setAddValueFlag] = useState(false)
   const [inputValue, setInputValue] = useState('')
+  const [timeStart, setTimeStart] = useState(moment().format('YYYY-MM-DD'))
+  const [timeEnd, setTimeEnd] = useState(null)
+  const [timeComp, setTimeComp] = useState(moment().format('YYYY-MM-DD'))
   /**
    * @ 0 - begin 1 - delete 2-complete
    */
@@ -100,11 +107,41 @@ const Collapse = ({
 
   const hanldeStart = (eve) => {
     eve.stopPropagation()
-    changeStatus(iterContainerId, 1)
-    setModalFlag(null)
+    if (!timeStart) {
+      message.info({ content: '请选择迭代开始时间', key: 'dex' })
+    } else if (!timeEnd) {
+      message.info({ content: '请选择迭代结束时间', key: 'dex' })
+    } else {
+      changeStatus(iterContainerId, 1)
+      const data = { timeStart, timeEnd }
+      // TODO: 更新迭代对象起始时间接口，头部时间信息为datepick的value
+      setModalFlag(null)
+      message.info({ content: `${iterContainerId}已经开始`, key: 'dex' })
+    }
   }
 
-  const onChange = (date, dateString) => {
+  const handleComp = (eve) => {
+    eve.stopPropagation()
+    if (!timeComp) {
+      message.info({ content: '请确认迭代完成时间', key: 'pex' })
+    } else {
+      const data = { timeComp }
+      // TODO: 更新迭代容器，此处不应该用这个删除方法的接口
+      delIterContainer(iterContainerId)
+      setModalFlag(null)
+    }
+  }
+
+  const onStartChange = (date, dateString) => {
+    setTimeStart(dateString)
+  }
+
+  const onEndChange = (date, dateString) => {
+    setTimeEnd(dateString)
+  }
+
+  const onCompChange = (date, dateString) => {
+    setTimeComp(dateString)
   }
 
   const renderModal = () => {
@@ -119,7 +156,7 @@ const Collapse = ({
       >
         {
           modalFlag === 1 && (
-            <>
+            <div onClick={(eve) => eve.stopPropagation()}>
               <div className={s.modalTitle}>删除迭代</div>
               <div className={s.modalMsg}>提示：只会删除当前迭代，迭代中涉及的事项将被移至未规划，此操作不可撤销，是否确认？</div>
               <div className={s.modalBtn}>
@@ -136,12 +173,12 @@ const Collapse = ({
                     setModalFlag(null)
                   }}>取消</Button>
               </div>
-            </>
+            </div>
           )
         }
         {
           modalFlag === 0 && (
-            <>
+            <div onClick={(eve) => eve.stopPropagation()}>
               <div className={s.modalTitle}>开始迭代</div>
               <div className={s.modalMsgTime}>迭代开始时间</div>
               <div>
@@ -149,7 +186,7 @@ const Collapse = ({
                   placeholder='请选择迭代开始时间'
                   defaultValue={moment()}
                   format={'YYYY-MM-DD'}
-                  onChange={onChange}
+                  onChange={onStartChange}
                   suffixIcon={<Icon type='down' />}
                   className={s.datePick} />
               </div>
@@ -157,7 +194,7 @@ const Collapse = ({
               <div >
                 <DatePicker
                   placeholder='请选择迭代结束时间'
-                  onChange={onChange}
+                  onChange={onEndChange}
                   suffixIcon={<Icon type='down' />}
                   className={s.datePick} />
               </div>
@@ -175,12 +212,12 @@ const Collapse = ({
                     setModalFlag(null)
                   }}>取消</Button>
               </div>
-            </>
+            </div>
           )
         }
         {
           modalFlag === 2 && (
-            <>
+            <div onClick={(eve) => eve.stopPropagation()}>
               <div className={s.modalTitle}>完成迭代</div>
               <div className={s.modalMsgTime}>请再次确认当前迭代内所有事项是否都已完成？</div>
               <div className={s.modalMsgTime}>确认迭代完成时间</div>
@@ -189,7 +226,7 @@ const Collapse = ({
                   placeholder='请选择迭代完成时间'
                   defaultValue={moment()}
                   format={'YYYY-MM-DD'}
-                  onChange={onChange}
+                  onChange={onCompChange}
                   suffixIcon={<Icon type='down' />}
                   className={s.datePick} />
               </div>
@@ -197,7 +234,7 @@ const Collapse = ({
                 <Button
                   type='primary'
                   className={cn(s.btn, s.sureBtn)}
-                  onClick={() => delIterContainer(iterContainerId)}
+                  onClick={handleComp}
                 >确认完成</Button>
                 <Button
                   type='primary'
@@ -207,7 +244,7 @@ const Collapse = ({
                     setModalFlag(null)
                   }}>取消</Button>
               </div>
-            </>
+            </div>
           )
         }
       </Modal>
@@ -238,9 +275,6 @@ const Collapse = ({
       <div
         className={cn(s.header, type !== 'backlog' && s.headerExpand)}
         onClick={handleExpand}>
-        {
-          renderModal('delete')
-        }
         {
           type === 'backlog'
             ? <Icon type='hdd' className={s.icon} />
@@ -274,7 +308,9 @@ const Collapse = ({
             )
         }
       </div>
-
+      {
+        renderModal('delete')
+      }
       <div className={s.body}>
         {(type === 'backlog') && issuesNum === 0 && (
           <div className={s.mainEmpty}>
