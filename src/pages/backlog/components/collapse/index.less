@@ -9,10 +9,10 @@
   align-items: center;
   line-height: 45px;
   padding-left: 9px;
-  // background-color: rgb(235, 240, 245);
+  background-color: rgb(235, 240, 245);
   position: sticky;
   top: 0px;
-  z-index: 19;
+  z-index: 21;
 }
 
 .headerRight {
@@ -75,7 +75,7 @@
 }
 
 .addFooter {
-  // background-color: rgb(235, 240, 245);
+  background-color: rgb(235, 240, 245);
   display: flex;
   align-items: center;
   padding-left: 9px;
@@ -147,12 +147,12 @@
 .modal {
   width: 480px;
   position: absolute;
-  left: 50%;
-  top: 50%;
+  left: 35%;
+  top: 20%;
   margin: 0;
   padding: 30px;
   background: #fff;
-  transform: translate(-50%, -50%);
+  // transform: translate(-50%, -50%);
 }
 
 .modalTitle {
@@ -169,6 +169,14 @@
   line-height: 16px;
 }
 
+.modalMsgTime {
+  margin-top: 20px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #202d40;
+  line-height: 16px;
+}
+
 .modalBtn {
   margin-top: 30px;
 }
@@ -176,6 +184,9 @@
 .btn {
   width: 100px;
   padding: 0;
+  height: 30px;
+  font-size: 14px;
+  margin: 0;
 }
 
 .leftBtn {
@@ -189,4 +200,22 @@
   border: 1px solid #202d40;
   background-color: transparent;
   color: #202d40;
+}
+
+.rightBtn:hover {
+  background-color: #202d40;
+  border: 1px solid #202d40;
+}
+
+.beginBtn {
+  border: 1px solid #202d40;
+  background-color: #202d40;
+  color: #fff;
+  margin-right: 40px;
+}
+
+.beginBtn:hover {
+  background-color: #202d40;
+  opacity: 0.7;
+  border: 1px solid #202d40;
 }

@@ -6,6 +6,7 @@ import DrawContainer from '../../components/drawer_container'
 import { Avatar, Icon, message } from 'antd'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import { FixedSizeList } from 'react-window'
+// import _lodash from 'lodash'
 
 const getRandomColor = () => `#${Math.floor(Math.random() * 16777215).toString(16)}`
 const issues = {
@@ -49,6 +50,7 @@ const issues = {
 
 class Backlog extends Component {
   state = {
+    itemId: null,
     issues,
     iterationExpand: {
       i1: true
@@ -139,7 +141,8 @@ class Backlog extends Component {
   // }
 
   showDrawer = eachItem => {
-    this.props.history.push(`/backlog/issues/${eachItem.id}`)
+    // this.props.history.push(`/backlog/issues/${eachItem.id}`)
+    this.setState({ itemId: eachItem.id })
     this.setState({ drawerVisible: true })
   }
 
@@ -239,6 +242,8 @@ class Backlog extends Component {
     }
 
     this.setState({ issues });
+    // TODO: 限制提示信息次数，此处是失败的
+    // message.success({ content: '更新成功', key: 'x', duration: 0.5 })
   }
 
   handleStatus = (iterationId, code) => {
@@ -254,7 +259,15 @@ class Backlog extends Component {
 
   delIterContainer = (iterationId) => {
     const newData = this.state.iterations.filter(item => item.id !== iterationId)
+    const resId = this.state.iterations.filter(item => item.id === iterationId)[0].id
+    const resData = this.state.issues[resId]
+    let newIssues = JSON.parse(JSON.stringify(this.state.issues))
+    newIssues.backlog = [...resData, ...this.state.issues.backlog]
+    console.log(newIssues.iterationId)
+    delete newIssues.iterationId
     this.setState({ iterations: newData })
+    this.setState({ issues: newIssues })
+    message.success('删除成功')
   }
 
   render() {
@@ -336,7 +349,8 @@ class Backlog extends Component {
           this.state.drawerVisible &&
           <DrawContainer
             type='Item'
-            id={this.props.match.params.id}
+            // id={this.props.match.params.id}
+            id={this.state.itemId}
             visible={this.state.drawerVisible}
             closeDrawer={this.closeDrawer} />
         }

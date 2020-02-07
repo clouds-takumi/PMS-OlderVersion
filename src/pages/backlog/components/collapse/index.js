@@ -22,7 +22,10 @@ const Collapse = ({
   const [addFlag, setAddFlag] = useState(false)
   const [addValueFlag, setAddValueFlag] = useState(false)
   const [inputValue, setInputValue] = useState('')
-  const [delModalFlag, setDelModalFlag] = useState(false)
+  /**
+   * @ 0 - begin 1 - delete
+   */
+  const [modalFlag, setModalFlag] = useState(null)
 
   const changeAddFlag = () => { setAddFlag(true) }
   const handleCancel = () => {
@@ -72,7 +75,10 @@ const Collapse = ({
       <Menu.Item key='0' onClick={(eve) => {
         // TODO2： 渲染modal，选择时间
         eve.domEvent.stopPropagation()
-        changeStatus(iterContainerId, 1)
+        if (!status) {
+          setModalFlag(0)
+          // changeStatus(iterContainerId, 1)
+        }
       }} style={status ? { cursor: " not-allowed" } : null}>开始迭代</Menu.Item>
 
       {/* <Menu.Divider /> */}
@@ -88,9 +94,8 @@ const Collapse = ({
 
       <Menu.Divider />
       <Menu.Item key='3' onClick={eve => {
-        // TODO1： 删除后 ，这里面所有的元素返回到backblock
         eve.domEvent.stopPropagation()
-        setDelModalFlag(true)
+        setModalFlag(1)
       }} style={{ color: 'red' }}>删除迭代</Menu.Item>
     </Menu >
   )
@@ -99,27 +104,59 @@ const Collapse = ({
     return (
       <Modal
         title={null}
-        visible={delModalFlag}
+        visible={modalFlag === 0 || modalFlag === 1}
         closable={false}
         footer={null}
         className={s.modal}
+        onCancel={(eve) => eve.stopPropagation()}
       >
-        <div className={s.modalTitle}>删除迭代</div>
-        <div className={s.modalMsg}>提示：只会删除当前迭代，迭代中涉及的事项将被移至未规划，此操作不可撤销，是否确认？</div>
-        <div className={s.modalBtn}>
-          <Button
-            type='primary'
-            className={s.btn, s.leftBtn}
-            onClick={() => delIterContainer(iterContainerId)}
-          >确认删除</Button>
-          <Button
-            type='primary'
-            className={s.btn, s.rightBtn}
-            onClick={(eve) => {
-              eve.stopPropagation()
-              setDelModalFlag(false)
-            }}>取消</Button>
-        </div>
+        {
+          modalFlag === 1 && (
+            <>
+              <div className={s.modalTitle}>删除迭代</div>
+              <div className={s.modalMsg}>提示：只会删除当前迭代，迭代中涉及的事项将被移至未规划，此操作不可撤销，是否确认？</div>
+              <div className={s.modalBtn}>
+                <Button
+                  type='primary'
+                  className={cn(s.btn, s.leftBtn)}
+                  onClick={() => delIterContainer(iterContainerId)}
+                >确认删除</Button>
+                <Button
+                  type='primary'
+                  className={cn(s.btn, s.rightBtn)}
+                  onClick={(eve) => {
+                    eve.stopPropagation()
+                    setModalFlag(null)
+                  }}>取消</Button>
+              </div>
+            </>
+          )
+        }
+
+        {
+          modalFlag === 0 && (
+            <>
+              <div className={s.modalTitle}>开始迭代</div>
+              <div className={s.modalMsgTime}>迭代开始时间</div>
+              <div className={s.modalMsgTime}>迭代结束时间</div>
+              <div className={s.modalBtn}>
+                <Button
+                  type='primary'
+                  className={cn(s.btn, s.beginBtn)}
+                  onClick={(eve) => { eve.stopPropagation() }}
+                >确认并开始</Button>
+                <Button
+                  type='primary'
+                  className={cn(s.btn, s.rightBtn)}
+                  onClick={(eve) => {
+                    eve.stopPropagation()
+                    setModalFlag(null)
+                  }}>取消</Button>
+              </div>
+            </>
+          )
+        }
+
       </Modal>
     )
   }
@@ -149,7 +186,7 @@ const Collapse = ({
         className={cn(s.header, type !== 'backlog' && s.headerExpand)}
         onClick={handleExpand}>
         {
-          renderModal()
+          renderModal('delete')
         }
         {
           type === 'backlog'

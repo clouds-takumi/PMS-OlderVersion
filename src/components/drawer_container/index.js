@@ -32,8 +32,8 @@ class DrawContainer extends PureComponent {
         )
     }
 
-    // goback = () => this.props.closeDrawer()
-    goback = () => router.push('/backlog')
+    goback = () => this.props.closeDrawer()
+    // goback = () => router.push('/backlog')
 
     changeProp = () => this.setState((state) => {
         return { expandProp: !state.expandProp }
