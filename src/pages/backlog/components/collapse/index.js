@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import s from './index.less'
-import { Icon, Tag, Dropdown, Menu, Divider, Tooltip } from 'antd'
+import { Icon, Tag, Dropdown, Menu, Divider, Tooltip, Modal, Button } from 'antd'
 import cn from 'classnames'
 
 const Collapse = ({
@@ -22,6 +22,7 @@ const Collapse = ({
   const [addFlag, setAddFlag] = useState(false)
   const [addValueFlag, setAddValueFlag] = useState(false)
   const [inputValue, setInputValue] = useState('')
+  const [delModalFlag, setDelModalFlag] = useState(false)
 
   const changeAddFlag = () => { setAddFlag(true) }
   const handleCancel = () => {
@@ -69,24 +70,59 @@ const Collapse = ({
   const dropDownMenu = (
     <Menu>
       <Menu.Item key='0' onClick={(eve) => {
+        // TODO2： 渲染modal，选择时间
         eve.domEvent.stopPropagation()
         changeStatus(iterContainerId, 1)
       }} style={status ? { cursor: " not-allowed" } : null}>开始迭代</Menu.Item>
+
       {/* <Menu.Divider /> */}
+
       {/* <Menu.Item key='1'
         onClick={(eve) => {
           eve.domEvent.stopPropagation()
           // this.props.history.push(`/detail/${eachItem.id}`)
         }
         }>在新标签页打开</Menu.Item> */}
+
       {/* <Menu.Item key='2'>编辑迭代</Menu.Item> */}
+
       <Menu.Divider />
       <Menu.Item key='3' onClick={eve => {
+        // TODO1： 删除后 ，这里面所有的元素返回到backblock
         eve.domEvent.stopPropagation()
-        delIterContainer(iterContainerId)
-      }}>删除迭代</Menu.Item>
+        setDelModalFlag(true)
+      }} style={{ color: 'red' }}>删除迭代</Menu.Item>
     </Menu >
   )
+
+  const renderModal = () => {
+    return (
+      <Modal
+        title={null}
+        visible={delModalFlag}
+        closable={false}
+        footer={null}
+        className={s.modal}
+      >
+        <div className={s.modalTitle}>删除迭代</div>
+        <div className={s.modalMsg}>提示：只会删除当前迭代，迭代中涉及的事项将被移至未规划，此操作不可撤销，是否确认？</div>
+        <div className={s.modalBtn}>
+          <Button
+            type='primary'
+            className={s.btn, s.leftBtn}
+            onClick={() => delIterContainer(iterContainerId)}
+          >确认删除</Button>
+          <Button
+            type='primary'
+            className={s.btn, s.rightBtn}
+            onClick={(eve) => {
+              eve.stopPropagation()
+              setDelModalFlag(false)
+            }}>取消</Button>
+        </div>
+      </Modal>
+    )
+  }
 
   const renderAddMenu = () => {
     return (
@@ -113,6 +149,9 @@ const Collapse = ({
         className={cn(s.header, type !== 'backlog' && s.headerExpand)}
         onClick={handleExpand}>
         {
+          renderModal()
+        }
+        {
           type === 'backlog'
             ? <Icon type='hdd' className={s.icon} />
             : <Icon type={expand ? 'down' : 'right'} className={s.icon} />
@@ -130,11 +169,14 @@ const Collapse = ({
             : (
               <div className={s.headerRight}>
                 <Dropdown overlay={dropDownMenu} trigger={['click']}>
-                  <Icon type='ellipsis' onClick={e => e.stopPropagation()} />
+                  <Icon type='ellipsis' onClick={e => e.stopPropagation()} className={s.moreMenu} />
                 </Dropdown>
-                <div className={s.date}>
-                  {startDate} - {endDate}
-                </div>
+                {status === 1 && (
+                  <div className={s.date}>
+                    {startDate} - {endDate}
+                  </div>
+                )
+                }
                 <Tag color={status ? 'orange' : 'blue'}>
                   {status ? '进行中' : '未开始'}
                 </Tag>

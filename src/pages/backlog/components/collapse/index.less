@@ -9,7 +9,7 @@
   align-items: center;
   line-height: 45px;
   padding-left: 9px;
-  background-color: rgb(235, 240, 245);
+  // background-color: rgb(235, 240, 245);
   position: sticky;
   top: 0px;
   z-index: 19;
@@ -20,6 +20,20 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.moreMenu {
+  width: 20px;
+  height: 16px;
+  font-size: 16px;
+  line-height: 16px;
+  border-radius: 3px;
+  color: #a7a8a8;
+}
+
+.moreMenu:hover {
+  background-color: #e2e4e6;
+  color: #7d7e7e;
 }
 
 .date {
@@ -36,8 +50,14 @@
 
 .icon {
   margin-right: 5px;
-  font-size: 12px;
+  font-size: 10px;
   color: #606c80;
+  opacity: .8;
+}
+
+.icon:hover {
+  color: #000;
+  opacity: 1;
 }
 
 .name {
@@ -55,7 +75,7 @@
 }
 
 .addFooter {
-  background-color: rgb(235, 240, 245);
+  // background-color: rgb(235, 240, 245);
   display: flex;
   align-items: center;
   padding-left: 9px;
@@ -122,4 +142,51 @@
   line-height: 70px;
   color: #8592a6;
   font-size: 13px;
+}
+
+.modal {
+  width: 480px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin: 0;
+  padding: 30px;
+  background: #fff;
+  transform: translate(-50%, -50%);
+}
+
+.modalTitle {
+  font-size: 18px;
+  color: #202d40;
+  line-height: 24px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.modalMsg {
+  font-size: 14px;
+  color: #202d40;
+  line-height: 16px;
+}
+
+.modalBtn {
+  margin-top: 30px;
+}
+
+.btn {
+  width: 100px;
+  padding: 0;
+}
+
+.leftBtn {
+  border: 1px solid #f81d22;
+  background-color: #f81d22;
+  color: #fff;
+  margin-right: 40px;
+}
+
+.rightBtn {
+  border: 1px solid #202d40;
+  background-color: transparent;
+  color: #202d40;
 }

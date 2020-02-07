@@ -54,41 +54,41 @@ class Backlog extends Component {
       i1: true
     },
     iterations: [
-      // {
-      //   id: 'i1',
-      //   name: '[PC] 广告平台',
-      //   status: 0,
-      //   startDate: '2020/02/01',
-      //   endDate: '2020/02/16',
-      // },
-      // {
-      //   id: 'i2',
-      //   name: '[Mobile] 手机版微店',
-      //   status: 1,
-      //   startDate: '2020/02/01',
-      //   endDate: '2020/02/16',
-      // },
-      // {
-      //   id: 'i3',
-      //   name: '[PC] 宠物商店',
-      //   status: 0,
-      //   startDate: '2020/02/01',
-      //   endDate: '2020/02/16',
-      // },
-      // {
-      //   id: 'i4',
-      //   name: '[Mobile] 钓鱼市场',
-      //   status: 0,
-      //   startDate: '2020/02/01',
-      //   endDate: '2020/02/16',
-      // },
-      // {
-      //   id: 'i5',
-      //   name: '[PC] 预研项目',
-      //   status: 0,
-      //   startDate: '2020/02/01',
-      //   endDate: '2020/02/16',
-      // },
+      {
+        id: 'i1',
+        name: '[PC] 广告平台',
+        status: 0,
+        startDate: '2020/02/01',
+        endDate: '2020/02/16',
+      },
+      {
+        id: 'i2',
+        name: '[Mobile] 手机版微店',
+        status: 1,
+        startDate: '2020/02/01',
+        endDate: '2020/02/16',
+      },
+      {
+        id: 'i3',
+        name: '[PC] 宠物商店',
+        status: 0,
+        startDate: '2020/02/01',
+        endDate: '2020/02/16',
+      },
+      {
+        id: 'i4',
+        name: '[Mobile] 钓鱼市场',
+        status: 0,
+        startDate: '2020/02/01',
+        endDate: '2020/02/16',
+      },
+      {
+        id: 'i5',
+        name: '[PC] 预研项目',
+        status: 0,
+        startDate: '2020/02/01',
+        endDate: '2020/02/16',
+      },
     ],
     drawerVisible: false
   }
@@ -111,16 +111,20 @@ class Backlog extends Component {
     message.success('更新成功')
   }
 
-  handleAddIter = title => {
+  handleAddIter = ({ title, expand }) => {
     let id, newIter
     const newIterations = JSON.parse(JSON.stringify(this.state.iterations))
     const newIssues = JSON.parse(JSON.stringify(this.state.issues))
     id = 'i' + newIterations.length + 1
     newIter = { id, name: title, status: 0, startDate: '2020/02/01', endDate: '2020/02/16' }
-    newIterations.push(newIter)
+    // newIterations.push(newIter)
+    newIterations.unshift(newIter)
     this.setState({ iterations: newIterations })
     newIssues[id] = []
     this.setState({ issues: newIssues })
+    const { iterationExpand } = this.state
+    iterationExpand[id] = expand
+    this.setState({ iterationExpand })
   }
 
   handleExpand = id => {

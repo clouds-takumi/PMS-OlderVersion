@@ -31,9 +31,9 @@ const AddIterContainer = ({ handleAddIter, emptyFlag }) => {
 
     const handleItemAdd = () => {
         if (!!value) {
-            handleAddIter(value)
+            handleAddIter({ title:value, expand: true })
             setValue('')
-            message.success('增加迭代成功')
+            message.success('创建迭代成功')
         }
     }
 
