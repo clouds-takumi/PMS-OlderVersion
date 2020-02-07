@@ -1,7 +1,10 @@
 import { useState } from 'react'
 import s from './index.less'
-import { Icon, Tag, Dropdown, Menu, Divider, Tooltip, Modal, Button } from 'antd'
+import { Icon, Tag, Dropdown, Menu, Divider, Tooltip, Modal, Button, DatePicker } from 'antd'
 import cn from 'classnames'
+import moment from 'moment';
+import 'moment/locale/zh-cn';
+moment.locale('zh-cn');
 
 const Collapse = ({
   className,
@@ -23,7 +26,7 @@ const Collapse = ({
   const [addValueFlag, setAddValueFlag] = useState(false)
   const [inputValue, setInputValue] = useState('')
   /**
-   * @ 0 - begin 1 - delete
+   * @ 0 - begin 1 - delete 2-complete
    */
   const [modalFlag, setModalFlag] = useState(null)
 
@@ -72,26 +75,21 @@ const Collapse = ({
 
   const dropDownMenu = (
     <Menu>
-      <Menu.Item key='0' onClick={(eve) => {
-        // TODO2： 渲染modal，选择时间
-        eve.domEvent.stopPropagation()
-        if (!status) {
-          setModalFlag(0)
-          // changeStatus(iterContainerId, 1)
-        }
-      }} style={status ? { cursor: " not-allowed" } : null}>开始迭代</Menu.Item>
-
-      {/* <Menu.Divider /> */}
-
-      {/* <Menu.Item key='1'
-        onClick={(eve) => {
-          eve.domEvent.stopPropagation()
-          // this.props.history.push(`/detail/${eachItem.id}`)
-        }
-        }>在新标签页打开</Menu.Item> */}
-
-      {/* <Menu.Item key='2'>编辑迭代</Menu.Item> */}
-
+      {
+        status
+          ? <Menu.Item key='0' onClick={(eve) => {
+            eve.domEvent.stopPropagation()
+            setModalFlag(2)
+          }}>完成迭代</Menu.Item>
+          : <Menu.Item key='0' onClick={(eve) => {
+            eve.domEvent.stopPropagation()
+            if (!status) {
+              setModalFlag(0)
+            }
+          }} style={status ? { cursor: " not-allowed" } : null}>开始迭代</Menu.Item>
+      }
+      <Menu.Divider />
+      <Menu.Item key='2' onClick={(eve) => eve.domEvent.stopPropagation()}>编辑迭代</Menu.Item>
       <Menu.Divider />
       <Menu.Item key='3' onClick={eve => {
         eve.domEvent.stopPropagation()
@@ -100,11 +98,20 @@ const Collapse = ({
     </Menu >
   )
 
+  const hanldeStart = (eve) => {
+    eve.stopPropagation()
+    changeStatus(iterContainerId, 1)
+    setModalFlag(null)
+  }
+
+  const onChange = (date, dateString) => {
+  }
+
   const renderModal = () => {
     return (
       <Modal
         title={null}
-        visible={modalFlag === 0 || modalFlag === 1}
+        visible={modalFlag === 0 || modalFlag === 1 || modalFlag === 2}
         closable={false}
         footer={null}
         className={s.modal}
@@ -132,18 +139,33 @@ const Collapse = ({
             </>
           )
         }
-
         {
           modalFlag === 0 && (
             <>
               <div className={s.modalTitle}>开始迭代</div>
               <div className={s.modalMsgTime}>迭代开始时间</div>
+              <div>
+                <DatePicker
+                  placeholder='请选择迭代开始时间'
+                  defaultValue={moment()}
+                  format={'YYYY-MM-DD'}
+                  onChange={onChange}
+                  suffixIcon={<Icon type='down' />}
+                  className={s.datePick} />
+              </div>
               <div className={s.modalMsgTime}>迭代结束时间</div>
+              <div >
+                <DatePicker
+                  placeholder='请选择迭代结束时间'
+                  onChange={onChange}
+                  suffixIcon={<Icon type='down' />}
+                  className={s.datePick} />
+              </div>
               <div className={s.modalBtn}>
                 <Button
                   type='primary'
                   className={cn(s.btn, s.beginBtn)}
-                  onClick={(eve) => { eve.stopPropagation() }}
+                  onClick={(eve) => hanldeStart(eve)}
                 >确认并开始</Button>
                 <Button
                   type='primary'
@@ -156,7 +178,38 @@ const Collapse = ({
             </>
           )
         }
-
+        {
+          modalFlag === 2 && (
+            <>
+              <div className={s.modalTitle}>完成迭代</div>
+              <div className={s.modalMsgTime}>请再次确认当前迭代内所有事项是否都已完成？</div>
+              <div className={s.modalMsgTime}>确认迭代完成时间</div>
+              <div>
+                <DatePicker
+                  placeholder='请选择迭代完成时间'
+                  defaultValue={moment()}
+                  format={'YYYY-MM-DD'}
+                  onChange={onChange}
+                  suffixIcon={<Icon type='down' />}
+                  className={s.datePick} />
+              </div>
+              <div className={s.modalBtn}>
+                <Button
+                  type='primary'
+                  className={cn(s.btn, s.sureBtn)}
+                  onClick={() => delIterContainer(iterContainerId)}
+                >确认完成</Button>
+                <Button
+                  type='primary'
+                  className={cn(s.btn, s.rightBtn)}
+                  onClick={(eve) => {
+                    eve.stopPropagation()
+                    setModalFlag(null)
+                  }}>取消</Button>
+              </div>
+            </>
+          )
+        }
       </Modal>
     )
   }

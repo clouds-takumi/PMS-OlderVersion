@@ -267,7 +267,7 @@ class Backlog extends Component {
     delete newIssues.iterationId
     this.setState({ iterations: newData })
     this.setState({ issues: newIssues })
-    message.success('删除成功')
+    message.success('更新成功')
   }
 
   render() {
