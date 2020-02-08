@@ -1,4 +1,4 @@
-<font face="Source Code Pro" color=#0099ff size=8>PMS</font>
+<font face="Source Code Pro" color=#0099ff size= >PMS</font>
 
 ### 🚀 技术栈   
 [![react](https://img.shields.io/badge/react-16.12.0-green)]()  

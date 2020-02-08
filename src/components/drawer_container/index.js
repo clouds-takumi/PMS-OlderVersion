@@ -1,6 +1,6 @@
 import { PureComponent } from 'react'
 import { Drawer, Icon, Dropdown, Menu } from 'antd'
-import router from 'umi/router'
+// import router from 'umi/router'
 import s from './index.less'
 
 class DrawContainer extends PureComponent {
@@ -8,7 +8,8 @@ class DrawContainer extends PureComponent {
         detailData: {},
         titleValue: '',
         expandProp: true,
-        expandDesc: true
+        expandDesc: true,
+        editFlag: true
     }
 
     handleInput = (e) => {
@@ -72,7 +73,7 @@ class DrawContainer extends PureComponent {
     }
 
     render() {
-        const { detailData, titleValue, expandProp, expandDesc } = this.state
+        const { detailData, titleValue, expandProp, expandDesc, editFlag } = this.state
         const { type } = this.props
         // Project Iteration Issues Item
         return (
@@ -137,21 +138,39 @@ class DrawContainer extends PureComponent {
                                 </div>
                                 {
                                     expandProp && (
-                                        <div> asd </div>
+                                        <div>
+                                            <div>截止日期</div>
+                                        </div>
                                     )
                                 }
                                 <div className={s.partTwo}>
                                     <div className={s.partTitle}>
-                                        描述
+                                        <span>描述</span>
                                         <Icon
                                             type={expandDesc ? 'down' : 'right'}
                                             className={s.expandIcon}
                                             style={!expandDesc ? { color: "#3385ff" } : null}
                                             onClick={this.chageDesc}
                                             size='small' />
+                                        <span className={s.divid} ></span>
+                                        {
+                                            editFlag && (
+                                                <span className={s.edit} onClick={() => this.setState({ editFlag: false })}>
+                                                    <Icon type='edit' className={s.editIcon} />
+                                                    <span>编辑</span>
+                                                </span>)
+                                        }
                                     </div>
                                     {
-                                        expandDesc && 'das'
+                                        expandDesc && (
+                                            <>
+                                                {
+                                                    editFlag
+                                                        ? (<div>没有描述</div>)
+                                                        : (<div>xxxx</div>)
+                                                }
+                                            </>
+                                        )
                                     }
                                 </div>
 

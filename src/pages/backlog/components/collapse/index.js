@@ -5,6 +5,11 @@ import cn from 'classnames'
 import moment from 'moment';
 import 'moment/locale/zh-cn';
 moment.locale('zh-cn');
+/**
+ * 
+ * TODO:
+ * - 时间选择验证：结束时间 不应该小于 开始时间
+ */
 
 const Collapse = ({
   className,
@@ -28,6 +33,9 @@ const Collapse = ({
   const [timeStart, setTimeStart] = useState(moment().format('YYYY-MM-DD'))
   const [timeEnd, setTimeEnd] = useState(null)
   const [timeComp, setTimeComp] = useState(moment().format('YYYY-MM-DD'))
+  const [editInputValue, setEditInputValue] = useState(name)
+  const [timeEditStart, setEditTimeStart] = useState(startDate)
+  const [timeEditEnd, setEditTimeEnd] = useState(endDate)
   /**
    * @ 0-begin 1-delete 2-complete 3-edit
    */
@@ -127,6 +135,22 @@ const Collapse = ({
       const data = { timeComp }
       // TODO: 更新迭代容器，此处不应该用这个删除方法的接口
       delIterContainer(iterContainerId)
+      setModalFlag(null)
+    }
+  }
+
+  const handleEditSave = (eve) => {
+    eve.stopPropagation()
+    if (!editInputValue) {
+      message.info({ content: '请输入迭代标题', key: 'pex' })
+    } else if (!timeEditStart) {
+      message.info({ content: '请选择迭代开始时间', key: 'dex' })
+    } else if (!timeEditEnd) {
+      message.info({ content: '请选择迭代结束时间', key: 'dex' })
+    } else {
+      const data = { editInputValue }
+      // TODO:
+      changeStatus(iterContainerId, 1)
       setModalFlag(null)
     }
   }
@@ -251,35 +275,35 @@ const Collapse = ({
             <div onClick={(eve) => eve.stopPropagation()}>
               <div className={s.modalTitle}>编辑迭代</div>
               <div className={s.modalMsgTime}>标题</div>
-              {/* TODO: 待改 可控 数据操作 */}
-              <Input value={name} />
+              <Input
+                placeholder='请输入迭代标题'
+                value={editInputValue}
+                onChange={(e) => setEditInputValue(e.target.value)} />
               <div className={s.modalDate}>
                 <div className={s.modalLeft}>
                   <div className={s.modalMsgTime}>开始时间</div>
                   <DatePicker
                     disabled={status ? true : false}
                     placeholder={status ? '' : '请选择迭代开始时间'}
-                    // TODO: 此处的默认值 应该为status被设为1之后保存的时间数据 开始 和 结束
-                    defaultValue={status ? moment() : null}
+                    defaultValue={status ? moment(timeEditStart) : null}
                     format={'YYYY-MM-DD'}
-                    onChange={onCompChange}
+                    onChange={(date, dateString) => setEditTimeStart(dateString)}
                     suffixIcon={<Icon type='down' />} />
                 </div>
                 <div className={s.modalRight}>
                   <div className={s.modalMsgTime}>结束时间</div>
                   <DatePicker
                     placeholder='请选择迭代结束时间'
-                    // TODO: 此处的默认值 应该为status被设为1之后保存的时间数据 开始 和 结束
-                    defaultValue={status ? moment() : null}
-                    onChange={onCompChange}
+                    defaultValue={status ? moment(timeEditEnd) : null}
+                    onChange={(date, dateString) => setEditTimeEnd(dateString)}
                     suffixIcon={<Icon type='down' />} />
                 </div>
               </div>
-              {/* TODO: 保存操作待完善 */}
               <Button
                 type='primary'
                 className={cn(s.btn, s.sureBtn)}
-                style={{ width: '60px', marginRight: '20px' }}>保存</Button>
+                style={{ width: '60px', marginRight: '20px' }}
+                onClick={handleEditSave}>保存</Button>
               <Button
                 type='primary'
                 className={cn(s.btn, s.rightBtn)}
