@@ -45,7 +45,19 @@ const menus = [
     id: 6,
     name: '系统',
     icon: 'setting',
-    path: '/system'
+    path: '/system',
+    children: [
+      {
+        id: '6-1',
+        name: '标签管理',
+        path: '/system/tag'
+      },
+      {
+        id: '6-2',
+        name: '用户管理',
+        path: '/system/user'
+      }
+    ]
   }
 ]
 
