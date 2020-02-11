@@ -1,4 +1,5 @@
 import { Component } from 'react'
+import menus from './menus.config'
 import { Layout, Menu, Icon, Badge, Avatar, Dropdown } from 'antd'
 import s from './index.less'
 import cn from 'classnames'
@@ -9,45 +10,7 @@ import { getUserInfo } from './service'
 import router from 'umi/router'
 
 const { Header, Content, Sider } = Layout
-
-const menus = [
-  {
-    id: 1,
-    name: '首页',
-    icon: 'home',
-    path:'/'
-  },
-  {
-    id: 2,
-    name: '项目',
-    icon: 'project',
-    path:'/project'
-  },
-  {
-    id: 3,
-    name: '迭代',
-    icon: 'build',
-    path:'/iteration'
-  },
-  {
-    id: 4,
-    name: '待规划',
-    icon: 'block',
-    path: '/backlog'
-  },
-  {
-    id: 5,
-    name: '事项',
-    icon: 'filter',
-    path: '/issues'
-  },
-  {
-    id: 6,
-    name: '系统',
-    icon: 'setting',
-    path: '/system'
-  }
-]
+const { SubMenu } = Menu
 
 class CommonLayout extends Component {
   componentDidMount() {
@@ -61,36 +24,56 @@ class CommonLayout extends Component {
       }
     })
   }
-  renderMenus = () => {
-    return (
-      <Menu
-        theme='dark'
-        mode='inline'>
-        {
-          menus.map(menu => (
-            <Menu.Item key={menu.id} >
-              <Link to={menu.path}>
+
+  renderMenus = menus => {
+    return menus.map(menu => {
+      if (menu.children) {
+        return (
+          <SubMenu
+            key={menu.id}
+            title={
+              <span>
                 <Icon type={menu.icon} />
                 <span className="nav-text">{menu.name}</span>
-              </Link>
-            </Menu.Item>
-          ))
-        }
-      </Menu>
-    )
+              </span>
+            }>
+            {
+              this.renderMenus(menu.children)
+            }
+          </SubMenu>
+        )
+      } else {
+        return (
+          <Menu.Item key={menu.id} >
+            <Link to={menu.path}>
+              {menu.icon && <Icon type={menu.icon} />}
+              <span className="nav-text">{menu.name}</span>
+            </Link>
+          </Menu.Item>
+        )
+      }
+    })
   }
+
   handleLogout = () => {
     localStorage.removeItem('token')
     router.replace('/login')
   }
+  
   render() {
     const { children, collapsed, handleCollapsed, userInfo } = this.props
-
     return (
       <Layout className={cn(collapsed && s.appCollapsed)}>
         <Sider className={s.sider} width={256} collapsed={collapsed}>
           <div className={s.logo}>PMS</div>
-          {this.renderMenus()}
+          <Menu
+            mode='inline'
+            theme='dark'
+          >
+            {
+              this.renderMenus(menus)
+            }
+          </Menu>
         </Sider>
         <Layout className={s.wrapper}>
           <Header className={s.header}>

@@ -1,25 +1,29 @@
 import axios from 'axios'
 import { message } from 'antd'
-// import store from '../utils/storage'
+import router from 'umi/router'
 
 axios.interceptors.request.use(
-    (config) => {
-      return config
-    },
-    (error) => { return Promise.reject(error) }
+  config => {
+
+    return config
+  },
+  error => { return Promise.reject(error) }
 )
 
 axios.interceptors.response.use(
-    response => {
-      const { status, data } = response
+  response => {
+    const { status, data } = response
 
-      if (status === 200 && data.code !== 0) {
-        message.error(data.msg)
+    if (status === 200 && data.code !== 0) {
+      if (data.code === 1) {
+        router.replace('/login')
       }
+      message.error(data.msg)
+    }
 
-      return data.data
-    },
-    error => { return Promise.reject(error) }
+    return data.data
+  },
+  error => { return Promise.reject(error) }
 )
 
 export const baseUrl = 'http://localhost:7001'

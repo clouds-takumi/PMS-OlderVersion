@@ -1,90 +1,29 @@
-// import DraggableContainer from '../../components/draggable_container'
-
-// export default function (props) {
-//   return <DraggableContainer />
-// }
 import { Component } from 'react'
-import { Table, Tag, Divider, Form, Select, Button, Input, DatePicker } from 'antd'
 import s from './index.less'
+import cn from 'classnames'
 import DrawContainer from '../../components/drawer_container'
-
-const projects = [...Array(15).keys()].map(i => ({
-  id: i,
-  name: `project-${i}`,
-  created: `Jason`,
-  startDate: '2020/02/03',
-  endDate: '2020/03/03',
-  status: Math.floor(Math.random() * 3),
-  tags: i % 2 === 0 ? ['电商', '支付'] : ['教育', '网课', '学习']
-}))
-const colors = {
-  0: 'blue',
-  1: 'orange',
-  2: 'red',
-}
-const statusMap = {
-  0: '未开始',
-  1: '进行中',
-  2: '已完成',
-}
-const statusColorMap = {
-  0: '#2db7f5',
-  1: '#87d068',
-  2: '#f50',
-}
-const statusOptions = [
-  {
-    id: 0,
-    name: '未开始',
-  },
-  {
-    id: 1,
-    name: '进行中',
-  },
-  {
-    id: 2,
-    name: '已完成',
-  },
-]
-const tagOptions = [
-  {
-    id: 0,
-    name: '电商',
-  },
-  {
-    id: 1,
-    name: '支付',
-  },
-  {
-    id: 2,
-    name: '教育',
-  },
-  {
-    id: 3,
-    name: '网课',
-  },
-  {
-    id: 4,
-    name: '学习',
-  },
-]
-const createdOptions = [
-  {
-    id: 0,
-    name: 'Jason',
-  },
-  {
-    id: 1,
-    name: 'Jane',
-  }
-]
+import { Table, Tag, Divider, Form, Select, Button, Input, DatePicker, message, Modal } from 'antd'
+// import { reqProjects, reqIdProject, addProject, delIdProject, updataIdProject } from '../../services'
+import { Projects, colors, statusMap, statusColorMap, statusOptions, tagOptions, createdOptions } from './mock-data'
 
 class Project extends Component {
-  state = {
-    drawerVisible: false,
-    proName: '',
-    projects,
-    columns: [
+  constructor(props) {
+    super(props)
+    this.state = {
+      drawerVisible: false,
+      proName: '',
+      proId: null,
+      projects: [],
+      loading: false,
+      editable: false,
+      createFlag: false,
+      showDelModal: false
+    }
+    this.initColumns()
+  }
+
+  initColumns = () => {
+    this.columns = [
       {
         title: '项目名称',
         dataIndex: 'name',
@@ -126,14 +65,14 @@ class Project extends Component {
       },
       {
         title: '操作',
-        dataIndex: 'operate',
+        dataIndex: 'id',
         key: 'operate',
-        render: () => {
+        render: id => {
           return (
             <>
-              <span className={s.operate}>编辑</span>
+              <span className={s.operate} onClick={() => this.setState({ proId: id, drawerVisible: true })}>编辑</span>
               <Divider type='vertical' />
-              <span className={s.operate}>删除</span>
+              <span className={s.operate} onClick={() => this.handleDelPro(id)}>删除</span>
             </>
           )
         }
@@ -141,57 +80,245 @@ class Project extends Component {
     ]
   }
 
-  showDrawer = (dataIndex) => {
-    // TODO
-    this.setState({ drawerVisible: true })
+  showDrawer = (name) => {
+    let proId
+    const { projects } = this.state
+    for (let item of projects) {
+      if (item.name === name) {
+        proId = item.id
+        break
+      }
+    }
+    this.setState({ proId, drawerVisible: true })
   }
 
   closeDrawer = () => this.setState({ drawerVisible: false })
 
+  closeModal = (eve) => {
+    eve.stopPropagation()
+    this.setState({ showDelModal: false })
+  }
+
+  handleDelPro = async (id) => {
+    let proName
+    const { projects } = this.state
+    for (let item of projects) {
+      if (item.id === id) {
+        proName = item.name
+        break
+      }
+    }
+    this.setState({ proId: id, proName, showDelModal: true })
+  }
+
+  handleSureDel = () => {
+    // const res = await delIdProject(this.state.proId)
+    if ('res.status===0') {
+      message.success('删除成功')
+      this.fetchData({ type: 'projects' })
+      this.setState({ showDelModal: false })
+    } else {
+      message.error('result.msg')
+    }
+  }
+
+  handleCreate = (event) => {
+    event.preventDefault()
+    this.props.form.validateFields(async (err, values) => {
+      if (!err) {
+        const { name, status, created } = values
+        const product = { name, status, created }
+        // const result = await addProject(product)
+        if ('result.status===0') {
+          message.success(`${name}-${status}-${created}`)
+          this.fetchData({ type: 'projects' })
+          this.setState({ createFlag: false })
+        } else {
+          message.error('result.msg')
+        }
+      }
+    })
+  }
+
+  handleSearch = (event) => {
+    event.preventDefault()
+    this.props.form.validateFields(async (err, values) => {
+      if (!err) {
+        const { sname, sstatus, screated, tag } = values
+        const product = { sname, sstatus, screated, tag }
+        // const result = await searchProject(product)
+        if ('result.status===0') {
+          this.setState({ projects: [] })
+        } else {
+          message.error('result.msg')
+        }
+      }
+    })
+  }
+
+  handleRest = (event) => {
+    event.preventDefault()
+    this.setState({ loading: true })
+    this.fetchData({ type: 'projects' })
+  }
+
+  renderModal = (showDelModal) => {
+    return (
+      <Modal
+        title={null}
+        visible
+        closable={false}
+        footer={null}
+        className={s.modal}
+        onCancel={(eve) => eve.stopPropagation()}>
+        <div onClick={(eve) => eve.stopPropagation()} className={s.modalContainer}>
+          <div className={s.modalTitle}>确认删除当前 "{`${this.state.proName}`}" 项目吗？</div>
+          <div className={s.modalBtn}>
+            <Button type='primary' onClick={this.handleSureDel} className={cn(s.btn, s.leftBtn)}>确认</Button>
+            <Button type='primary' onClick={this.closeModal} className={cn(s.btn, s.rightBtn)}>取消</Button>
+          </div>
+        </div>
+      </Modal>
+    )
+  }
+
+  renderForm = (type) => {
+    const { getFieldDecorator } = this.props.form;
+    return (
+      <Form layout='inline' style={{ marginBottom: 24 }} onSubmit={type === 'create' ? this.handleCreate : this.handleSearch}>
+        <Form.Item label='名称'>
+          {
+            type === 'create' && getFieldDecorator('name', {
+              rules: [{ required: true }]
+            })(<Input placeholder='请输入项目名称' />)
+          }
+          {
+            type === 'search' && getFieldDecorator('sname', {
+              rules: []
+            })(<Input placeholder='请输入项目名称' />)
+          }
+        </Form.Item>
+        <Form.Item label='项目状态'>
+          {
+            type === 'create' && getFieldDecorator('status', {
+              rules: [{ required: true }]
+            })(<Select placeholder='请选择' style={{ width: 140 }}>
+              {statusOptions.map(status => <Select.Option key={status.id}>{status.name}</Select.Option>)}
+            </Select>)
+          }
+          {
+            type === 'search' && getFieldDecorator('sstatus', {
+              rules: []
+            })(<Select placeholder='请选择' style={{ width: 140 }}>
+              {statusOptions.map(status => <Select.Option key={status.id}>{status.name}</Select.Option>)}
+            </Select>)
+          }
+        </Form.Item>
+        <Form.Item label='项目日期'>
+          <DatePicker />
+        </Form.Item>
+        <Form.Item label='创建人'>
+          {
+            type === 'create' && getFieldDecorator('created', {
+              rules: [{ required: true }]
+            })(<Select placeholder='请选择' style={{ width: 140 }}>
+              {createdOptions.map(created => <Select.Option key={created.id}>{created.name}</Select.Option>)}
+            </Select>)
+          }
+          {
+            type === 'search' && getFieldDecorator('screated', {
+              rules: []
+            })(<Select placeholder='请选择' style={{ width: 140 }}>
+              {createdOptions.map(created => <Select.Option key={created.id}>{created.name}</Select.Option>)}
+            </Select>)
+          }
+        </Form.Item>
+        <Form.Item label='标签'>
+          {
+            getFieldDecorator('tag', {
+              rules: []
+            })(<Select placeholder='请选择' style={{ width: 140 }}>
+              {tagOptions.map(tag => <Select.Option key={tag.id}>{tag.name}</Select.Option>)}
+            </Select>)
+          }
+        </Form.Item>
+        <Form.Item label=' ' colon={false}>
+          {
+            type === 'search' && (
+              <>
+                <Button type='primary' style={{ marginRight: 12 }} htmlType="submit">筛选</Button>
+                <Button onClick={this.handleRest}>重置</Button>
+              </>
+            )
+          }
+          {
+            type === 'create' && (
+              <>
+                <Button type='primary' style={{ marginRight: 12 }} htmlType="submit">确认</Button>
+                <Button onClick={() => this.setState({ createFlag: false })}>取消</Button>
+              </>
+            )
+          }
+        </Form.Item>
+      </Form>
+    )
+  }
+
+  fetchData = async ({ type }) => {
+    if (type === 'projects') {
+      const lists = Projects
+      // const res = await reqProjects()
+      if ('res.status===0') {
+        this.setState({ projects: lists, loading: false })
+      } else {
+        message.error('result.msg')
+      }
+    }
+  }
+
+  componentDidMount() {
+    this.setState({ loading: true })
+    this.fetchData({ type: 'projects' })
+  }
+
   render() {
-    const { projects, columns } = this.state
+    const { projects, drawerVisible, proId, editable, createFlag, loading, showDelModal } = this.state
 
     return (
       <div className={s.project}>
-        <Form layout='inline' style={{ marginBottom: 24 }}>
-          <Form.Item label='名称'>
-            <Input placeholder='请输入项目名称' />
-          </Form.Item>
-          <Form.Item label='项目状态'>
-            <Select placeholder='请选择' style={{ width: 140 }}>
-              {statusOptions.map(status => <Select.Option key={status.id}>{status.name}</Select.Option>)}
-            </Select>
-          </Form.Item>
-          <Form.Item label='项目日期'>
-            <DatePicker />
-          </Form.Item>
-          <Form.Item label='创建人'>
-            <Select placeholder='请选择' style={{ width: 140 }}>
-              {createdOptions.map(created => <Select.Option key={created.id}>{created.name}</Select.Option>)}
-            </Select>
-          </Form.Item>
-          <Form.Item label='标签'>
-            <Select placeholder='请选择' style={{ width: 140 }}>
-              {tagOptions.map(tag => <Select.Option key={tag.id}>{tag.name}</Select.Option>)}
-            </Select>
-          </Form.Item>
-          <Form.Item label=' ' colon={false}>
-            <Button type='primary' style={{ marginRight: 12 }}>筛选</Button>
-            <Button>重置</Button>
-          </Form.Item>
-        </Form>
+        {
+          this.renderForm('search')
+        }
+
+        <div>
+          {
+            createFlag
+              ? (this.renderForm('create'))
+              : (<Button type='primary' className={s.addBtn} onClick={() => this.setState({ createFlag: true })}>新建项目</Button>)
+          }
+        </div>
+
         <Table
+          bordered
+          loading={loading}
           dataSource={projects}
-          columns={columns}
+          columns={this.columns}
           rowKey='id'
           pagination />
+
         {
-          this.state.drawerVisible &&
-          <DrawContainer
-            type='Project'
-            id={this.state.proName}
-            visible={this.state.drawerVisible}
-            closeDrawer={this.closeDrawer} />
+          drawerVisible && (
+            <DrawContainer
+              type='Project'
+              editable={editable}
+              id={proId}
+              visible={drawerVisible}
+              closeDrawer={this.closeDrawer} />
+          )
+        }
+
+        {
+          showDelModal && this.renderModal(showDelModal)
         }
       </div>
     )

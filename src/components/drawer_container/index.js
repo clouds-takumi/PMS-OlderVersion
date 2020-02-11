@@ -44,6 +44,10 @@ class DrawContainer extends PureComponent {
         return { expandDesc: !state.expandDesc }
     })
 
+    onEditorStateChange = (editorState) => {
+        this.setState({ editorState })
+    }
+
     componentDidMount() {
         const detailId = this.props.id
         const resData =
@@ -167,13 +171,12 @@ class DrawContainer extends PureComponent {
                                                 {
                                                     editFlag
                                                         ? (<div>没有描述</div>)
-                                                        : (<div>xxxx</div>)
+                                                        : (<div>有描述</div>)
                                                 }
                                             </>
                                         )
                                     }
                                 </div>
-
                             </div>
                         </div>
                     </div>

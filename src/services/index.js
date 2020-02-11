@@ -1,32 +1,27 @@
 import ajax from './ajax'
 
-export const reqLogin = (username, password) => ajax({
-    method: 'post',
-    url: '/login',
-    params: { username, password }
-})
-
-// Main容器的item列表数据获取
-export const reqMainLists = () => ajax({
+export const reqProjects = () => ajax({
     method: 'get',
-    url: '/api/main'
-})
+    url: '/projects'
+}, true)
 
-// Main容器创建新的item更新接口
-export const resMainLists = (data) => ajax({
+export const reqIdProject = id => ajax({
+    method: 'get',
+    url: `/project/:${id}`
+}, true)
+
+export const addProject = data => ajax({
     method: 'post',
-    url: '/api/main/redata',
+    url: '/project',
     data
-})
+}, true)
 
-// 右边容器个数列表
-export const reqClassLists = () => ajax({
-    method: 'get',
-    url: '/api/main/class'
-})
+export const delIdProject = id => ajax({
+    method: 'delete',
+    url: `/project/:${id}`
+}, true)
 
-// 右边逐个容器创建新的item更新接口
-export const resClassLists = (item) => ajax({
-    method: 'post',
-    url: '/api/main/reclass'
-})
+export const updataIdProject = id => ajax({
+    method: 'put',
+    url: `/project/:${id}`
+}, true)

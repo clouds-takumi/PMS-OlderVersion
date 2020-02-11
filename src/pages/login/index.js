@@ -12,7 +12,7 @@ const Login = (props) => {
   const handleUsernameChange = e => setUsername(e.target.value)
   const handlePasswordChange = e => setPassword(e.target.value)
   const toLogin = () => {
-    login({username, password}).then(data => {
+    login({ username, password }).then(data => {
       if (data) {
         localStorage.setItem('token', data.token)
         router.replace('/')

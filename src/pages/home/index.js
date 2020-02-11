@@ -1,3 +1,3 @@
-export default function(props) {  
-  return 'home'
+export default function (props) {
+  return (<div></div>)
 }
