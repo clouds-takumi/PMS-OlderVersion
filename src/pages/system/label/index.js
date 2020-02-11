@@ -1,5 +1,6 @@
 import { PureComponent } from 'react'
 import s from './index.less'
+import InputColor from 'react-input-color'
 import { Table, Divider, Tag, Button, message, Modal, Input, Icon } from 'antd'
 import { tags } from './mock.data'
 
@@ -11,6 +12,7 @@ class Label extends PureComponent {
             curTag: null,
             loading: false,
             modalFlag: null,
+            color: {}
         }
         this.initColumns()
     }
@@ -62,7 +64,15 @@ class Label extends PureComponent {
 
     handleSure = () => { }
 
-    renderModal = (type, tag) => (
+    handleSetColor = (color) => this.setState({ color })
+
+    handleInputChange = (e) => {
+        let newTag = JSON.parse(JSON.stringify(this.state.curTag))
+        newTag.name = e.target.value
+        this.setState({ curTag: newTag })
+    }
+
+    renderModal = type => (
         <Modal
             title={null}
             visible
@@ -77,14 +87,14 @@ class Label extends PureComponent {
                         type === 'edit' && (
                             <div className={s.infoCode}>
                                 <Icon type="filter" theme="twoTone" />
-                                &nbsp;#{tag.id}
+                                &nbsp;#{this.state.curTag.id}
                             </div>
                         )
                     }
                     <div className={s.info}>
                         <span className={s.infoTitle}>标签名称</span>
                         {
-                            type === 'edit' && <Input placeholder={tag.name} />
+                            type === 'edit' && <Input value={this.state.curTag.name} onChange={this.handleInputChange} />
                         }
                         {
                             type === 'create' && <Input />
@@ -93,10 +103,28 @@ class Label extends PureComponent {
                     <div className={s.info}>
                         <span className={s.infoTitle}>标签颜色</span>
                         {
-                            type === 'edit' && <Input placeholder={tag.color} />
+                            type === 'edit' && (
+                                <>
+                                    <span style={{ marginRight: '20px' }}>{this.state.color.hex}</span>
+                                    <InputColor
+                                        initialHexColor={this.state.curTag.color}
+                                        onChange={this.handleSetColor}
+                                        placement="right"
+                                    />
+                                </>
+                            )
                         }
                         {
-                            type === 'create' && <Input />
+                            type === 'create' && (
+                                <>
+                                    <span style={{ marginRight: '20px' }}>{this.state.color.hex}</span>
+                                    <InputColor
+                                        initialHexColor="#5e72e4"
+                                        onChange={this.handleSetColor}
+                                        placement="right"
+                                    />
+                                </>
+                            )
                         }
                     </div>
                 </div>
@@ -109,7 +137,7 @@ class Label extends PureComponent {
     )
 
     render() {
-        const { tags, modalFlag, loading, curTag } = this.state
+        const { tags, modalFlag, loading } = this.state
         return (
             <div>
                 <div className={s.tagRoot}>
@@ -124,7 +152,7 @@ class Label extends PureComponent {
                 </div>
 
                 {
-                    modalFlag === 0 && this.renderModal('edit', curTag)
+                    modalFlag === 0 && this.renderModal('edit')
                 }
                 {
                     modalFlag === 1 && this.renderModal('create')
