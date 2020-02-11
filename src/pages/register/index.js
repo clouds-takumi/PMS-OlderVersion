@@ -50,7 +50,7 @@ export default function(props) {
       <Button
         className={s.loginButton}
         type='primary'
-        onClick={toRegister}>登录</Button>
+        onClick={toRegister}>注册</Button>
       <div className={s.textLine}>
         已有帐号?<Link to='/login'>去登录</Link>
       </div>
