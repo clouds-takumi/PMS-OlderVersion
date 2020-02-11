@@ -50,7 +50,7 @@ export const addTag = data => ajax({
 
 export const delIdTag = id => ajax({
     method: 'delete',
-    url: `/tag/:${id}`
+    url: `/tag/${id}`
 }, true)
 
 export const updataIdTag = id => ajax({

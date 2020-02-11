@@ -2,7 +2,7 @@ import { PureComponent } from 'react'
 import s from './index.less'
 import InputColor from 'react-input-color'
 import { Table, Divider, Tag, Button, message, Modal, Input, Icon } from 'antd'
-import { reqTags } from '../../../services'
+import { reqTags, addTag, delIdTag } from '../../../services'
 import { tags } from './mock.data'
 
 class Label extends PureComponent {
@@ -13,6 +13,7 @@ class Label extends PureComponent {
             curTag: null,
             loading: false,
             modalFlag: null,
+            tagName: '',
             color: {}
         }
         this.initColumns()
@@ -55,13 +56,28 @@ class Label extends PureComponent {
 
     tagEdit = tag => this.setState({ curTag: tag, modalFlag: 0 })
 
-    tagDelete = (id) => { message.success(id) }
+    tagDelete = id => {
+        const res = window.confirm(`确认删除吗?`)
+        if (res) {
+            delIdTag(id).then(() => this.fetchData())
+        }
+    }
 
     tagCreate = () => this.setState({ modalFlag: 1 })
 
-    closeModal = () => this.setState({ modalFlag: null })
+    closeModal = () => this.setState({ modalFlag: null, tagName: '' })
 
-    handleSure = () => { }
+    handleSure = async () => {
+        this.setState({ modalFlag: null, tagName: '' })
+        const { tagName, color } = this.state
+        const data = { name: tagName, color: color.hex }
+        if (tagName) {
+            const res = await addTag(data)
+            if (res.id) {
+                this.fetchData()
+            }
+        }
+    }
 
     handleSetColor = (color) => this.setState({ color })
 
@@ -70,6 +86,15 @@ class Label extends PureComponent {
         newTag.name = e.target.value
         this.setState({ curTag: newTag })
     }
+
+    fetchData = async () => {
+        const resData = await reqTags()
+        if (resData) {
+            this.setState({ tags: resData })
+        }
+    }
+
+    componentDidMount() { this.fetchData() }
 
     renderModal = type => (
         <Modal
@@ -99,7 +124,10 @@ class Label extends PureComponent {
                                 className={s.nameInput} />
                         }
                         {
-                            type === 'create' && <Input />
+                            type === 'create' && <Input
+                                placeholder='请输入标签名'
+                                value={this.state.tagName}
+                                onChange={(e) => this.setState({ tagName: e.target.value })} />
                         }
                     </div>
                     <div className={s.info}>
@@ -137,13 +165,6 @@ class Label extends PureComponent {
             </div>
         </Modal>
     )
-
-    fetchData = async () => {
-        const res = await reqTags()
-        console.log(res)
-    }
-
-    componentDidMount() { this.fetchData() }
 
     render() {
         const { tags, modalFlag, loading } = this.state
