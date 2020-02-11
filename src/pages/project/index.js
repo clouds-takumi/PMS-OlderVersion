@@ -142,6 +142,7 @@ class Project extends Component {
 
   handleSearch = (event) => {
     event.preventDefault()
+    message.success('筛选逻辑待完善')
     this.props.form.validateFields(async (err, values) => {
       if (!err) {
         const { sname, sstatus, screated, tag } = values
@@ -235,7 +236,14 @@ class Project extends Component {
         </Form.Item>
         <Form.Item label='标签'>
           {
-            getFieldDecorator('tag', {
+            type === 'create' && getFieldDecorator('tag', {
+              rules: []
+            })(<Select placeholder='请选择' style={{ width: 140 }}>
+              {tagOptions.map(tag => <Select.Option key={tag.id}>{tag.name}</Select.Option>)}
+            </Select>)
+          }
+          {
+            type === 'search' && getFieldDecorator('stag', {
               rules: []
             })(<Select placeholder='请选择' style={{ width: 140 }}>
               {tagOptions.map(tag => <Select.Option key={tag.id}>{tag.name}</Select.Option>)}
