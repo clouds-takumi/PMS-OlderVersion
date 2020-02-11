@@ -2,6 +2,7 @@ import { PureComponent } from 'react'
 import s from './index.less'
 import InputColor from 'react-input-color'
 import { Table, Divider, Tag, Button, message, Modal, Input, Icon } from 'antd'
+import { reqTags } from '../../../services'
 import { tags } from './mock.data'
 
 class Label extends PureComponent {
@@ -58,8 +59,6 @@ class Label extends PureComponent {
 
     tagCreate = () => this.setState({ modalFlag: 1 })
 
-    renderFooter = () => <Button type='primary' onClick={this.tagCreate}>新建</Button>
-
     closeModal = () => this.setState({ modalFlag: null })
 
     handleSure = () => { }
@@ -94,7 +93,10 @@ class Label extends PureComponent {
                     <div className={s.info}>
                         <span className={s.infoTitle}>标签名称</span>
                         {
-                            type === 'edit' && <Input value={this.state.curTag.name} onChange={this.handleInputChange} />
+                            type === 'edit' && <Input
+                                value={this.state.curTag.name}
+                                onChange={this.handleInputChange}
+                                className={s.nameInput} />
                         }
                         {
                             type === 'create' && <Input />
@@ -136,21 +138,27 @@ class Label extends PureComponent {
         </Modal>
     )
 
+    fetchData = async () => {
+        const res = await reqTags()
+        console.log(res)
+    }
+
+    componentDidMount() { this.fetchData() }
+
     render() {
         const { tags, modalFlag, loading } = this.state
         return (
-            <div>
-                <div className={s.tagRoot}>
+            <div className={s.tagRoot}>
+                <div className={s.tagContainer}>
                     <Table
                         className={s.table}
                         loading={loading}
                         dataSource={tags}
                         columns={this.columns}
                         rowKey='id'
-                        pagination={false}
-                        footer={this.renderFooter} />
+                        pagination={false} />
                 </div>
-
+                <Button type='primary' onClick={this.tagCreate} style={{ marginTop: '20px' }}>新建</Button>
                 {
                     modalFlag === 0 && this.renderModal('edit')
                 }
