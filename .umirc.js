@@ -16,8 +16,8 @@ export default {
         { path: '/detail/:id', component: '../pages/detail' },
         { path: '/iteration', component: '../pages/iteration' },
         { path: '/issues', component: '../pages/issues' },
-        { path: '/system/role', component: '../pages/system/role' },
-        { path: '/system/label', component: '../pages/system/label' }
+        { path: '/system/user', component: '../pages/system/user' },
+        { path: '/system/tag', component: '../pages/system/tag' }
       ]
     }
   ],

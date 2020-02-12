@@ -1,15 +1,15 @@
 import { Component } from 'react'
 
-class Role extends Component {
+class User extends Component {
     constructor(props) {
         super(props);
         this.state = {}
     }
     render() {
         return (
-            <div>role</div>
+            <div>user</div>
         );
     }
 }
 
-export default Role;
+export default User;

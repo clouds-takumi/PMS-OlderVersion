@@ -38,12 +38,12 @@ export default [
             {
                 id: 7,
                 name: '标签管理',
-                path: '/system/label'
+                path: '/system/tag'
             },
             {
                 id: 8,
-                name: '角色管理',
-                path: '/system/role'
+                name: '用户管理',
+                path: '/system/user'
             }
         ]
     }

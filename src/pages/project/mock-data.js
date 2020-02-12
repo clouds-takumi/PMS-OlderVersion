@@ -14,32 +14,7 @@ export const colors = {
     2: 'red',
 }
 
-export const statusMap = {
-    0: '未开始',
-    1: '进行中',
-    2: '已完成',
-}
 
-export const statusColorMap = {
-    0: '#2db7f5',
-    1: '#87d068',
-    2: '#f50',
-}
-
-export const statusOptions = [
-    {
-        id: 0,
-        name: '未开始',
-    },
-    {
-        id: 1,
-        name: '进行中',
-    },
-    {
-        id: 2,
-        name: '已完成',
-    },
-]
 
 export const tagOptions = [
     {

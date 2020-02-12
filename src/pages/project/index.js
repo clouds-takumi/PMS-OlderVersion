@@ -1,84 +1,125 @@
 import { Component } from 'react'
 import s from './index.less'
 import cn from 'classnames'
+import Moment from 'moment'
 import DrawContainer from '../../components/drawer_container'
 import { Table, Tag, Divider, Form, Select, Button, Input, DatePicker, message, Modal } from 'antd'
-// import { reqProjects, reqIdProject, addProject, delIdProject, updataIdProject } from '../../services'
-import { Projects, colors, statusMap, statusColorMap, statusOptions, tagOptions, createdOptions } from './mock-data'
+import { reqProjects, reqUserInfo, reqTags, addProject, delIdProject, reqIdProject, updataIdProject } from './service'
+
+const statusOptions = [
+  {
+    id: 0,
+    name: '未开始',
+  },
+  {
+    id: 1,
+    name: '进行中',
+  },
+  {
+    id: 2,
+    name: '已完成',
+  },
+]
+
+const statusMap = {
+  0: '未开始',
+  1: '进行中',
+  2: '已完成',
+}
+
+const statusColorMap = {
+  0: '#2db7f5',
+  1: '#87d068',
+  2: '#f50',
+}
 
 class Project extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      drawerVisible: false,
+      projects: [],
+      userInfo: null,
+      tags: null,
+      selectedTags: [],
+      loading: false,
       proName: '',
       proId: null,
-      projects: [],
-      loading: false,
+      modalType: '',
+      drawerVisible: false,
       editable: false,
-      createFlag: false,
-      showDelModal: false
+      columns: [
+        {
+          title: '项目名称',
+          dataIndex: 'name',
+          key: 'name',
+          render: dataIndex => <span className={s.proName} onClick={() => this.showDrawer(dataIndex)}>{dataIndex}</span>
+        },
+        {
+          title: '项目状态',
+          dataIndex: 'status',
+          key: 'status',
+          render: dataIndex => <Tag color={statusColorMap[dataIndex]}>{statusMap[dataIndex]}</Tag>
+        },
+        {
+          title: '开始日期',
+          dataIndex: 'start_date',
+          key: 'start_date',
+          render: dataIndex => dataIndex ? null : <span>---</span>
+        },
+        {
+          title: '结束日期',
+          dataIndex: 'endDate',
+          key: 'endDate',
+          render: dataIndex => dataIndex ? null : <span>---</span>
+        },
+        {
+          title: '创建人',
+          dataIndex: 'created',
+          key: 'created',
+          render: dataIndex => <span>x {dataIndex} x</span>
+        },
+        {
+          title: '标签',
+          dataIndex: 'tags',
+          key: 'tags',
+          render: dataIndex => {
+            if (dataIndex) {
+              // TODO
+              // const arrs = dataIndex.split(',')
+              // const { tags } = this.state
+              // Object.keys(tags).forEach(index => {
+              //   arrs.forEach(currentValue=>)
+              // })
+            } else {
+              return (
+                <span>---</span>
+              )
+            }
+          }
+        },
+        {
+          title: '操作',
+          dataIndex: 'id',
+          key: 'operate',
+          render: id => {
+            return (
+              <>
+                <span className={s.operate} onClick={() => this.setState({ proId: id, drawerVisible: true })}>编辑</span>
+                <Divider type='vertical' />
+                <span className={s.operate} onClick={() => this.handleDelPro(id)}>删除</span>
+              </>
+            )
+          }
+        },
+      ]
     }
-    this.initColumns()
   }
 
-  initColumns = () => {
-    this.columns = [
-      {
-        title: '项目名称',
-        dataIndex: 'name',
-        key: 'name',
-        render: (dataIndex) => <span className={s.proName} onClick={() => this.showDrawer(dataIndex)}>{dataIndex}</span>
-      },
-      {
-        title: '项目状态',
-        dataIndex: 'status',
-        key: 'status',
-        render: status => <Tag color={statusColorMap[status]}>{statusMap[status]}</Tag>
-      },
-      {
-        title: '开始日期',
-        dataIndex: 'startDate',
-        key: 'startDate',
-      },
-      {
-        title: '结束日期',
-        dataIndex: 'endDate',
-        key: 'endDate',
-      },
-      {
-        title: '创建人',
-        dataIndex: 'created',
-        key: 'created',
-      },
-      {
-        title: '标签',
-        dataIndex: 'tags',
-        key: 'tags',
-        render: tags => {
-          return (
-            <>
-              {tags.map((tag, index) => <Tag key={tag} color={colors[index]}>{tag}</Tag>)}
-            </>
-          )
-        }
-      },
-      {
-        title: '操作',
-        dataIndex: 'id',
-        key: 'operate',
-        render: id => {
-          return (
-            <>
-              <span className={s.operate} onClick={() => this.setState({ proId: id, drawerVisible: true })}>编辑</span>
-              <Divider type='vertical' />
-              <span className={s.operate} onClick={() => this.handleDelPro(id)}>删除</span>
-            </>
-          )
-        }
-      },
-    ]
-  }
+  showCreateModal = () => this.setState({ modalType: 'create' })
+
+  showDeleteModal = () => this.setState({ modalType: 'delete' })
+
+  closeModal = () => { this.setState({ modalType: '', proName: '' }) }
 
   showDrawer = (name) => {
     let proId
@@ -94,11 +135,6 @@ class Project extends Component {
 
   closeDrawer = () => this.setState({ drawerVisible: false })
 
-  closeModal = (eve) => {
-    eve.stopPropagation()
-    this.setState({ showDelModal: false })
-  }
-
   handleDelPro = async (id) => {
     let proName
     const { projects } = this.state
@@ -108,45 +144,34 @@ class Project extends Component {
         break
       }
     }
-    this.setState({ proId: id, proName, showDelModal: true })
+    this.setState({ proId: id, proName, modalType: 'delete' })
   }
 
-  handleSureDel = () => {
-    // const res = await delIdProject(this.state.proId)
-    if ('res.status===0') {
-      message.success('删除成功')
-      this.fetchData({ type: 'projects' })
-      this.setState({ showDelModal: false })
-    } else {
-      message.error('result.msg')
+  handleConfirm = async () => {
+    const { modalType, proName, userInfo } = this.state
+    if (modalType === 'delete') {
+      delIdProject(this.state.proId).then(() => {
+        message.success('删除成功')
+        this.fetchData()
+        this.setState({ modalType: '', proName: '' })
+      })
+    }
+    if (modalType === 'create') {
+      const product = { name: proName, status: 0, created: userInfo.id, tags: '2,3' }
+      const result = await addProject(product)
+      if (result && result.id) {
+        this.fetchData()
+        this.setState({ modalType: '', proName: '' })
+      }
     }
   }
 
-  handleCreate = (event) => {
+  handleSearch = event => {
     event.preventDefault()
+    message.success('筛选待完善')
     this.props.form.validateFields(async (err, values) => {
       if (!err) {
-        const { name, status, created } = values
-        const product = { name, status, created }
-        // const result = await addProject(product)
-        if ('result.status===0') {
-          message.success(`${name}-${status}-${created}`)
-          this.fetchData({ type: 'projects' })
-          this.setState({ createFlag: false })
-        } else {
-          message.error('result.msg')
-        }
-      }
-    })
-  }
-
-  handleSearch = (event) => {
-    event.preventDefault()
-    message.success('筛选逻辑待完善')
-    this.props.form.validateFields(async (err, values) => {
-      if (!err) {
-        const { sname, sstatus, screated, tag } = values
-        const product = { sname, sstatus, screated, tag }
+        // const { name, status, created, tag } = values
         // const result = await searchProject(product)
         if ('result.status===0') {
           this.setState({ projects: [] })
@@ -160,55 +185,37 @@ class Project extends Component {
   handleRest = (event) => {
     event.preventDefault()
     this.setState({ loading: true })
-    this.fetchData({ type: 'projects' })
+    this.fetchData()
   }
 
-  renderModal = (showDelModal) => {
-    return (
-      <Modal
-        title={null}
-        visible
-        closable={false}
-        footer={null}
-        className={s.modal}
-        onCancel={(eve) => eve.stopPropagation()}>
-        <div onClick={(eve) => eve.stopPropagation()} className={s.modalContainer}>
-          <div className={s.modalTitle}>确认删除当前 "{`${this.state.proName}`}" 项目吗？</div>
-          <div className={s.modalBtn}>
-            <Button type='primary' onClick={this.handleSureDel} className={cn(s.btn, s.leftBtn)}>确认</Button>
-            <Button type='primary' onClick={this.closeModal} className={cn(s.btn, s.rightBtn)}>取消</Button>
-          </div>
-        </div>
-      </Modal>
-    )
+  fetchData = async () => {
+    const resData = await reqProjects()
+    if (resData) {
+      this.setState({ projects: resData.lists, loading: false })
+    }
   }
 
-  renderForm = (type) => {
+  componentDidMount() {
+    this.setState({ loading: true })
+    this.fetchData()
+    reqUserInfo().then(res => { this.setState({ userInfo: res }) })
+    reqTags().then(res => this.setState({ tags: res }))
+  }
+
+  renderSearchForm = () => {
     const { getFieldDecorator } = this.props.form;
     return (
-      <Form layout='inline' style={{ marginBottom: 24 }} onSubmit={type === 'create' ? this.handleCreate : this.handleSearch}>
+      <Form layout='inline' style={{ marginBottom: 24 }} onSubmit={this.handleSearch}>
         <Form.Item label='名称'>
           {
-            type === 'create' && getFieldDecorator('name', {
-              rules: [{ required: true }]
-            })(<Input placeholder='请输入项目名称' />)
-          }
-          {
-            type === 'search' && getFieldDecorator('sname', {
+            getFieldDecorator('name', {
               rules: []
             })(<Input placeholder='请输入项目名称' />)
           }
         </Form.Item>
         <Form.Item label='项目状态'>
           {
-            type === 'create' && getFieldDecorator('status', {
-              rules: [{ required: true }]
-            })(<Select placeholder='请选择' style={{ width: 140 }}>
-              {statusOptions.map(status => <Select.Option key={status.id}>{status.name}</Select.Option>)}
-            </Select>)
-          }
-          {
-            type === 'search' && getFieldDecorator('sstatus', {
+            getFieldDecorator('status', {
               rules: []
             })(<Select placeholder='请选择' style={{ width: 140 }}>
               {statusOptions.map(status => <Select.Option key={status.id}>{status.name}</Select.Option>)}
@@ -220,97 +227,88 @@ class Project extends Component {
         </Form.Item>
         <Form.Item label='创建人'>
           {
-            type === 'create' && getFieldDecorator('created', {
-              rules: [{ required: true }]
-            })(<Select placeholder='请选择' style={{ width: 140 }}>
-              {createdOptions.map(created => <Select.Option key={created.id}>{created.name}</Select.Option>)}
-            </Select>)
-          }
-          {
-            type === 'search' && getFieldDecorator('screated', {
+            getFieldDecorator('created', {
               rules: []
             })(<Select placeholder='请选择' style={{ width: 140 }}>
-              {createdOptions.map(created => <Select.Option key={created.id}>{created.name}</Select.Option>)}
+              {/* {createdOptions.map(created => <Select.Option key={created.id}>{created.name}</Select.Option>)} */}
             </Select>)
           }
         </Form.Item>
         <Form.Item label='标签'>
           {
-            type === 'create' && getFieldDecorator('tag', {
+            getFieldDecorator('tag', {
               rules: []
             })(<Select placeholder='请选择' style={{ width: 140 }}>
-              {tagOptions.map(tag => <Select.Option key={tag.id}>{tag.name}</Select.Option>)}
-            </Select>)
-          }
-          {
-            type === 'search' && getFieldDecorator('stag', {
-              rules: []
-            })(<Select placeholder='请选择' style={{ width: 140 }}>
-              {tagOptions.map(tag => <Select.Option key={tag.id}>{tag.name}</Select.Option>)}
+              {this.state.tags && this.state.tags.map(tag => <Select.Option key={tag.id}>{tag.name}</Select.Option>)}
             </Select>)
           }
         </Form.Item>
         <Form.Item label=' ' colon={false}>
-          {
-            type === 'search' && (
-              <>
-                <Button type='primary' style={{ marginRight: 12 }} htmlType="submit">筛选</Button>
-                <Button onClick={this.handleRest}>重置</Button>
-              </>
-            )
-          }
-          {
-            type === 'create' && (
-              <>
-                <Button type='primary' style={{ marginRight: 12 }} htmlType="submit">确认</Button>
-                <Button onClick={() => this.setState({ createFlag: false })}>取消</Button>
-              </>
-            )
-          }
+          <>
+            <Button type='primary' style={{ marginRight: 12 }} htmlType="submit">筛选</Button>
+            <Button onClick={this.handleRest}>重置</Button>
+          </>
         </Form.Item>
       </Form>
     )
   }
 
-  fetchData = async ({ type }) => {
-    if (type === 'projects') {
-      const lists = Projects
-      // const res = await reqProjects()
-      if ('res.status===0') {
-        this.setState({ projects: lists, loading: false })
-      } else {
-        message.error('result.msg')
-      }
-    }
+  renderModal = () => {
+    const { modalType, proName } = this.state
+    return (
+      <Modal
+        title={null}
+        visible
+        closable={false}
+        footer={null}
+        className={s.modal}
+        onCancel={(eve) => eve.stopPropagation()}>
+        <div onClick={(eve) => eve.stopPropagation()} className={s.modalContainer}>
+          {
+            modalType === 'delete' && <div className={s.modalTitle}>确认删除当前 "{`${this.state.proName}`}" 项目吗？</div>
+          }
+          {
+            modalType === 'create' && (
+              <>
+                <Input
+                  placeholder='请输入项目名称'
+                  value={proName}
+                  onChange={(e) => this.setState({ proName: e.target.value })} />
+                <Select placeholder='请选择' style={{ width: 140 }}>
+                  {this.state.tags && this.state.tags.map(
+                    tag => <Select.Option key={tag.id}>{tag.name}</Select.Option>)}
+                </Select>
+              </>
+            )
+          }
+          <div className={s.modalBtn}>
+            <Button type='primary' onClick={this.handleConfirm} className={cn(s.btn, s.leftBtn)}>确认</Button>
+            <Button type='primary' onClick={this.closeModal} className={cn(s.btn, s.rightBtn)}>取消</Button>
+          </div>
+        </div>
+      </Modal>
+    )
   }
 
-  componentDidMount() {
-    this.setState({ loading: true })
-    this.fetchData({ type: 'projects' })
-  }
 
   render() {
-    const { projects, drawerVisible, proId, editable, createFlag, loading, showDelModal } = this.state
+    const { columns, projects, drawerVisible, proId, editable, loading, modalType } = this.state
 
     return (
       <div className={s.project}>
         {
-          this.renderForm('search')
+          this.renderSearchForm()
         }
 
-        <div>
-          {
-            createFlag
-              ? (this.renderForm('create'))
-              : (<Button type='primary' className={s.addBtn} onClick={() => this.setState({ createFlag: true })}>新建项目</Button>)
-          }
-        </div>
+        <Button type='primary' className={s.addBtn} onClick={this.showCreateModal}>
+          新建项目
+        </Button>
 
         <Table
           bordered
           loading={loading}
           dataSource={projects}
-          columns={this.columns}
+          columns={columns}
           rowKey='id'
           pagination />
 
@@ -326,7 +324,11 @@ class Project extends Component {
         }
 
         {
-          showDelModal && this.renderModal(showDelModal)
+          modalType === 'delete' && this.renderModal()
+        }
+
+        {
+          modalType === 'create' && this.renderModal()
         }
       </div>
     )
