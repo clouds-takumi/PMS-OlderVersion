@@ -53,7 +53,8 @@ export const delIdTag = id => ajax({
     url: `/tag/${id}`
 }, true)
 
-export const updataIdTag = id => ajax({
+export const updataIdTag = (id, data) => ajax({
     method: 'put',
-    url: `/tag/:${id}`
+    url: `/tag/${id}`,
+    data
 }, true)
