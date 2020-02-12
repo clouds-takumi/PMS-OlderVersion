@@ -1,15 +1,15 @@
 import { PureComponent } from 'react'
 import s from './index.less'
 import InputColor from 'react-input-color'
-import { Table, Divider, Tag, Button, message, Modal, Input, Icon } from 'antd'
+import { Table, Divider, Tag, Button, Modal, Input, Icon } from 'antd'
 import { reqTags, addTag, delIdTag } from '../../../services'
-import { tags } from './mock.data'
+// import { tags } from './mock.data'
 
 class Label extends PureComponent {
     constructor(props) {
         super(props)
         this.state = {
-            tags,
+            tags: [],
             curTag: null,
             loading: false,
             modalFlag: null,
@@ -59,13 +59,13 @@ class Label extends PureComponent {
     tagDelete = id => {
         const res = window.confirm(`确认删除吗?`)
         if (res) {
-            delIdTag(id).then(() => this.fetchData())
+            delIdTag(id).then((res) => { this.fetchData() })
         }
     }
 
     tagCreate = () => this.setState({ modalFlag: 1 })
 
-    closeModal = () => this.setState({ modalFlag: null, tagName: '' })
+    closeModal = () => this.setState({ modalFlag: null, tagName: '', curTag: null })
 
     handleSure = async () => {
         this.setState({ modalFlag: null, tagName: '' })
@@ -79,7 +79,7 @@ class Label extends PureComponent {
         }
     }
 
-    handleSetColor = (color) => this.setState({ color })
+    handleSetColor = color => this.setState({ color })
 
     handleInputChange = (e) => {
         let newTag = JSON.parse(JSON.stringify(this.state.curTag))
@@ -93,6 +93,8 @@ class Label extends PureComponent {
             this.setState({ tags: resData })
         }
     }
+
+    componentDidUpdate(preProps, preState) { }
 
     componentDidMount() { this.fetchData() }
 
