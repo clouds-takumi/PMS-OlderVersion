@@ -1,7 +1,6 @@
 import { Component } from 'react'
 import s from './index.less'
 import cn from 'classnames'
-import Moment from 'moment'
 import DrawContainer from '../../components/drawer_container'
 import { Table, Tag, Divider, Form, Select, Button, Input, DatePicker, message, Modal } from 'antd'
 import { reqProjects, reqUserInfo, reqTags, addProject, delIdProject, reqIdProject, updataIdProject } from './service'
@@ -83,13 +82,13 @@ class Project extends Component {
           dataIndex: 'tags',
           key: 'tags',
           render: dataIndex => {
-            if (dataIndex) {
-              // TODO
-              // const arrs = dataIndex.split(',')
-              // const { tags } = this.state
-              // Object.keys(tags).forEach(index => {
-              //   arrs.forEach(currentValue=>)
-              // })
+            if (dataIndex && this.state.tags) {
+              const idArr = dataIndex.split(',').map(Number)
+              const tagsArr = [].slice.call(this.state.tags)
+              const renderArr = tagsArr.filter(item => idArr.includes(item.id))
+              if (renderArr) {
+                return renderArr.map(tag => <Tag key={tag.id} color={tag.color}>{tag.name}</Tag>)
+              }
             } else {
               return (
                 <span>---</span>
@@ -152,16 +151,19 @@ class Project extends Component {
     if (modalType === 'delete') {
       delIdProject(this.state.proId).then(() => {
         message.success('删除成功')
-        this.fetchData()
         this.setState({ modalType: '', proName: '' })
+        this.fetchData()
       })
     }
     if (modalType === 'create') {
-      const product = { name: proName, status: 0, created: userInfo.id, tags: '2,3' }
+      const { selectedTags } = this.state
+      const tagsStr = selectedTags.join(',')
+      const product = { name: proName, status: 0, created: userInfo.id, tags: tagsStr }
       const result = await addProject(product)
       if (result && result.id) {
-        this.fetchData()
+        message.success('创建成功')
         this.setState({ modalType: '', proName: '' })
+        this.fetchData()
       }
     }
   }
@@ -186,6 +188,12 @@ class Project extends Component {
     event.preventDefault()
     this.setState({ loading: true })
     this.fetchData()
+  }
+
+  handleSelectTag = (value) => {
+    if (value) {
+      this.setState({ selectedTags: value })
+    }
   }
 
   fetchData = async () => {
@@ -270,14 +278,25 @@ class Project extends Component {
           {
             modalType === 'create' && (
               <>
-                <Input
-                  placeholder='请输入项目名称'
-                  value={proName}
-                  onChange={(e) => this.setState({ proName: e.target.value })} />
-                <Select placeholder='请选择' style={{ width: 140 }}>
-                  {this.state.tags && this.state.tags.map(
-                    tag => <Select.Option key={tag.id}>{tag.name}</Select.Option>)}
-                </Select>
+                <div className={s.xxx}>
+                  <span>项目名称</span>
+                  <Input
+                    placeholder='请输入项目名称'
+                    value={proName}
+                    onChange={(e) => this.setState({ proName: e.target.value })} />
+                </div>
+
+                <div className={s.xxx}>
+                  <span>标签</span>
+                  <Select
+                    mode="multiple"
+                    placeholder='请选择标签'
+                    style={{ width: '100%' }}
+                    onChange={this.handleSelectTag}>
+                    {this.state.tags && this.state.tags.map(
+                      tag => <Select.Option key={tag.id} ><Tag color={tag.color}>{tag.name}</Tag></Select.Option>)}
+                  </Select>
+                </div>
               </>
             )
           }
@@ -296,16 +315,16 @@ class Project extends Component {
 
     return (
       <div className={s.project}>
-        {
+        {/* {
           this.renderSearchForm()
-        }
+        } */}
 
         <Button type='primary' className={s.addBtn} onClick={this.showCreateModal}>
           新建项目
         </Button>
 
         <Table
-          bordered
+          className={s.table}
           loading={loading}
           dataSource={projects}
           columns={columns}
@@ -324,11 +343,7 @@ class Project extends Component {
         }
 
         {
-          modalType === 'delete' && this.renderModal()
-        }
-
-        {
-          modalType === 'create' && this.renderModal()
+          modalType !== '' && this.renderModal()
         }
       </div>
     )
