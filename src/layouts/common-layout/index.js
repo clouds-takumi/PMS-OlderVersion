@@ -26,11 +26,17 @@ class CommonLayout extends Component {
   }
 
   renderMenus = menus => {
+    const selectedKey = this.props.children.props.location.pathname
     return menus.map(menu => {
       if (menu.children) {
+        let selectedObj = menu.children.find(item => item.path === selectedKey)
+        if (selectedObj) {
+          this.openKey = menu.path
+          console.log(this.openKey)
+        }
         return (
           <SubMenu
-            key={menu.id}
+            key={menu.path}
             title={
               <span>
                 <Icon type={menu.icon} />
@@ -44,7 +50,7 @@ class CommonLayout extends Component {
         )
       } else {
         return (
-          <Menu.Item key={menu.id} >
+          <Menu.Item key={menu.path} >
             <Link to={menu.path}>
               {menu.icon && <Icon type={menu.icon} />}
               <span className="nav-text">{menu.name}</span>
@@ -59,33 +65,38 @@ class CommonLayout extends Component {
     localStorage.removeItem('token')
     router.replace('/login')
   }
-  
+
   render() {
     const { children, collapsed, handleCollapsed, userInfo } = this.props
+    const selectedKey = this.props.children.props.location.pathname
     return (
       <Layout className={cn(collapsed && s.appCollapsed)}>
+
         <Sider className={s.sider} width={256} collapsed={collapsed}>
           <div className={s.logo}>PMS</div>
           <Menu
             mode='inline'
             theme='dark'
+            defaultOpenKeys={[this.openKey]}
+            defaultSelectedKeys={[selectedKey]}
           >
             {
               this.renderMenus(menus)
             }
           </Menu>
         </Sider>
+
         <Layout className={s.wrapper}>
           <Header className={s.header}>
             <div className={s.headerLeft} onClick={() => handleCollapsed(!collapsed)}>
               <Icon type={collapsed ? 'menu-unfold' : 'menu-fold'} />
             </div>
             <div className={s.headerRight}>
-              <div className={s.headerBadge}>
+              {/* <div className={s.headerBadge}>
                 <Badge count={5}>
                   <Icon type='bell' />
                 </Badge>
-              </div>
+              </div> */}
               {
                 userInfo && (
                   <Dropdown overlay={
