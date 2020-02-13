@@ -3,7 +3,7 @@ import s from './index.less'
 import cn from 'classnames'
 import DrawContainer from '../../components/drawer_container'
 import { Table, Tag, Divider, Form, Select, Button, Input, DatePicker, message, Modal } from 'antd'
-import { reqProjects, reqUserInfo, reqTags, addProject, delIdProject, reqIdProject, updataIdProject } from './service'
+import { reqProjects, reqUserInfo, reqTags, addProject, delIdProject, reqIdProject, updateIdProject } from './service'
 
 const statusOptions = [
   {
@@ -103,7 +103,7 @@ class Project extends Component {
           render: id => {
             return (
               <>
-                <span className={s.operate} onClick={() => this.setState({ proId: id, drawerVisible: true })}>编辑</span>
+                <span className={s.operate} onClick={() => this.setState({ proId: id, drawerVisible: true, editable: true })}>编辑</span>
                 <Divider type='vertical' />
                 <span className={s.operate} onClick={() => this.handleDelPro(id)}>删除</span>
               </>
@@ -129,10 +129,18 @@ class Project extends Component {
         break
       }
     }
-    this.setState({ proId, drawerVisible: true })
+    this.setState({ proId, drawerVisible: true, editable: false })
   }
 
   closeDrawer = () => this.setState({ drawerVisible: false })
+
+  delCurPro = id => {
+    delIdProject(id).then(() => {
+      message.success('删除成功')
+      this.fetchData()
+      this.setState({ drawerVisible: false })
+    })
+  }
 
   handleDelPro = async (id) => {
     let proName
@@ -335,10 +343,11 @@ class Project extends Component {
           drawerVisible && (
             <DrawContainer
               type='Project'
-              editable={editable}
               id={proId}
+              editable={editable}
               visible={drawerVisible}
-              closeDrawer={this.closeDrawer} />
+              closeDrawer={this.closeDrawer}
+              delOperation={this.delCurPro} />
           )
         }
 

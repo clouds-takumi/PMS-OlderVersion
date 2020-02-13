@@ -31,7 +31,7 @@ export const delIdProject = id => ajax({
     url: `/project/${id}`
 }, true)
 
-export const updataIdProject = (id, data) => ajax({
+export const updateIdProject = (id, data) => ajax({
     method: 'put',
     url: `/project/${id}`,
     data
