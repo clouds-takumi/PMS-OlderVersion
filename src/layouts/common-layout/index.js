@@ -13,6 +13,9 @@ const { Header, Content, Sider } = Layout
 const { SubMenu } = Menu
 
 class CommonLayout extends Component {
+  state = {
+    openKey: ''
+  }
   componentDidMount() {
     const { setUserInfo } = this.props
 
@@ -31,8 +34,7 @@ class CommonLayout extends Component {
       if (menu.children) {
         let selectedObj = menu.children.find(item => item.path === selectedKey)
         if (selectedObj) {
-          this.openKey = menu.path
-          console.log(this.openKey)
+          // this.setState({ openKey: menu.path })
         }
         return (
           <SubMenu
@@ -69,6 +71,7 @@ class CommonLayout extends Component {
   render() {
     const { children, collapsed, handleCollapsed, userInfo } = this.props
     const selectedKey = this.props.children.props.location.pathname
+    console.log(this.openKey)
     return (
       <Layout className={cn(collapsed && s.appCollapsed)}>
 
@@ -77,7 +80,7 @@ class CommonLayout extends Component {
           <Menu
             mode='inline'
             theme='dark'
-            defaultOpenKeys={[this.openKey]}
+            // defaultOpenKeys={[this.openKey]}
             defaultSelectedKeys={[selectedKey]}
           >
             {
