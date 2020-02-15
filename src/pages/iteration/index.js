@@ -1,5 +1,6 @@
 import { PureComponent } from 'react'
 import s from './index.less'
+import cn from 'classnames'
 import { Table, Divider, Tag, Card, Button, Icon, message, Modal, Input, DatePicker } from 'antd'
 import DrawContainer from '../../components/drawer_container'
 import { iterations, statusColorMap, statusMap } from './mock-data'
@@ -140,15 +141,16 @@ class Iteration extends PureComponent {
                 visible
                 closable={false}
                 footer={null}
-                className={s.modal}
                 onCancel={eve => eve.stopPropagation()}>
-                <div>删除迭代</div>
-                <span>
-                    当前正在删除迭代 {iterName}，该迭代下的所有事项将移入未规划，此操作不可撤销，是否确认？
+                <div className={s.delRoot}>
+                    <div className={s.title}>删除迭代</div>
+                    <span className={s.subtitle}>
+                        当前正在删除迭代 {iterName}，该迭代下的所有事项将移入未规划，此操作不可撤销，是否确认？
                 </span>
-                <div>
-                    <Button onClick={this.handleConfirmDel}>确认</Button>
-                    <Button onClick={this.closeDeleteModal}>取消</Button>
+                    <div style={{ marginTop: '30px' }}>
+                        <Button onClick={this.handleConfirmDel} className={cn(s.lBtn, s.btn)}>确认</Button>
+                        <Button onClick={this.closeDeleteModal} className={cn(s.rBtn, s.btn)}>取消</Button>
+                    </div>
                 </div>
             </Modal>
         )
@@ -168,33 +170,33 @@ class Iteration extends PureComponent {
                 onCancel={eve => eve.stopPropagation()}>
                 <>
                     {
-                        modalType === 'create' && <div>创建迭代</div>
+                        modalType === 'create' && <div className={s.title} style={{ marginBottom: '20px' }}>创建迭代</div>
                     }
                     {
-                        modalType === 'edit' && <div>编辑迭代</div>
+                        modalType === 'edit' && <div className={s.title} style={{ marginBottom: '20px' }}>编辑迭代</div>
                     }
-                    <div>
-                        <span>标题</span>
+                    <div style={{ marginBottom: '20px' }}>
+                        <span className={s.subtitle}>标题</span>
                         <Input placeholder='请输入迭代标题' value={iterName} onChange={e => this.setState({ iterName: e.target.value })} />
                     </div>
-                    <div>
+                    <div style={{ display: 'flex', marginBottom: '20px' }}>
                         <div>
-                            <span>开始时间</span>
+                            <span className={s.subtitle}>开始时间</span>
                             <DatePicker></DatePicker>
                         </div>
                         <div>
-                            <span>结束时间</span>
+                            <span className={s.subtitle}>结束时间</span>
                             <DatePicker></DatePicker>
                         </div>
                     </div>
                     <div>
                         {
-                            modalType === 'create' && <Button onClick={this.handleConfirm}>创建</Button>
+                            modalType === 'create' && <Button onClick={this.handleConfirm} className={cn(s.laBtn, s.aBtn)}>创建</Button>
                         }
                         {
-                            modalType === 'edit' && <Button onClick={this.handleConfirm}>保存</Button>
+                            modalType === 'edit' && <Button onClick={this.handleConfirm} className={cn(s.laBtn, s.aBtn)}>保存</Button>
                         }
-                        <Button onClick={this.closeModal}>取消</Button>
+                        <Button onClick={this.closeModal} className={cn(s.raBtn, s.aBtn)}>取消</Button>
                     </div>
                 </>
             </Modal>
