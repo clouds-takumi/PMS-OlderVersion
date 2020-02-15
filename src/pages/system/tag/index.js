@@ -113,6 +113,7 @@ class Tags extends PureComponent {
         return (
             <div className={s.tagRoot}>
                 <Button type='primary' onClick={this.tagCreate} style={{ marginBottom: 20 }}>新建</Button>
+
                 <div className={s.tagContainer}>
                     <Table
                         className={s.table}

@@ -1,70 +1,63 @@
 import { PureComponent } from 'react'
 import s from './index.less'
-import { Table, Divider, Tag } from 'antd'
+import { Table, Divider, Tag, Card, Button, Icon, message, Modal, Input, DatePicker } from 'antd'
 import DrawContainer from '../../components/drawer_container'
-
-
-const iterations = [...Array(24).keys()].map(i => ({
-    id: i,
-    name: `iteration-${i}`,
-    created: `Jason`,
-    deadline: '2020/03/03',
-    status: Math.floor(Math.random() * 3),
-}))
-
-const statusColorMap = {
-    0: '#2db7f5',
-    1: '#87d068',
-    2: '#f50',
-}
-
-const statusMap = {
-    0: '未开始',
-    1: '进行中',
-    2: '已完成',
-}
+import { iterations, statusColorMap, statusMap } from './mock-data'
 
 class Iteration extends PureComponent {
     state = {
-        // loading: true,
+        loading: false,
+        iterations: [],
         id: null,
+        delFlag: false,
         drawerVisible: false,
-        iterations,
+        editable: false,
+        modalType: '',
+        iterName: '',
         columns: [
             {
                 title: '迭代名称',
-                dataIndex: 'name',
                 key: 'name',
                 width: 120,
+                render: iteration => <span style={{ cursor: 'pointer' }} onClick={() => this.showDrawer(iteration)}>{iteration.name}</span>
             },
             {
-                title: '迭代状态',
+                title: '迭代阶段',
                 dataIndex: 'status',
                 key: 'status',
                 width: 120,
                 render: status => <Tag color={statusColorMap[status]}>{statusMap[status]}</Tag>
             },
             {
-                title: '截至日期',
-                dataIndex: 'deadline',
+                title: '开始时间',
+                dataIndex: 'start_time',
                 key: 'deadline',
                 width: 120,
-                render: deadline => (<div>{deadline}</div>)
+                render: dataIndex => <div>---</div>
             },
             {
-                title: '创建人',
+                title: '结束时间',
+                dataIndex: 'end_time',
+                key: 'deadline',
+                width: 120,
+                render: dataIndex => <div>---</div>
+            },
+            {
+                title: '负责人',
                 dataIndex: 'created',
                 key: 'created',
-                width: 120,
+                width: 100,
+                render: dataIndex => <div>id_name</div>
             },
             {
                 title: '操作',
-                render: (iteration) => {
+                key: 'operation',
+                render: iteration => {
                     return (
                         <>
-                            <span className={s.operate} onClick={() => this.showDrawer(iteration)}>编辑</span>
+                            <span className={s.operate} onClick={() => this.showEditModal(iteration)}>编辑</span>
                             <Divider type='vertical' />
-                            <span className={s.operate}>删除</span>
+                            <span className={s.operate} onClick={() => this.showDeleteModal(iteration)}>删除</span>
                         </>
                     )
                 }
@@ -72,37 +65,177 @@ class Iteration extends PureComponent {
         ]
     }
 
-    showDrawer = (iteration) => {
-        this.setState({ drawerVisible: true, id: iteration.id })
-    }
+    showDrawer = iteration => { this.setState({ drawerVisible: true, id: iteration.id, editable: true }) }
 
     closeDrawer = () => this.setState({ drawerVisible: false })
 
+    showDeleteModal = iteration => this.setState({ iterName: iteration.name, id: iteration.id, delFlag: true })
+
+    closeDeleteModal = () => this.setState({ delFlag: false, iterName: '' })
+
+    showCreateModal = () => this.setState({ modalType: 'create' })
+
+    showEditModal = iteration => this.setState({ modalType: 'edit', iterName: iteration.name })
+
+    closeModal = () => this.setState({ modalType: '', iterName: '' })
+
+    handleConfirm = () => {
+        const { modalType } = this.state
+        if (modalType === 'create') {
+            // 增加数据
+            const iteration = {}
+            //   const result = await addIteration(product)
+            if ("result" && "result.id") {
+                message.success('创建成功')
+                this.fetchData()
+                this.setState({ modalType: '', iterName: '' })
+            }
+        }
+        if (modalType === 'edit') {
+            // 修改数据
+            const data = {}
+            //   const result = await updateIdIteration(product, data)
+            if ("result" && "result.id") {
+                message.success('创建成功')
+                this.fetchData()
+                this.setState({ modalType: '', iterName: '' })
+            }
+        }
+    }
+
+    handleConfirmDel = () => {
+        // 删除数据
+        const { id } = this.state
+        this.delCurIter(id)
+        this.fetchData()
+    }
+
+    delCurIter = id => {
+        // 删除数据 - drawer
+        // delIdIter(id).then(() => {
+        message.success(`删除${id}成功`)
+        this.fetchData()
+        this.setState({ drawerVisible: false, delFlag: false })
+        // })
+    }
+
+    fetchData = () => {
+        // 获取数据 
+        // const resData = await reqIterations()
+        if ("resData") {
+            //   this.setState({ iterations: resData.lists, loading: false })
+            this.setState({ iterations, loading: false })
+        }
+    }
+    componentDidMount() {
+        this.setState({ loading: true })
+        this.fetchData()
+    }
+
+    renderDelModal = () => {
+        const { iterName } = this.state
+        return (
+            <Modal
+                title={null}
+                visible
+                closable={false}
+                footer={null}
+                className={s.modal}
+                onCancel={eve => eve.stopPropagation()}>
+                <div>删除迭代</div>
+                <span>
+                    当前正在删除迭代 {iterName}，该迭代下的所有事项将移入未规划，此操作不可撤销，是否确认？
+                </span>
+                <div>
+                    <Button onClick={this.handleConfirmDel}>确认</Button>
+                    <Button onClick={this.closeDeleteModal}>取消</Button>
+                </div>
+            </Modal>
+        )
+    }
+
+    rendertitle = () => (<Button type='primary' onClick={this.showCreateModal} ><Icon type='plus' />添加迭代</Button>)
+
+    renderModal = () => {
+        const { modalType, iterName } = this.state
+        return (
+            <Modal
+                title={null}
+                visible
+                closable={false}
+                footer={null}
+                className={s.modal}
+                onCancel={eve => eve.stopPropagation()}>
+                <>
+                    {
+                        modalType === 'create' && <div>创建迭代</div>
+                    }
+                    {
+                        modalType === 'edit' && <div>编辑迭代</div>
+                    }
+                    <div>
+                        <span>标题</span>
+                        <Input placeholder='请输入迭代标题' value={iterName} onChange={e => this.setState({ iterName: e.target.value })} />
+                    </div>
+                    <div>
+                        <div>
+                            <span>开始时间</span>
+                            <DatePicker></DatePicker>
+                        </div>
+                        <div>
+                            <span>结束时间</span>
+                            <DatePicker></DatePicker>
+                        </div>
+                    </div>
+                    <div>
+                        {
+                            modalType === 'create' && <Button onClick={this.handleConfirm}>创建</Button>
+                        }
+                        {
+                            modalType === 'edit' && <Button onClick={this.handleConfirm}>保存</Button>
+                        }
+                        <Button onClick={this.closeModal}>取消</Button>
+                    </div>
+                </>
+            </Modal>
+        )
+    }
+
     render() {
-        const { iterations, columns } = this.state
+        const { iterations, columns, loading, id, delFlag, drawerVisible, editable, modalType } = this.state
         return (
             <div>
                 <div className={s.iterRoot}>
-                    <Table
-                        className={s.table}
-                        // loading={loading}
-                        dataSource={iterations}
-                        columns={columns}
-                        rowKey='id'
-                        // bordered
-                        // title={() => 'iterations'}
-                        pagination={{ total: 24, defaultPageSize: 8, showQuickJumper: true }} />
+                    <Card title={this.rendertitle()}>
+                        <Table
+                            className={s.table}
+                            loading={loading}
+                            dataSource={iterations}
+                            columns={columns}
+                            rowKey='id'
+                            pagination={{ total: 24, defaultPageSize: 8, showQuickJumper: true }} />
+                    </Card>
                 </div>
+
                 {
-                    this.state.drawerVisible &&
+                    delFlag && this.renderDelModal()
+                }
+
+                {
+                    modalType !== '' && this.renderModal()
+                }
+
+                {
+                    drawerVisible &&
                     <DrawContainer
                         type='Iteration'
-                        id={this.state.id}
-                        visible={this.state.drawerVisible}
-                        closeDrawer={this.closeDrawer} />
+                        id={id}
+                        visible={drawerVisible}
+                        closeDrawer={this.closeDrawer}
+                        delOperation={this.delCurIter}
+                        editable={editable} />
                 }
             </div>
-
         )
     }
 }

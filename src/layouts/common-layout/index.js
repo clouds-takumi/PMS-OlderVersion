@@ -8,16 +8,23 @@ import { connect } from 'react-redux'
 import { changeSiderCollapsed, setUserInfo } from './redux/actions'
 import { getUserInfo } from './service'
 import router from 'umi/router'
+import withRouter from 'umi/withRouter'
 
 const { Header, Content, Sider } = Layout
 const { SubMenu } = Menu
 
 class CommonLayout extends Component {
   state = {
-    openKey: ''
+    openKeys: [],
   }
+
   componentDidMount() {
-    const { setUserInfo } = this.props
+    const { setUserInfo, location } = this.props
+    const { pathname } = location
+
+    if (pathname.indexOf('/system') > -1) {
+      this.setState({ openKeys: ['/system'] })
+    }
 
     getUserInfo().then(data => {
       if (data) {
@@ -29,13 +36,8 @@ class CommonLayout extends Component {
   }
 
   renderMenus = menus => {
-    const selectedKey = this.props.children.props.location.pathname
     return menus.map(menu => {
       if (menu.children) {
-        let selectedObj = menu.children.find(item => item.path === selectedKey)
-        if (selectedObj) {
-          // this.setState({ openKey: menu.path })
-        }
         return (
           <SubMenu
             key={menu.path}
@@ -68,10 +70,14 @@ class CommonLayout extends Component {
     router.replace('/login')
   }
 
+  handleMenuOpen = openKeys => {
+    this.setState({ openKeys })
+  }
+
   render() {
     const { children, collapsed, handleCollapsed, userInfo } = this.props
-    const selectedKey = this.props.children.props.location.pathname
-    console.log(this.openKey)
+    const selectedKey = this.props.location.pathname
+    const { openKeys } = this.state
     return (
       <Layout className={cn(collapsed && s.appCollapsed)}>
 
@@ -80,7 +86,8 @@ class CommonLayout extends Component {
           <Menu
             mode='inline'
             theme='dark'
-            // defaultOpenKeys={[this.openKey]}
+            openKeys={openKeys}
+            onOpenChange={this.handleMenuOpen}
             defaultSelectedKeys={[selectedKey]}
           >
             {
@@ -123,7 +130,7 @@ class CommonLayout extends Component {
   }
 }
 
-export default connect(
+export default withRouter(connect(
   store => ({
     collapsed: store.commonLayoutReducer.collapsed,
     userInfo: store.commonLayoutReducer.userInfo,
@@ -132,4 +139,4 @@ export default connect(
     handleCollapsed: collapsed => dispatch(changeSiderCollapsed(collapsed)),
     setUserInfo: userInfo => dispatch(setUserInfo(userInfo)),
   })
-)(CommonLayout)
+)(CommonLayout))

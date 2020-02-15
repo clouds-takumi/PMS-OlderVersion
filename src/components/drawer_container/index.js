@@ -40,6 +40,12 @@ class DrawContainer extends PureComponent {
                 this.setState({ detailData: res, titleValue: res.name })
             }
         }
+        if (type === 'Iteration') {
+            // const res = await reqIdIteration(id)
+            // if (res) {
+            //     this.setState({ detailData: res, titleValue: res.name })
+            // }
+        }
     }
 
     componentDidMount() {
