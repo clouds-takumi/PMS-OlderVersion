@@ -1,31 +1,12 @@
-import { PureComponent } from 'react'
+import { PureComponent, Fragment } from 'react'
 import s from './index.less'
-import { Table, Divider, Tag } from 'antd'
+import { Table, Tag, Menu, Dropdown, Icon } from 'antd'
 import DrawContainer from '../../components/drawer_container'
-
-
-const iterations = [...Array(24).keys()].map(i => ({
-    id: i,
-    name: `iteration-${i}`,
-    created: `Jason`,
-    status: Math.floor(Math.random() * 3),
-}))
-
-const statusColorMap = {
-    0: '#2db7f5',
-    1: '#87d068',
-    2: '#f50',
-}
-
-const statusMap = {
-    0: '未开始',
-    1: '进行中',
-    2: '已完成',
-}
+import { iterations, statusColorMap, statusMap, statuOptions } from './mock-data'
 
 class Issue extends PureComponent {
     state = {
-        // loading: true,
+        loading: false,
         id: null,
         drawerVisible: false,
         iterations,
@@ -37,45 +18,67 @@ class Issue extends PureComponent {
                 width: 120,
             },
             {
-                title: '事项状态',
+                title: '状态',
                 dataIndex: 'status',
                 key: 'status',
                 width: 120,
-                render: status => <Tag color={statusColorMap[status]}>{statusMap[status]}</Tag>
+                render: status => (
+                    <Dropdown overlay={this.renderMenu()} trigger={['click']}>
+                        <div style={{ cursor: 'pointer' }}>
+                            <Tag color={statusColorMap[status]} style={{ cursor: 'pointer' }}> {statusMap[status]}</Tag>
+                            <Icon type="down" />
+                        </div>
+                    </Dropdown>
+                )
+            },
+            {
+                title: '处理人',
+                dataIndex: 'handler',
+                key: 'handler',
+                width: 120,
+                render: dataIndex => <div>---</div>
             },
             {
                 title: '创建人',
                 dataIndex: 'created',
                 key: 'created',
                 width: 120,
+                render: dataIndex => <div>---</div>
             },
             {
-                title: '操作',
-                render: (iteration) => {
-                    return (
-                        <>
-                            <span className={s.operate} onClick={() => this.showDrawer(iteration)}>编辑</span>
-                            <Divider type='vertical' />
-                            <span className={s.operate} onClick={this.handleDel}>删除</span>
-                        </>
-                    )
-                }
-            },
+                title: '创建时间',
+                dataIndex: 'start_time',
+                key: 'start_time',
+                width: 120,
+                render: dataIndex => <div>---</div>
+            }
         ]
     }
 
-    showDrawer = (iteration) => {
+    showDrawer = iteration => {
         this.setState({ drawerVisible: true, id: iteration.id })
     }
 
     closeDrawer = () => this.setState({ drawerVisible: false })
 
-    // addNewIssue = () => this.props.push('/detail')
-
-    handleDel = () => alert(`确认删除吗`)
-
     renderAdd = () => {
         return <div className={s.addIss} onClick={this.addNewIssue}>添加事项</div>
+    }
+
+    renderMenu = () => {
+        return (
+            <Menu className={s.menu}>
+                {
+                    statuOptions.map(statu => (
+                        <Menu.Item key={statu.key} className={s.menuItem}>
+                            <span>{statu.name}</span>
+                            <Icon type="double-right" className={s.arrow} />
+                            <Tag color={statu.color}>{statu.event}</Tag>
+                        </Menu.Item>
+                    ))
+                }
+            </Menu>
+        )
     }
 
     render() {
@@ -91,6 +94,7 @@ class Issue extends PureComponent {
                         title={this.renderAdd}
                         pagination={{ total: 24, defaultPageSize: 8, showQuickJumper: true }} />
                 </div>
+
                 {
                     this.state.drawerVisible &&
                     <DrawContainer
@@ -100,7 +104,6 @@ class Issue extends PureComponent {
                         closeDrawer={this.closeDrawer} />
                 }
             </div>
-
         )
     }
 }
