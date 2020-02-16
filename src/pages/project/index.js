@@ -2,7 +2,7 @@ import { Component } from 'react'
 import s from './index.less'
 import cn from 'classnames'
 import DrawContainer from '../../components/drawer_container'
-import { Table, Tag, Divider, Form, Select, Button, Input, DatePicker, message, Modal } from 'antd'
+import { Table, Tag, Divider, Form, Select, Button, Input, DatePicker, message, Modal, Card, Icon } from 'antd'
 import { reqProjects, reqUserInfo, reqTags, addProject, delIdProject, reqIdProject, updateIdProject } from './service'
 
 const statusOptions = [
@@ -170,7 +170,7 @@ class Project extends Component {
       const result = await addProject(product)
       if (result && result.id) {
         message.success('创建成功')
-        this.setState({ modalType: '', proName: '' })
+        this.setState({ modalType: '', proName: '', selectedTags: [] })
         this.fetchData()
       }
     }
@@ -221,51 +221,51 @@ class Project extends Component {
   renderSearchForm = () => {
     const { getFieldDecorator } = this.props.form;
     return (
-      <Form layout='inline' style={{ marginBottom: 24 }} onSubmit={this.handleSearch}>
-        <Form.Item label='名称'>
-          {
-            getFieldDecorator('name', {
-              rules: []
-            })(<Input placeholder='请输入项目名称' />)
-          }
-        </Form.Item>
-        <Form.Item label='项目状态'>
-          {
-            getFieldDecorator('status', {
-              rules: []
-            })(<Select placeholder='请选择' style={{ width: 140 }}>
-              {statusOptions.map(status => <Select.Option key={status.id}>{status.name}</Select.Option>)}
-            </Select>)
-          }
-        </Form.Item>
-        <Form.Item label='项目日期'>
-          <DatePicker />
-        </Form.Item>
-        <Form.Item label='创建人'>
-          {
-            getFieldDecorator('created', {
-              rules: []
-            })(<Select placeholder='请选择' style={{ width: 140 }}>
-              {/* {createdOptions.map(created => <Select.Option key={created.id}>{created.name}</Select.Option>)} */}
-            </Select>)
-          }
-        </Form.Item>
-        <Form.Item label='标签'>
-          {
-            getFieldDecorator('tag', {
-              rules: []
-            })(<Select placeholder='请选择' style={{ width: 140 }}>
-              {this.state.tags && this.state.tags.map(tag => <Select.Option key={tag.id}>{tag.name}</Select.Option>)}
-            </Select>)
-          }
-        </Form.Item>
-        <Form.Item label=' ' colon={false}>
-          <>
-            <Button type='primary' style={{ marginRight: 12 }} htmlType="submit">筛选</Button>
-            <Button onClick={this.handleRest}>重置</Button>
-          </>
-        </Form.Item>
-      </Form>
+      <>
+        <Form layout='inline' onSubmit={this.handleSearch} className={s.formRoot}>
+          <Form.Item label='名称'>
+            {
+              getFieldDecorator('name', {
+                rules: []
+              })(<Input placeholder='请输入项目名称' />)
+            }
+          </Form.Item>
+          <Form.Item label='项目状态'>
+            {
+              getFieldDecorator('status', {
+                rules: []
+              })(<Select placeholder='请选择' style={{ width: 140 }}>
+                {statusOptions.map(status => <Select.Option key={status.id}>{status.name}</Select.Option>)}
+              </Select>)
+            }
+          </Form.Item>
+          <Form.Item label='项目日期'>
+            <DatePicker />
+          </Form.Item>
+          <Form.Item label='创建人'>
+            {
+              getFieldDecorator('created', {
+                rules: []
+              })(<Select placeholder='请选择' style={{ width: 140 }}>
+                {/* {createdOptions.map(created => <Select.Option key={created.id}>{created.name}</Select.Option>)} */}
+              </Select>)
+            }
+          </Form.Item>
+          <Form.Item label='标签'>
+            {
+              getFieldDecorator('tag', {
+                rules: []
+              })(<Select placeholder='请选择' style={{ width: 140 }}>
+                {this.state.tags && this.state.tags.map(tag => <Select.Option key={tag.id}>{tag.name}</Select.Option>)}
+              </Select>)
+            }
+          </Form.Item>
+        </Form>
+        <>
+          <Button type='primary' style={{ marginRight: 12 }} htmlType="submit">筛选</Button>
+          <Button onClick={this.handleRest}>重置</Button>
+        </>
+      </>
     )
   }
 
@@ -317,29 +317,28 @@ class Project extends Component {
     )
   }
 
-
   render() {
     const { columns, projects, drawerVisible, proId, editable, loading, modalType } = this.state
 
     return (
       <div className={s.project}>
-        {/* {
-          this.renderSearchForm()
-        } */}
 
-
-        <Button type='primary' className={s.addBtn} onClick={this.showCreateModal}>
-          新建项目
-        </Button>
-
-
-        <Table
-          className={s.table}
-          loading={loading}
-          dataSource={projects}
-          columns={columns}
-          rowKey='id'
-          pagination />
+        <Card
+          title={this.renderSearchForm()}
+          actions={[
+            <Button type='primary' className={s.addBtn} onClick={this.showCreateModal}>
+              <Icon type='plus' />添加项目
+            </Button>
+          ]}
+        >
+          <Table
+            className={s.table}
+            loading={loading}
+            dataSource={projects}
+            columns={columns}
+            rowKey='id'
+            pagination />
+        </Card>
 
         {
           drawerVisible && (

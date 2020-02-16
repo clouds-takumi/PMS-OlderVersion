@@ -3,7 +3,7 @@ import s from './index.less'
 import cn from 'classnames'
 import { Table, Divider, Tag, Card, Button, Icon, message, Modal, Input, DatePicker } from 'antd'
 import DrawContainer from '../../components/drawer_container'
-import { reqIters, reqIdIter, addIter, delIdIter, updateIdIter } from './service'
+// import { reqIters, reqIdIter, addIter, delIdIter, updateIdIter } from './service'
 import { iterations, statusColorMap, statusMap } from './mock-data'
 
 class Iteration extends PureComponent {
