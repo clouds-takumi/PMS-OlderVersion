@@ -3,6 +3,7 @@ import s from './index.less'
 import cn from 'classnames'
 import { Table, Divider, Tag, Card, Button, Icon, message, Modal, Input, DatePicker } from 'antd'
 import DrawContainer from '../../components/drawer_container'
+import { reqIters, reqIdIter, addIter, delIdIter, updateIdIter } from './service'
 import { iterations, statusColorMap, statusMap } from './mock-data'
 
 class Iteration extends PureComponent {
@@ -12,7 +13,6 @@ class Iteration extends PureComponent {
         id: null,
         delFlag: false,
         drawerVisible: false,
-        editable: false,
         modalType: '',
         iterName: '',
         columns: [
@@ -66,7 +66,7 @@ class Iteration extends PureComponent {
         ]
     }
 
-    showDrawer = iteration => { this.setState({ drawerVisible: true, id: iteration.id, editable: true }) }
+    showDrawer = iteration => { this.setState({ drawerVisible: true, id: iteration.id }) }
 
     closeDrawer = () => this.setState({ drawerVisible: false })
 
@@ -204,7 +204,7 @@ class Iteration extends PureComponent {
     }
 
     render() {
-        const { iterations, columns, loading, id, delFlag, drawerVisible, editable, modalType } = this.state
+        const { iterations, columns, loading, id, delFlag, drawerVisible, modalType } = this.state
         return (
             <div>
                 <div className={s.iterRoot}>
@@ -234,8 +234,7 @@ class Iteration extends PureComponent {
                         id={id}
                         visible={drawerVisible}
                         closeDrawer={this.closeDrawer}
-                        delOperation={this.delCurIter}
-                        editable={editable} />
+                        delOperation={this.delCurIter} />
                 }
             </div>
         )

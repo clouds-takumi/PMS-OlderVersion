@@ -1,21 +1,25 @@
-import { PureComponent, Fragment } from 'react'
+import { PureComponent } from 'react'
 import s from './index.less'
-import { Table, Tag, Menu, Dropdown, Icon } from 'antd'
+import cn from 'classnames'
 import DrawContainer from '../../components/drawer_container'
-import { iterations, statusColorMap, statusMap, statuOptions } from './mock-data'
+import { Table, Tag, Menu, Dropdown, Icon, message, Card, Button, Modal, Input } from 'antd'
+import { reqIssues, addIssue, } from './service'
+import { issues, statusColorMap, statusMap, statuOptions } from './mock-data'
 
 class Issue extends PureComponent {
     state = {
         loading: false,
+        issues: [],
         id: null,
+        addFlag: false,
         drawerVisible: false,
-        iterations,
+        issueName: '',
         columns: [
             {
                 title: '事项名称',
-                dataIndex: 'name',
-                key: 'name',
                 width: 120,
+                key: 'name',
+                render: iteration => <div style={{ cursor: 'pointer' }} onClick={() => this.showDrawer(iteration)}>{iteration.name}</div>
             },
             {
                 title: '状态',
@@ -61,9 +65,44 @@ class Issue extends PureComponent {
 
     closeDrawer = () => this.setState({ drawerVisible: false })
 
-    renderAdd = () => {
-        return <div className={s.addIss} onClick={this.addNewIssue}>添加事项</div>
+    showCreateModal = () => this.setState({ addFlag: true })
+
+    closeAddModal = () => this.setState({ addFlag: false, iterName: '' })
+
+    handleConfirm = () => {
+        // 修改数据
+        const data = {}
+        //   const result = await updateIdIss(product, data)
+        if ("result" && "result.id") {
+            message.success('创建成功')
+            this.fetchData()
+            this.setState({ modalType: '', issueName: '' })
+        }
     }
+
+    delCurIssue = id => {
+        // 删除数据 - drawer
+        // delIdIter(id).then(() => {
+        message.success(`删除${id}成功`)
+        this.fetchData()
+        this.setState({ drawerVisible: false, delFlag: false })
+        // })
+    }
+
+    fetchData = () => {
+        // 获取数据 
+        // const resData = await reqIssues()
+        if ("resData") {
+            //   this.setState({ issues: resData.lists, loading: false })
+            this.setState({ issues, loading: false })
+        }
+    }
+    componentDidMount() {
+        this.setState({ loading: true })
+        this.fetchData()
+    }
+
+    rendertitle = () => (<Button type='primary' onClick={this.showCreateModal} ><Icon type='plus' />添加需求</Button>)
 
     renderMenu = () => {
         return (
@@ -81,27 +120,56 @@ class Issue extends PureComponent {
         )
     }
 
+    renderAddModal = () => {
+        return (
+            <Modal
+                title={null}
+                visible
+                closable={false}
+                footer={null}
+                onCancel={eve => eve.stopPropagation()}>
+                <div className={s.delRoot}>
+                    <div className={s.title}>添加需求</div>
+                    <span className={s.subtitle}>标题<span style={{ color: 'red' }}> *</span></span>
+                    <Input />
+                    <span className={s.subtitle}>需求描述</span>
+                    <div style={{ marginTop: '30px' }}>
+                        <Button onClick={this.handleConfirmDel} className={cn(s.lBtn, s.btn)}>确认</Button>
+                        <Button onClick={this.closeAddModal} className={cn(s.rBtn, s.btn)}>取消</Button>
+                    </div>
+                </div>
+            </Modal>
+        )
+    }
+
     render() {
-        const { iterations, columns } = this.state
+        const { issues, columns, id, drawerVisible, addFlag } = this.state
         return (
             <div>
                 <div className={s.iterRoot}>
-                    <Table
-                        className={s.table}
-                        dataSource={iterations}
-                        columns={columns}
-                        rowKey='id'
-                        title={this.renderAdd}
-                        pagination={{ total: 24, defaultPageSize: 8, showQuickJumper: true }} />
+                    <Card title={this.rendertitle()}>
+                        <Table
+                            className={s.table}
+                            dataSource={issues}
+                            columns={columns}
+                            rowKey='id'
+                            title={this.renderAdd}
+                            pagination={{ total: 24, defaultPageSize: 8, showQuickJumper: true }} />
+                    </Card>
                 </div>
 
                 {
-                    this.state.drawerVisible &&
+                    addFlag && this.renderAddModal()
+                }
+
+                {
+                    drawerVisible &&
                     <DrawContainer
-                        type='Iteration'
-                        id={this.state.id}
-                        visible={this.state.drawerVisible}
-                        closeDrawer={this.closeDrawer} />
+                        type='Issue'
+                        id={id}
+                        visible={drawerVisible}
+                        closeDrawer={this.closeDrawer}
+                        delOperation={this.delCurIssue} />
                 }
             </div>
         )

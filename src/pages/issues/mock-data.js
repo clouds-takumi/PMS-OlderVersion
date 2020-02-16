@@ -1,4 +1,4 @@
-export const iterations = [...Array(24).keys()].map(i => ({
+export const issues = [...Array(24).keys()].map(i => ({
     id: i,
     name: `iteration-${i}`,
     created: `Jason`,
