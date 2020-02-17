@@ -17,7 +17,9 @@ export default {
         { path: '/iteration', component: '../pages/iteration' },
         { path: '/issues', component: '../pages/issues' },
         { path: '/system/user', component: '../pages/system/user' },
-        { path: '/system/tag', component: '../pages/system/tag' }
+        { path: '/system/tag', component: '../pages/system/tag' },
+        { path: '/404', component: '../pages/404' },
+        { path: '/offline', component: '../pages/offline' }
       ]
     }
   ],

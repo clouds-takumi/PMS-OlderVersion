@@ -2,36 +2,52 @@ import axios from 'axios'
 import { message } from 'antd'
 import router from 'umi/router'
 
-axios.interceptors.request.use(
-  config => {
+axios.defaults.baseURL = 'http://localhost:7001'
 
-    return config
-  },
+axios.interceptors.request.use(
+  config => { return config },
   error => { return Promise.reject(error) }
 )
 
 axios.interceptors.response.use(
   response => {
     const { status, data } = response
-
     if (status === 200 && data.code !== 0) {
       if (data.code === 1) {
         router.replace('/login')
       }
       message.error(data.msg)
     }
-
     return data.data
   },
-  error => { return Promise.reject(error) }
+  error => {
+    if (error.response) {
+      let { response } = error
+      switch (response.status) {
+        case 401:
+          router.replace('/login')
+          break
+        case 403:
+          localStorage.removeItem('token')
+          router.replace('/login')
+          break
+        case 404:
+          router.replace('/404')
+          break
+        default:
+      }
+      return Promise.reject(error.response)
+    } else {
+      if (!window.navigator.onLine) {
+        router.replace('/offline')
+        return
+      }
+      return Promise.reject(error)
+    }
+  }
 )
 
-export const baseUrl = 'http://localhost:7001'
-
 export default (config, auth) => {
-  const { url } = config
-  config.url = `${baseUrl}${url}`
-
   if (auth) {
     const token = localStorage.getItem('token')
     const authHeader = {
