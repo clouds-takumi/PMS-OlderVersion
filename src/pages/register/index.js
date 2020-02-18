@@ -1,11 +1,11 @@
 import { useState } from 'react'
-import { Input, Button, message } from 'antd'
+import { Input, Button, message, Icon } from 'antd'
 import s from './index.less'
 import Link from 'umi/link'
 import { register } from './service'
 import router from 'umi/router'
 
-export default function(props) {
+export default function (props) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [rpassword, setRpassword] = useState('')
@@ -19,7 +19,7 @@ export default function(props) {
       message.error('两次密码输入不一致!')
       return
     }
-    register({username, password}).then(data => {
+    register({ username, password }).then(data => {
       if (data) {
         message.success('注册成功')
         router.replace('/login')
@@ -31,18 +31,21 @@ export default function(props) {
     <div className={s.login}>
       <div className={s.loginLine}>
         <Input
+          prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
           placeholder='用户名'
           value={username}
           onChange={handleUsernameChange} />
       </div>
       <div className={s.loginLine}>
         <Input
+          prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
           placeholder='密码'
           value={password}
           onChange={handlePasswordChange} />
       </div>
       <div className={s.loginLine}>
         <Input.Password
+          prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
           placeholder='确认密码'
           value={rpassword}
           onChange={handleRpasswordChange} />

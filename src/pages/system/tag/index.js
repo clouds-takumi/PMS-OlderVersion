@@ -112,7 +112,7 @@ class Tags extends PureComponent {
         const { tags, loading, visible, tagName, tagColor, tagId, columns } = this.state
         return (
             <div className={s.tagRoot}>
-                <Button type='primary' onClick={this.tagCreate} style={{ marginBottom: 20 }}>新建</Button>
+                <Button type='primary' onClick={this.tagCreate} style={{ marginBottom: 20 }}>添加标签</Button>
 
                 <div className={s.tagContainer}>
                     <Table

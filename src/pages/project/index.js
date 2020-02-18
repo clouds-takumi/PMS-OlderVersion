@@ -309,11 +309,22 @@ class Project extends Component {
             )
           }
           <div className={s.modalBtn}>
-            <Button type='primary' onClick={this.handleConfirm} className={cn(s.btn, s.leftBtn)}>确认</Button>
-            <Button type='primary' onClick={this.closeModal} className={cn(s.btn, s.rightBtn)}>取消</Button>
+            <Button type='primary' onClick={this.handleConfirm} className={cn(s.btn, s.addBtn)}>确认</Button>
+            <Button onClick={this.closeModal}>取消</Button>
           </div>
         </div>
       </Modal>
+    )
+  }
+
+  renderAddBtn() {
+    return (
+      <div className={s.btnRoot}>
+        <Button className={s.addBtn} onClick={this.showCreateModal}>
+          <Icon type='plus' />添加项目
+      </Button>
+      </div>
+
     )
   }
 
@@ -322,14 +333,11 @@ class Project extends Component {
 
     return (
       <div className={s.project}>
-
+        {
+          this.renderAddBtn()
+        }
         <Card
           title={this.renderSearchForm()}
-          actions={[
-            <Button type='primary' className={s.addBtn} onClick={this.showCreateModal}>
-              <Icon type='plus' />添加项目
-            </Button>
-          ]}
         >
           <Table
             className={s.table}

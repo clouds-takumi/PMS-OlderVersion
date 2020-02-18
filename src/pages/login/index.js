@@ -1,4 +1,4 @@
-import { Input, Button } from 'antd'
+import { Form, Input, Button, Icon } from 'antd'
 import s from './index.less'
 import { useState } from 'react'
 import { login } from './service'
@@ -24,12 +24,15 @@ const Login = (props) => {
     <div className={s.login}>
       <div className={s.loginLine}>
         <Input
+          prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
           placeholder='用户名'
           value={username}
           onChange={handleUsernameChange} />
       </div>
       <div className={s.loginLine}>
-        <Input
+        <Input.Password
+          prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
+          type='password'
           placeholder='密码'
           value={password}
           onChange={handlePasswordChange} />

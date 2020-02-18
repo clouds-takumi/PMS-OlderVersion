@@ -109,14 +109,20 @@ class CommonLayout extends Component {
               </div> */}
               {
                 userInfo && (
-                  <Dropdown overlay={
-                    <Menu>
-                      <Menu.Item onClick={this.handleLogout}>退出登录</Menu.Item>
-                    </Menu>
-                  }>
+                  <Dropdown
+                    trigger={['click', 'hover']}
+                    overlay={
+                      <Menu>
+                        <Menu.Item onClick={this.handleLogout}>
+                        <Icon type='logout' />
+                          退出登录
+                          </Menu.Item>
+                      </Menu>
+                    }>
                     <div className={s.headerAvatar}>
-                      <Avatar>{userInfo.username[0]}</Avatar>
-                      <span className={s.headerAvatarName}>{userInfo.username}</span>
+                      <Avatar>{userInfo.username}</Avatar>
+                      {/* <span className={s.headerAvatarName}>{userInfo.username}</span> */}
+                      <Icon type='down' className={s.headerArrow} />
                     </div>
                   </Dropdown>
                 )
