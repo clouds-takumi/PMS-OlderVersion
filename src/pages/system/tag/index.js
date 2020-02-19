@@ -1,7 +1,7 @@
 import { PureComponent } from 'react'
 import s from './index.less'
 import InputColor from 'react-input-color'
-import { Table, Divider, Tag, Button, message, Modal, Input, Popconfirm } from 'antd'
+import { Table, Divider, Tag, Button, message, Modal, Input, Popconfirm, Icon } from 'antd'
 import { reqTags, addTag, delIdTag, updataIdTag } from './service'
 
 const initialTagColor = '#5e72e4'
@@ -112,7 +112,10 @@ class Tags extends PureComponent {
         const { tags, loading, visible, tagName, tagColor, tagId, columns } = this.state
         return (
             <div className={s.tagRoot}>
-                <Button type='primary' onClick={this.tagCreate} style={{ marginBottom: 20 }}>添加标签</Button>
+                <div className={s.titleroot}>
+                    <Button className={s.addBtn} onClick={this.tagCreate}><Icon type='plus' />添加标签</Button>
+                </div>
+
 
                 <div className={s.tagContainer}>
                     <Table

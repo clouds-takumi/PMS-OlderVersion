@@ -10,6 +10,8 @@ export default {
         { path: '/', component: '../pages/home' },
         { path: '/login', component: '../pages/login' },
         { path: '/register', component: '../pages/register' },
+        { path: '/user', component: '../pages/user' },
+        { path: '/user/projects', component: '../pages/user/projects' },
         { path: '/project', component: '../pages/project' },
         { path: '/backlog', component: '../pages/backlog' },
         { path: '/backlog/issues/:id', component: '../pages/backlog' },

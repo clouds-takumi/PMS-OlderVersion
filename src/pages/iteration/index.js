@@ -19,35 +19,30 @@ class Iteration extends PureComponent {
             {
                 title: '迭代名称',
                 key: 'name',
-                width: 120,
                 render: iteration => <span style={{ cursor: 'pointer' }} onClick={() => this.showDrawer(iteration)}>{iteration.name}</span>
             },
             {
                 title: '迭代阶段',
                 dataIndex: 'status',
                 key: 'status',
-                width: 120,
                 render: status => <Tag color={statusColorMap[status]}>{statusMap[status]}</Tag>
             },
             {
                 title: '开始时间',
                 dataIndex: 'start_time',
                 key: 'deadline',
-                width: 120,
                 render: dataIndex => <div>---</div>
             },
             {
                 title: '结束时间',
                 dataIndex: 'end_time',
                 key: 'deadline',
-                width: 120,
                 render: dataIndex => <div>---</div>
             },
             {
                 title: '负责人',
                 dataIndex: 'created',
                 key: 'created',
-                width: 100,
                 render: dataIndex => <div>id_name</div>
             },
             {
@@ -156,7 +151,12 @@ class Iteration extends PureComponent {
         )
     }
 
-    rendertitle = () => (<Button type='primary' onClick={this.showCreateModal} ><Icon type='plus' />添加迭代</Button>)
+    rendertitle = () => (
+        <div className={s.titleroot}>
+            <Button className={s.addBtn} onClick={this.showCreateModal} >
+                <Icon type='plus' />添加迭代
+            </Button>
+        </div>)
 
     renderModal = () => {
         const { modalType, iterName } = this.state
@@ -206,17 +206,18 @@ class Iteration extends PureComponent {
     render() {
         const { iterations, columns, loading, id, delFlag, drawerVisible, modalType } = this.state
         return (
-            <div>
+            <>
+                {
+                    this.rendertitle()
+                }
                 <div className={s.iterRoot}>
-                    <Card title={this.rendertitle()}>
-                        <Table
-                            className={s.table}
-                            loading={loading}
-                            dataSource={iterations}
-                            columns={columns}
-                            rowKey='id'
-                            pagination={{ total: 24, defaultPageSize: 8, showQuickJumper: true }} />
-                    </Card>
+                    <Table
+                        className={s.table}
+                        loading={loading}
+                        dataSource={iterations}
+                        columns={columns}
+                        rowKey='id'
+                        pagination={{ total: 24, defaultPageSize: 8, showQuickJumper: true }} />
                 </div>
 
                 {
@@ -236,7 +237,7 @@ class Iteration extends PureComponent {
                         closeDrawer={this.closeDrawer}
                         delOperation={this.delCurIter} />
                 }
-            </div>
+            </>
         )
     }
 }

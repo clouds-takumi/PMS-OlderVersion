@@ -1,7 +1,7 @@
 export default [
     {
         id: 1,
-        name: '首页',
+        name: '概览',
         icon: 'home',
         path: '/'
     },

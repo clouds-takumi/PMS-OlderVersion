@@ -6,7 +6,6 @@ import DrawContainer from '../../components/drawer_container'
 import { Avatar, Icon, message } from 'antd'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import { FixedSizeList } from 'react-window'
-// import _lodash from 'lodash'
 
 const getRandomColor = () => `#${Math.floor(Math.random() * 16777215).toString(16)}`
 const issues = {

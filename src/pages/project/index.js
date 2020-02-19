@@ -336,17 +336,17 @@ class Project extends Component {
         {
           this.renderAddBtn()
         }
-        <Card
+        {/* <Card
           title={this.renderSearchForm()}
-        >
-          <Table
-            className={s.table}
-            loading={loading}
-            dataSource={projects}
-            columns={columns}
-            rowKey='id'
-            pagination />
-        </Card>
+        > */}
+        <Table
+          className={s.table}
+          loading={loading}
+          dataSource={projects}
+          columns={columns}
+          rowKey='id'
+          pagination />
+        {/* </Card> */}
 
         {
           drawerVisible && (

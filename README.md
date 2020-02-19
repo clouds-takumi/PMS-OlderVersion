@@ -42,7 +42,7 @@ git clone xxx
 ```
 #### 初始化依赖配置
 ```
-yarn install
+yarn install / yarn
 ```
 #### 开发环境 内存中打包 开启虚拟服务器
 ```

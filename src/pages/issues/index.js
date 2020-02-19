@@ -102,7 +102,11 @@ class Issue extends PureComponent {
         this.fetchData()
     }
 
-    rendertitle = () => (<Button type='primary' onClick={this.showCreateModal} ><Icon type='plus' />添加需求</Button>)
+    rendertitle = () => (
+        <div className={s.titleroot}>
+            <Button className={s.addBtn} onClick={this.showCreateModal} ><Icon type='plus' />添加需求</Button>
+        </div>
+    )
 
     renderMenu = () => {
         return (
@@ -145,17 +149,18 @@ class Issue extends PureComponent {
     render() {
         const { issues, columns, id, drawerVisible, addFlag } = this.state
         return (
-            <div>
+            <>
+                {
+                    this.rendertitle()
+                }
                 <div className={s.iterRoot}>
-                    <Card title={this.rendertitle()}>
-                        <Table
-                            className={s.table}
-                            dataSource={issues}
-                            columns={columns}
-                            rowKey='id'
-                            title={this.renderAdd}
-                            pagination={{ total: 24, defaultPageSize: 8, showQuickJumper: true }} />
-                    </Card>
+                    <Table
+                        className={s.table}
+                        dataSource={issues}
+                        columns={columns}
+                        rowKey='id'
+                        title={this.renderAdd}
+                        pagination={{ total: 24, defaultPageSize: 8, showQuickJumper: true }} />
                 </div>
 
                 {
@@ -171,7 +176,7 @@ class Issue extends PureComponent {
                         closeDrawer={this.closeDrawer}
                         delOperation={this.delCurIssue} />
                 }
-            </div>
+            </>
         )
     }
 }
