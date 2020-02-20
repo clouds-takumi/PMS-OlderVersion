@@ -13,8 +13,8 @@ class Dashboard extends Component {
       { month: 'Jul.', count: 137 },
     ]
     const scale = {
-      month: {alias: 'Month',},
-      count: {alias: 'Sales',},
+      month: { alias: 'Month', },
+      count: { alias: 'Sales', },
     }
 
     return (

@@ -6,7 +6,7 @@ import store from '../redux/store'
 
 export default function ({ location: { pathname }, children }) {
 
-  if (pathname === '/login' || pathname === '/register') {
+  if (pathname === '/login' || pathname === '/register' || pathname === '/') {
     return <LoginLayout>{children}</LoginLayout>
   }
 

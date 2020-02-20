@@ -15,7 +15,7 @@ const Login = (props) => {
     login({ username, password }).then(data => {
       if (data) {
         localStorage.setItem('token', data.token)
-        router.replace('/')
+        router.replace('/user')
       }
     })
   }

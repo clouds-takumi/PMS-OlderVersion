@@ -1,5 +1,6 @@
 import { Component } from 'react'
 import s from './index.less'
+import Project from '../../project'
 
 class Projects extends Component {
     constructor(props) {
@@ -8,7 +9,9 @@ class Projects extends Component {
     }
     render() {
         return (
-            <div className={s.projectsRoot}>project</div>
+            <div className={s.projectsRoot}>
+                <Project />
+            </div>
         );
     }
 }
