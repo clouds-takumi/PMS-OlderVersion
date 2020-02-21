@@ -5,12 +5,12 @@ export default [
         icon: 'home',
         path: '/p/p1'
     },
-    // {
-    //     id: 2,
-    //     name: '项目',
-    //     icon: 'project',
-    //     path: '/project'
-    // },
+    {
+        id: 2,
+        name: '项目',
+        icon: 'project',
+        path: '/p/p1/project'
+    },
     {
         id: 3,
         name: '迭代',

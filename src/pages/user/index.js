@@ -20,14 +20,15 @@ class User extends Component {
 
   fetchData = async () => {
     const resData = await reqProjects()
-    console.log(resData)
-
-    if ("resData") {
-      this.setState({
-        projects: [
+    /**
+     * [
           { id: 1, name: '示例项目一', desc: '这是描述，示例项目的描述', path: '/p/p1', update_date: '2020/02/02' },
           { id: 2, name: '示例项目二', desc: '', path: '/p/p1', update_date: '2020/02/02' }
         ]
+     */
+    if (resData.lists) {
+      this.setState({
+        projects: resData.lists
       })
     }
   }
@@ -41,27 +42,37 @@ class User extends Component {
     const { projects } = this.state
     return (
       <>
-        {
+        {/* {
           projects.length === 0 && (
             <div className={s.allpro}>
               <div className={s.proinfo}>
-                <div className={s.proname}>示例项目</div>
+                <div className={s.proname}>新建项目</div>
                 <div className={s.prodesc}>未填写描述</div>
               </div>
             </div>
 
           )
-        }
+        } */}
         {
-          projects.map(item => (
-            <Link key={item.id} to={item.path} className={s.eachpro}>
-              <div className={s.proimg}></div>
-              <div className={s.proinfo}>
-                <div className={s.proname}>{item.name}</div>
-                <div className={s.prodesc}>{item.desc ? item.desc : '未填写描述'}</div>
-              </div>
-            </Link>
-          ))
+          projects.map((item, index) => {
+            if (index < 5) {
+              return (
+                <Link key={item.id} to={item.path} className={s.eachpro}>
+                  <div className={s.proimg}></div>
+                  <div className={s.proinfo}>
+                    <div className={s.proname}>{item.name}</div>
+                    <div className={s.prodesc}>{item.desc ? item.desc : '未填写描述'}</div>
+                  </div>
+                </Link>
+              )
+            } else if (index === 6) {
+              return (
+                <div className={s.morePro}>......</div>
+              )
+            } else {
+              return null
+            }
+          })
         }
         <Link to='/user/projects' className={s.allpro}>全部项目<Icon type='right' /></Link>
       </>
