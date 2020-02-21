@@ -154,8 +154,13 @@
   .workItem {
     cursor: pointer;
     margin-right: 40px;
-    border-bottom: 2px solid #355f9e;
     line-height: 46px;
+    border-bottom: 2px solid transparent;
+    transition:linear 0.2s;
+  }
+
+  .workItem:hover {
+    border-color: #355f9e;
   }
 
   .workHeader {
@@ -172,6 +177,10 @@
   .workMain {
     overflow: auto;
     padding: 0 16px 0 20px;
+  }
+
+  .mainDetail {
+    margin: 20px 0 0 10px;
   }
 }
 

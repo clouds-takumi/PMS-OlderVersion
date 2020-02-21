@@ -2,12 +2,16 @@ import { Component } from 'react'
 import s from './index.less'
 import router from 'umi/router'
 import Link from 'umi/link'
-import { Icon, Empty, Timeline } from 'antd'
+import { Icon, Empty, Select } from 'antd'
+import { reqProjects } from './service'
+
+const { Option } = Select
 
 class User extends Component {
   state = {
     projects: [],
-    type: '1'
+    type: '1',
+    switchType: '1'
   }
 
   changeRoute = () => {
@@ -15,7 +19,9 @@ class User extends Component {
   }
 
   fetchData = async () => {
-    // const resData = await reqAllProjects()
+    const resData = await reqProjects()
+    console.log(resData)
+
     if ("resData") {
       this.setState({
         projects: [
@@ -26,12 +32,26 @@ class User extends Component {
     }
   }
 
-  componentDidMount() { this.fetchData() }
+  componentDidMount() {
+    document.getElementsByTagName("title")[0].innerText = '工作台';
+    this.fetchData()
+  }
 
   renderProContainer = () => {
     const { projects } = this.state
     return (
       <>
+        {
+          projects.length === 0 && (
+            <div className={s.allpro}>
+              <div className={s.proinfo}>
+                <div className={s.proname}>示例项目</div>
+                <div className={s.prodesc}>未填写描述</div>
+              </div>
+            </div>
+
+          )
+        }
         {
           projects.map(item => (
             <Link key={item.id} to={item.path} className={s.eachpro}>
@@ -48,14 +68,35 @@ class User extends Component {
     )
   }
 
+  renderAllContent = switchType => {
+    return (
+      <div className={s.mainDetail}>
+        {
+          switchType === '1' && (
+            <>
+              全部动态
+            </>
+          )
+        }
+        {
+          switchType === '2' && (
+            <>
+              与我相关
+            </>
+          )
+        }
+      </div>
+    )
+  }
+
   render() {
-    const { type } = this.state
+    const { type, switchType, projects } = this.state
 
     return (
       <div className={s.userRoot}>
 
         <div className={s.projects}>
-          <div className={s.titleContainer}><h3>我的项目</h3></div>
+          <div className={s.titleContainer}><h3 className={s.workname}>我的项目</h3></div>
           <div className={s.projectsList}>
             {
               this.renderProContainer()
@@ -75,7 +116,23 @@ class User extends Component {
                 style={type === '2' ? { backgroundColor: '#fff' } : null}>待处理事项</div>
             </div>
             <div className={s.divider}></div>
-            <div className={s.select}>示例项目</div>
+            <div className={s.select}>
+              {
+                projects.length > 0
+                  ? (
+                    <Select defaultValue={projects[0].name} style={{ width: 120 }} onChange={() => { }}>
+                      {
+                        projects.map(item => (
+                          <Option value={item.name} key={item.id}>{item.name}</Option>
+                        ))
+                      }
+                    </Select>
+                  )
+                  : (
+                    <Select defaultValue='全部项目' style={{ width: 120 }} onChange={() => { }}></Select>
+                  )
+              }
+            </div>
             <span className={s.extendBtn}></span>
           </div>
 
@@ -84,48 +141,19 @@ class User extends Component {
               type === '1' && (
                 <>
                   <div className={s.workHeader}>
-                    <div className={s.workItem}>全部动态</div>
-                    <div className={s.workItem}>与我相关</div>
+                    <div className={s.workItem}
+                      onClick={() => this.setState({ switchType: '1' })}
+                      style={switchType === '1' ? { borderBottom: "2px solid #355f9e" } : null}>全部动态</div>
+                    <div className={s.workItem}
+                      onClick={() => this.setState({ switchType: '2' })}
+                      style={switchType === '2' ? { borderBottom: "2px solid #355f9e" } : null}>与我相关</div>
                   </div>
                   <div className={s.workMain}>
-                    <Timeline mode="alternate" className={s.timeline}>
-                      <Timeline.Item>Create a services site 2015-09-01</Timeline.Item>
-                      <Timeline.Item color="green">Solve initial network problems 2015-09-01</Timeline.Item>
-                      <Timeline.Item dot={<Icon type="clock-circle-o" style={{ fontSize: '16px' }} />}>
-                        Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque
-                        laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto
-                        beatae vitae dicta sunt explicabo.
-    </Timeline.Item>
-                      <Timeline.Item color="red">Network problems being solved 2015-09-01</Timeline.Item>
-                      <Timeline.Item>Create a services site 2015-09-01</Timeline.Item>
-                      <Timeline.Item dot={<Icon type="clock-circle-o" style={{ fontSize: '16px' }} />}>
-                        Technical testing 2015-09-01
-    </Timeline.Item>
-                      <Timeline.Item>Create a services site 2015-09-01</Timeline.Item>
-                      <Timeline.Item color="green">Solve initial network problems 2015-09-01</Timeline.Item>
-                      <Timeline.Item dot={<Icon type="clock-circle-o" style={{ fontSize: '16px' }} />}>
-                        Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque
-                        laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto
-                        beatae vitae dicta sunt explicabo.
-    </Timeline.Item>
-                      <Timeline.Item color="red">Network problems being solved 2015-09-01</Timeline.Item>
-                      <Timeline.Item>Create a services site 2015-09-01</Timeline.Item>
-                      <Timeline.Item dot={<Icon type="clock-circle-o" style={{ fontSize: '16px' }} />}>
-                        Technical testing 2015-09-01
-    </Timeline.Item>
-                      <Timeline.Item>Create a services site 2015-09-01</Timeline.Item>
-                      <Timeline.Item color="green">Solve initial network problems 2015-09-01</Timeline.Item>
-                      <Timeline.Item dot={<Icon type="clock-circle-o" style={{ fontSize: '16px' }} />}>
-                        Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque
-                        laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto
-                        beatae vitae dicta sunt explicabo.
-    </Timeline.Item>
-                      <Timeline.Item color="red">Network problems being solved 2015-09-01</Timeline.Item>
-                      <Timeline.Item>Create a services site 2015-09-01</Timeline.Item>
-                      <Timeline.Item dot={<Icon type="clock-circle-o" style={{ fontSize: '16px' }} />}>
-                        Technical testing 2015-09-01
-    </Timeline.Item>
-                    </Timeline>
+                    {
+                      switchType !== '' && (
+                        this.renderAllContent(switchType)
+                      )
+                    }
                   </div>
                 </>
               )
@@ -134,7 +162,8 @@ class User extends Component {
               type === '2' && (
                 <>
                   <div className={s.workHeader}>
-                    <div className={s.workItem}>全部事项</div>
+                    <div className={s.workItem}
+                      style={{ borderBottom: "2px solid #355f9e" }}>全部事项</div>
                   </div>
                   <div className={s.workMain}>
                     <Empty description={'暂时没有待处理事项'} />
