@@ -1,6 +1,6 @@
 import { Component } from 'react'
 import s from './index.less'
-import { Icon, Divider, Drawer } from 'antd'
+import { Icon, Divider, Drawer, Input } from 'antd'
 import { reqProjects } from '../service'
 
 class Projects extends Component {
@@ -39,18 +39,34 @@ class Projects extends Component {
                 onClose={this.onClose}
                 keyboard
                 height='100%'
-                // maskStyle={s.drawer}
                 visible>
                 <div className={s.drawer}>
-                    <p>Some contents...</p>
-                    <p>Some contents...</p>
-                    <p>Some contents...</p>
-                    <p>Some contents...</p>
-                    <p>Some contents...</p>
-                    <p>Some contents...</p>
-                    <p>Some contents...</p>
-                    <p>Some contents...</p>
-                    <p>Some contents...</p>
+                    <div className={s.leftContent}></div>
+
+                    <div className={s.rightContent}>
+                        <div>
+                            <span>填写项目基本信息</span>
+                        </div>
+
+                        <div>
+                            <span>项目名称</span>
+                            <Input />
+                            <span>可以使用中英文、数字、空格组合</span>
+                        </div>
+
+                        <div>
+                            <span>项目标识</span>
+                            <Input />
+                            <span>项目地址为：https://awmm.coding.net/p/项目标识</span>
+                        </div>
+
+                        <div>
+                            <span>项目描述</span>
+                            <textarea>
+                                描述内容限制在100字以内（选填）
+                        </textarea>
+                        </div>
+                    </div>
                 </div>
             </Drawer>
         )
