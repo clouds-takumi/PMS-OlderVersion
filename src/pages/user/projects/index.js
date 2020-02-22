@@ -1,5 +1,6 @@
 import { Component } from 'react'
 import s from './index.less'
+import cn from 'classnames'
 import { Icon, Divider, Drawer, Input } from 'antd'
 import { reqProjects } from '../service'
 
@@ -17,6 +18,8 @@ class Projects extends Component {
 
     onClose = () => this.setState({ modalFlag: false })
 
+    goback = () => { }
+
     fetchData = async () => {
         const resData = await reqProjects()
         if (resData.lists) {
@@ -31,43 +34,41 @@ class Projects extends Component {
             <Drawer
                 title=""
                 placement="bottom"
-                closable
-                onClose={this.onClose}
-                keyboard
                 height='100%'
                 visible
+                closable={false}
                 className={s.drawer}>
                 <div className={s.drawerInner}>
+                    <div className={s.leftContainer}>
+                        <div onClick={this.goback} className={s.closeBtn}>
+                            <Icon type='arrow-left' />
+                        </div>
+                    </div>
                     <div className={s.rightContent}>
-
                         <div className={s.info}>
-                            <div>
+                            <div className={s.title}>
                                 <span>填写项目基本信息</span>
                             </div>
-
-                            <div>
-                                <span>项目名称</span>
+                            <div className={s.item}>
+                                <div className={s.subtitle}>项目名称</div>
                                 <Input />
-                                <span>可以使用中英文、数字、空格组合</span>
+                                <span className={s.tips}>可以使用中英文、数字、空格组合</span>
                             </div>
-
-                            <div>
-                                <span>项目标识</span>
+                            <div className={s.item}>
+                                <div className={s.subtitle}>项目标识</div>
                                 <Input />
-                                <span>项目地址为：https://awmm.coding.net/p/项目标识</span>
+                                <span className={s.tips}>项目地址为：https://p/项目标识</span>
                             </div>
-
-                            <div>
-                                <span>项目描述</span>
-                                <span>描述内容限制在100字以内（选填）</span>
+                            <div className={s.item}>
+                                <div className={s.subtitle}>项目描述</div>
+                                <span className={s.tips}>描述内容限制在100字以内（选填）</span>
                             </div>
-
-                            <button>完成创建</button>
-                            <button>取消</button>
+                            <button className={cn(s.btn, s.leftBtn)}>完成创建</button>
+                            <button className={s.btn}>取消</button>
                         </div>
 
                         <div>
-                            img
+
                         </div>
                     </div>
                 </div>
