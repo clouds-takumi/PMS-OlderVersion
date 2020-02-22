@@ -91,16 +91,22 @@
 }
 
 .drawer {
-  display: flex;
+  position: absolute;
   min-width: 1000px;
+  z-index: 223;
+  background-color: #fff;
+  opacity: 0.97;
 }
 
-.leftContent {
-  width: 30%;
-}
-.rightContent {
-  padding-left: 64px;
-  padding-top: 120px;
-  height: 100%;
-  // width: 552px;
+.drawerInner {
+  margin: 0 auto;
+  width: 100%;
+
+  .rightContent {
+    width: 100%;
+    padding-top: 120px;
+    display: flex;
+    justify-content: center;
+  }
+
 }

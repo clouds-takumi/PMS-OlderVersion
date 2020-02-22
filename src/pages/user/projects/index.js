@@ -15,10 +15,6 @@ class Projects extends Component {
 
     }
 
-    handleAdd = () => {
-        alert('add')
-    }
-
     onClose = () => this.setState({ modalFlag: false })
 
     fetchData = async () => {
@@ -34,37 +30,44 @@ class Projects extends Component {
         return (
             <Drawer
                 title=""
-                placement="top"
+                placement="bottom"
                 closable
                 onClose={this.onClose}
                 keyboard
                 height='100%'
-                visible>
-                <div className={s.drawer}>
-                    <div className={s.leftContent}></div>
-
+                visible
+                className={s.drawer}>
+                <div className={s.drawerInner}>
                     <div className={s.rightContent}>
-                        <div>
-                            <span>填写项目基本信息</span>
+
+                        <div className={s.info}>
+                            <div>
+                                <span>填写项目基本信息</span>
+                            </div>
+
+                            <div>
+                                <span>项目名称</span>
+                                <Input />
+                                <span>可以使用中英文、数字、空格组合</span>
+                            </div>
+
+                            <div>
+                                <span>项目标识</span>
+                                <Input />
+                                <span>项目地址为：https://awmm.coding.net/p/项目标识</span>
+                            </div>
+
+                            <div>
+                                <span>项目描述</span>
+                                <span>描述内容限制在100字以内（选填）</span>
+                            </div>
+
+                            <button>完成创建</button>
+                            <button>取消</button>
                         </div>
 
                         <div>
-                            <span>项目名称</span>
-                            <Input />
-                            <span>可以使用中英文、数字、空格组合</span>
-                        </div>
-
-                        <div>
-                            <span>项目标识</span>
-                            <Input />
-                            <span>项目地址为：https://awmm.coding.net/p/项目标识</span>
-                        </div>
-
-                        <div>
-                            <span>项目描述</span>
-                            <textarea>
-                                描述内容限制在100字以内（选填）
-                        </textarea>
+                            img
                         </div>
                     </div>
                 </div>
@@ -79,7 +82,7 @@ class Projects extends Component {
                 <div className={s.leftNav}>
                     <div className={s.header}>
                         <div className={s.title}>项目</div>
-                        <Icon type='plus' style={{ cursor: 'pointer' }} onClick={this.handleAdd} />
+                        <Icon type='plus' style={{ cursor: 'pointer' }} onClick={() => this.setState({ modalFlag: true })} />
                     </div>
                     <div className={s.prolists}>
                         <div className={s.proItem} style={{ backgroundColor: '#dadfe6' }}>

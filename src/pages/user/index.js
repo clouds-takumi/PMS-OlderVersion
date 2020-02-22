@@ -122,11 +122,11 @@ class User extends Component {
               <div className={s.sitem}
                 onClick={() => { this.setState({ type: '1' }) }}
                 style={type === '1' ? { backgroundColor: '#fff' } : null}>
-                  <Icon type="fund" style={{ marginRight: '4px' }} style={type === '1' ? {marginRight: '4px', color: 'blue' } : {marginRight: '4px'}}/>项目动态</div>
+                <Icon type="fund" style={type === '1' ? { marginRight: '4px', color: 'blue' } : { marginRight: '4px' }} />项目动态</div>
               <div className={s.sitem}
                 onClick={() => { this.setState({ type: '2' }) }}
                 style={type === '2' ? { backgroundColor: '#fff' } : null}>
-                  <Icon type="notification" style={{  }} style={type === '2' ? { marginRight: '4px',color: 'blue' } : {marginRight: '4px'}}/>待处理事项</div>
+                <Icon type="notification" style={type === '2' ? { marginRight: '4px', color: 'blue' } : { marginRight: '4px' }} />待处理事项</div>
             </div>
             <div className={s.divider}></div>
             <div className={s.select}>
