@@ -41,17 +41,20 @@
 
 .drawerInner {
   display: flex;
+  min-width: 1000px;
 }
 
 .leftContainer {
   width: 30%;
-  padding-top: 120px;
+  padding-top: 80px;
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: #f7f8fa;
 }
 
 .rightContent {
+  background-color: #333d9e;
   flex: 1 1;
   background: #fff;
   padding: 30px 30px 50px;
@@ -108,17 +111,18 @@
   z-index: 223;
   background-color: #fff;
   opacity: 0.98;
+  height: 100vh;
+  width: 100%;
 }
 
 .drawerInner {
   margin: 0 auto;
   width: 100%;
+  height: 100vh;
 
   .rightContent {
     width: 100%;
     padding-top: 120px;
-    // display: flex;
-    // justify-content: center;
   }
 }
 
@@ -157,20 +161,81 @@
   margin-right: 12px;
 }
 
+.btn:hover {
+  box-shadow: 0 0 1px 1px #e6e4e4;
+}
+
 .leftBtn {
   color: #fff;
   background-color: #202d40;
 }
 
+.leftBtn:hover {
+  opacity: 0.9;
+}
+
 .closeBtn {
-  width: 43px;
-  height: 43px;
-  background-color: #c5c7ca;
-  font-size: 20px;
+  width: 36px;
+  height: 36px;
+  background-color: #fff;
+  font-size: 16px;
   display: flex;
   justify-content: center;
   align-items: center;
   border-radius: 50%;
-  color: #fff;
+  color: rgb(77, 89, 131);
   cursor: pointer;
+}
+
+.closeBtn:hover {
+  box-shadow: 0 0 10px 1px #c5c5c7;
+}
+
+.infoPic {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  height: 158px;
+  padding-left: 32px;
+  border-left: 1px solid #f5f5f5;
+
+  .picTitle {
+    font-size: 14px;
+    color: #202d40;
+    margin-top: 10px;
+    margin-bottom: 8px;
+  }
+
+  .bcImg {
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    width: 96px;
+    height: 96px;
+    border-radius: 3px;
+    margin-bottom: 8px;
+    background: 50% no-repeat;
+    background-size: cover;
+  }
+
+  .changeBtn {
+    width: 96px;
+    padding: 4px 8px;
+    border-radius: 3px;
+    outline: none;
+    border: none;
+    font-size: 11px;
+    cursor: pointer;
+    background: rgb(255, 255, 255);
+    color: #455166;
+    box-shadow: 0 0 0 1px rgba(32, 45, 64, 0.12), 0 0 1px 0 rgba(0, 0, 0, 0.1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .changeBtn:hover {
+    box-shadow: 0 0 2px 1px rgba(32, 45, 64, 0.12), 0 0 1px 0 rgba(0, 0, 0, 0.1);
+  }
+}
+.text {
+  resize: none;
 }

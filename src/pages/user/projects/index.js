@@ -16,9 +16,7 @@ class Projects extends Component {
 
     }
 
-    onClose = () => this.setState({ modalFlag: false })
-
-    goback = () => { }
+    goback = () => this.setState({ modalFlag: false })
 
     fetchData = async () => {
         const resData = await reqProjects()
@@ -33,8 +31,8 @@ class Projects extends Component {
         return (
             <Drawer
                 title=""
-                placement="bottom"
-                height='100%'
+                placement="left"
+                width='100%'
                 visible
                 closable={false}
                 className={s.drawer}>
@@ -49,26 +47,36 @@ class Projects extends Component {
                             <div className={s.title}>
                                 <span>填写项目基本信息</span>
                             </div>
-                            <div className={s.item}>
-                                <div className={s.subtitle}>项目名称</div>
-                                <Input />
-                                <span className={s.tips}>可以使用中英文、数字、空格组合</span>
+                            <div style={{ display: 'flex' }}>
+                                <div style={{ marginRight: '32px' }}>
+                                    <div className={s.item}>
+                                        <div className={s.subtitle}>项目名称</div>
+                                        <Input />
+                                        <span className={s.tips}>可以使用中英文、数字、空格组合</span>
+                                    </div>
+                                    <div className={s.item}>
+                                        <div className={s.subtitle}>项目标签</div>
+                                        <Input />
+                                        <span className={s.tips}>建议选择最多不超过三个</span>
+                                    </div>
+                                    <div className={s.item}>
+                                        <div className={s.subtitle}>项目描述</div>
+                                        <span className={s.tips}>
+                                            <Input.TextArea
+                                                rows={4}
+                                                placeholder='描述内容限制在100字以内（选填）'
+                                                className={s.text} />
+                                        </span>
+                                    </div>
+                                    <button className={cn(s.btn, s.leftBtn)}>完成创建</button>
+                                    <button className={s.btn} onClick={this.goback}>取消</button>
+                                </div>
+                                <div className={s.infoPic}>
+                                    <span className={s.picTitle}>项目封面</span>
+                                    <div className={s.bcImg}></div>
+                                    <button className={s.changeBtn} >更改封面</button>
+                                </div>
                             </div>
-                            <div className={s.item}>
-                                <div className={s.subtitle}>项目标识</div>
-                                <Input />
-                                <span className={s.tips}>项目地址为：https://p/项目标识</span>
-                            </div>
-                            <div className={s.item}>
-                                <div className={s.subtitle}>项目描述</div>
-                                <span className={s.tips}>描述内容限制在100字以内（选填）</span>
-                            </div>
-                            <button className={cn(s.btn, s.leftBtn)}>完成创建</button>
-                            <button className={s.btn}>取消</button>
-                        </div>
-
-                        <div>
-
                         </div>
                     </div>
                 </div>
