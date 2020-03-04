@@ -37,7 +37,7 @@ export default function (props) {
           onChange={handleUsernameChange} />
       </div>
       <div className={s.loginLine}>
-        <Input
+        <Input.Password
           prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
           placeholder='密码'
           value={password}

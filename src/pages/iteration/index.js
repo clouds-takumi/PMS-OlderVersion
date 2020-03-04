@@ -1,59 +1,106 @@
 import { PureComponent } from 'react'
 import s from './index.less'
 import cn from 'classnames'
-import { Table, Divider, Tag, Card, Button, Icon, message, Modal, Input, DatePicker } from 'antd'
+import _ from 'lodash'
+import moment from 'moment'
+import { Table, Divider, Tag, Button, Icon, message, Modal, Input, DatePicker, Select } from 'antd'
 import DrawContainer from '../../components/drawer_container'
-// import { reqIters, reqIdIter, addIter, delIdIter, updateIdIter } from './service'
-import { iterations, statusColorMap, statusMap } from './mock-data'
+import { reqIters, reqUserInfo, reqAllProjects, addIter, delIdIter, updateIdIter } from './service'
+import { EditorState, convertToRaw } from 'draft-js'
+import { Editor } from 'react-draft-wysiwyg'
+import draftToHtml from 'draftjs-to-html'
+// import htmlToDraft from 'html-to-draftjs'
 
 class Iteration extends PureComponent {
     state = {
+        userInfo: {},
+        projects: [],
+        iterName: '', // *
+        assignee: '',
+        startDate: '', // *
+        editorState: EditorState.createEmpty(),
+        projectId: '', // *
         loading: false,
-        iterations: [],
+        iterations: {},
         id: null,
         delFlag: false,
         drawerVisible: false,
-        modalType: '',
-        iterName: '',
+        modalFlag: '',
         columns: [
             {
                 title: '迭代名称',
+                width: 120,
                 key: 'name',
-                render: iteration => <span style={{ cursor: 'pointer' }} onClick={() => this.showDrawer(iteration)}>{iteration.name}</span>
+                render: iteration => <div className={s.iterName} onClick={() => this.showDrawer(iteration)}>{iteration.name}</div>
             },
             {
-                title: '迭代阶段',
-                dataIndex: 'status',
-                key: 'status',
-                render: status => <Tag color={statusColorMap[status]}>{statusMap[status]}</Tag>
+                title: '所属项目',
+                dataIndex: 'projectId',
+                width: 120,
+                key: 'projectId',
+                render: dataIndex => {
+                    if (this.state.projects) {
+                        return this.state.projects.map(pro => {
+                            if (pro.id && pro.id === dataIndex) {
+                                return <div key={pro.id}>{pro.name}</div>
+                            } else {
+                                return null
+                            }
+                        })
+                    } else {
+                        return null
+                    }
+                }
             },
             {
                 title: '开始时间',
-                dataIndex: 'start_time',
+                dataIndex: 'startDate',
                 key: 'deadline',
-                render: dataIndex => <div>---</div>
+                width: 120,
+                render: dataIndex => {
+                    if (dataIndex) {
+                        return <div>{moment(dataIndex).format('YYYY/MM/DD')}</div>
+                    } else {
+                        return <div>未设定</div>
+                    }
+                }
             },
             {
-                title: '结束时间',
-                dataIndex: 'end_time',
-                key: 'deadline',
-                render: dataIndex => <div>---</div>
+                title: '状态',
+                dataIndex: 'endDate',
+                key: 'endDate',
+                width: 120,
+                render: dataIndex => {
+                    if (dataIndex) {
+                        return <div>项目结束于{moment(dataIndex).format('YYYY/MM/DD')}</div>
+                    } else {
+                        return <div>进行中</div>
+                    }
+                }
             },
             {
                 title: '负责人',
-                dataIndex: 'created',
-                key: 'created',
-                render: dataIndex => <div>id_name</div>
+                dataIndex: 'assignee',
+                key: 'assignee',
+                width: 120,
+                render: dataIndex => {
+                    if (dataIndex) {
+                        return <div>{this.state.userInfo.username}</div>
+                    } else {
+                        return <div>未分配</div>
+                    }
+                }
             },
             {
                 title: '操作',
+                width: 120,
                 key: 'operation',
                 render: iteration => {
                     return (
                         <>
                             <span className={s.operate} onClick={() => this.showEditModal(iteration)}>编辑</span>
                             <Divider type='vertical' />
-                            <span className={s.operate} onClick={() => this.showDeleteModal(iteration)}>删除</span>
+                            <span style={{ cursor: 'pointer', color: '#dd3e6e' }} onClick={() => this.showDeleteModal(iteration)}>删除</span>
                         </>
                     )
                 }
@@ -69,63 +116,88 @@ class Iteration extends PureComponent {
 
     closeDeleteModal = () => this.setState({ delFlag: false, iterName: '' })
 
-    showCreateModal = () => this.setState({ modalType: 'create' })
+    showCreateModal = () => this.setState({ modalFlag: true })
 
-    showEditModal = iteration => this.setState({ modalType: 'edit', iterName: iteration.name })
+    showEditModal = iteration => this.setState({ modalFlag: true, iterName: iteration.name, id: iteration.id })
 
-    closeModal = () => this.setState({ modalType: '', iterName: '' })
+    closeModal = () => this.setState({ modalFlag: false, assignee: null, startDate: null, id: null, iterName: null, projectId: null })
 
-    handleConfirm = () => {
-        const { modalType } = this.state
-        if (modalType === 'create') {
-            // 增加数据
-            const iteration = {}
-            //   const result = await addIteration(product)
-            if ("result" && "result.id") {
-                message.success('创建成功')
-                this.fetchData()
-                this.setState({ modalType: '', iterName: '' })
-            }
+    onEditorStateChange = editorState => this.setState({ editorState })
+
+    handleSelectAss = value => this.setState({ assignee: value })
+    handleSelectPro = value => this.setState({ projectId: value })
+    handleSelectDate = (date, dateString) => this.setState({ startDate: dateString })
+
+    handleSure = async () => {
+        const { editorState, assignee, startDate, id, iterName, projectId } = this.state
+        const tempDescStr = draftToHtml(convertToRaw(editorState.getCurrentContent()))
+        if (!iterName) {
+            this.fun1()
+            return
         }
-        if (modalType === 'edit') {
-            // 修改数据
-            const data = {}
-            //   const result = await updateIdIteration(product, data)
-            if ("result" && "result.id") {
-                message.success('创建成功')
-                this.fetchData()
-                this.setState({ modalType: '', iterName: '' })
+        if (iterName) {
+            if (iterName.length > 20) {
+                this.fun2()
+                return
+            } else if (!projectId) {
+                this.fun3()
+                return
+            } else if (!startDate) {
+                this.fun4()
+                return
+            } else {
+                const data = { ...this.state.issues, name: iterName, projectId, startDate, desc: tempDescStr, assignee }
+                if (id) {
+                    // const res = await updateIdIssue(id, data)
+                    this.setState({ modalFlag: false, assignee: null, startDate: null, id: null, iterName: null, projectId: null })
+                    this.fetchData()
+                    return
+                } else {
+                    const res = await addIter(data)
+                    if (res) {
+                        this.setState({ modalFlag: false, assignee: null, startDate: null, id: null, iterName: null, projectId: null })
+                        this.fetchData()
+                    }
+                    return
+                }
             }
         }
     }
+    fun1 = _.throttle(() => message.info({ top: 0, key: '1', content: '请填写迭代名称' }), 3000)
+    fun2 = _.throttle(() => message.info({ top: 0, key: '1', content: '迭代名称不应该超过20位' }), 3000)
+    fun3 = _.throttle(() => message.info({ top: 0, key: '1', content: '请选择所属项目' }), 3000)
+    fun4 = _.throttle(() => message.info({ top: 0, key: '1', content: '请选择开始日期' }), 3000)
 
     handleConfirmDel = () => {
-        // 删除数据
         const { id } = this.state
         this.delCurIter(id)
         this.fetchData()
     }
 
     delCurIter = id => {
-        // 删除数据 - drawer
-        // delIdIter(id).then(() => {
-        message.success(`删除${id}成功`)
-        this.fetchData()
-        this.setState({ drawerVisible: false, delFlag: false })
-        // })
+        delIdIter(id).then(() => {
+            message.success(`删除成功`)
+            this.fetchData()
+            this.setState({ drawerVisible: false, delFlag: false })
+        })
     }
 
-    fetchData = () => {
-        // 获取数据 
-        // const resData = await reqIterations()
-        if ("resData") {
-            //   this.setState({ iterations: resData.lists, loading: false })
-            this.setState({ iterations, loading: false })
+    handleChange = page => {
+        reqIters(page).then(res => this.setState({ iterations: res }))
+    }
+
+    fetchData = async () => {
+        const resData = await reqIters()
+        if (resData) {
+            this.setState({ iterations: resData, loading: false })
         }
     }
+
     componentDidMount() {
         this.setState({ loading: true })
         this.fetchData()
+        reqAllProjects().then(res => this.setState({ projects: res.lists }))
+        reqUserInfo().then(res => this.setState({ userInfo: res }))
     }
 
     renderDelModal = () => {
@@ -140,7 +212,7 @@ class Iteration extends PureComponent {
                 <div className={s.delRoot}>
                     <div className={s.title}>删除迭代</div>
                     <span className={s.subtitle}>
-                        当前正在删除迭代 {iterName}，该迭代下的所有事项将移入未规划，此操作不可撤销，是否确认？
+                        当前正在删除迭代 <span style={{ color: 'red' }}>{iterName}</span>，该迭代下的所有事项将移入未规划，此操作不可撤销，是否确认？
                 </span>
                     <div style={{ marginTop: '30px' }}>
                         <Button onClick={this.handleConfirmDel} className={cn(s.lBtn, s.btn)}>确认</Button>
@@ -159,52 +231,91 @@ class Iteration extends PureComponent {
         </div>)
 
     renderModal = () => {
-        const { modalType, iterName } = this.state
+        const { projects, userInfo, id, iterName, editorState, assignee } = this.state
         return (
             <Modal
                 title={null}
                 visible
                 closable={false}
                 footer={null}
-                className={s.modal}
+                className={s.modalWraper}
                 onCancel={eve => eve.stopPropagation()}>
-                <>
-                    {
-                        modalType === 'create' && <div className={s.title} style={{ marginBottom: '20px' }}>创建迭代</div>
-                    }
-                    {
-                        modalType === 'edit' && <div className={s.title} style={{ marginBottom: '20px' }}>编辑迭代</div>
-                    }
-                    <div style={{ marginBottom: '20px' }}>
-                        <span className={s.subtitle}>标题</span>
-                        <Input placeholder='请输入迭代标题' value={iterName} onChange={e => this.setState({ iterName: e.target.value })} />
-                    </div>
-                    <div style={{ display: 'flex', marginBottom: '20px' }}>
+                <div className={s.addModalRoot}>
+                    <div className={s.leftContainer}>
+                        <div className={s.title}>{id ? '修改迭代' : '创建迭代'}</div>
+                        <span className={s.subtitle}>
+                            <div style={{ marginBottom: '10px' }}>
+                                标题<span style={{ color: 'red' }}> *</span>
+                            </div>
+                        </span>
+                        <Input value={iterName} onChange={(e) => this.setState({ iterName: e.target.value })} />
                         <div>
-                            <span className={s.subtitle}>开始时间</span>
-                            <DatePicker></DatePicker>
+                            <span className={s.subtitle}>
+                                <div style={{ margin: '20px 0 10px 0' }}>
+                                    迭代描述
+                            </div>
+                            </span>
+                            <div>
+                                <Editor
+                                    toolbarHidden
+                                    toolbarClassName={s.editTool}
+                                    editorClassName={s.editContainer}
+                                    wrapperClassName={s.editWrap}
+                                    editorState={editorState}
+                                    onEditorStateChange={this.onEditorStateChange}
+                                />
+                            </div>
                         </div>
+
+                        <div style={{ marginTop: '30px' }}>
+                            <Button type='primary' onClick={this.handleSure} className={cn(s.lBtn, s.btn)}>{id ? '修改' : '创建'}</Button>
+                            <Button onClick={this.closeModal} className={cn(s.rBtn, s.btn)}>取消</Button>
+                        </div>
+                    </div>
+
+                    <div className={s.rightContainer}>
+                        {/* 所属项目 */}
                         <div>
-                            <span className={s.subtitle}>结束时间</span>
-                            <DatePicker></DatePicker>
+                            <div className={s.rtitle}>所属项目<span style={{ color: 'red' }}> *</span></div>
+                            <div style={{ display: 'flex' }}>
+                                <Select style={{ width: 120 }} placeholder='请选择所属项目' onChange={this.handleSelectPro} >
+                                    {
+                                        projects.map(pro => (
+                                            <Select.Option key={pro.id} value={pro.id}>{pro.name}</Select.Option>
+                                        ))
+                                    }
+                                </Select>
+                            </div>
+                        </div>
+                        <Divider type='horizontal' />
+                        {/* 开始日期 */}
+                        <div>
+                            <div className={s.rtitle}>开始日期<span style={{ color: 'red' }}> *</span></div>
+                            {
+                                id ? <DatePicker onChange={this.handleSelectDate} ></DatePicker>
+                                    : <DatePicker onChange={this.handleSelectDate} placeholder='请选择日期'></DatePicker>
+                            }
+
+
+                        </div>
+                        <Divider type='horizontal' />
+                        {/* 处理人 */}
+                        <div>
+                            <div className={s.rtitle}>处理人</div>
+                            <div style={{ display: 'flex' }}>
+                                <Select defaultValue={assignee ? assignee : '未分配'} style={{ width: 120 }} onChange={this.handleSelectAss} >
+                                    <Select.Option key={userInfo.id} value={userInfo.id}>{userInfo.username}</Select.Option>
+                                </Select>
+                            </div>
                         </div>
                     </div>
-                    <div>
-                        {
-                            modalType === 'create' && <Button onClick={this.handleConfirm} className={cn(s.laBtn, s.aBtn)}>创建</Button>
-                        }
-                        {
-                            modalType === 'edit' && <Button onClick={this.handleConfirm} className={cn(s.laBtn, s.aBtn)}>保存</Button>
-                        }
-                        <Button onClick={this.closeModal} className={cn(s.raBtn, s.aBtn)}>取消</Button>
-                    </div>
-                </>
+                </div>
             </Modal>
         )
     }
 
     render() {
-        const { iterations, columns, loading, id, delFlag, drawerVisible, modalType } = this.state
+        const { iterations, columns, loading, id, delFlag, drawerVisible, modalFlag } = this.state
         return (
             <>
                 {
@@ -214,10 +325,10 @@ class Iteration extends PureComponent {
                     <Table
                         className={s.table}
                         loading={loading}
-                        dataSource={iterations}
+                        dataSource={iterations.lists}
                         columns={columns}
                         rowKey='id'
-                        pagination={{ total: 24, defaultPageSize: 8, showQuickJumper: true }} />
+                        pagination={{ total: iterations.total, pageSize: iterations.pageSize, hideOnSinglePage: true, onChange: this.handleChange }} />
                 </div>
 
                 {
@@ -225,7 +336,7 @@ class Iteration extends PureComponent {
                 }
 
                 {
-                    modalType !== '' && this.renderModal()
+                    modalFlag && this.renderModal()
                 }
 
                 {

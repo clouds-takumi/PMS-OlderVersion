@@ -1,9 +1,11 @@
 import { Component } from 'react'
 import s from './index.less'
 import cn from 'classnames'
+import _ from 'lodash'
+import moment from 'moment'
 import DrawContainer from '../../components/drawer_container'
-import { Table, Tag, Divider, Form, Select, Button, Input, DatePicker, message, Modal, Card, Icon } from 'antd'
-import { reqProjects, reqUserInfo, reqTags, addProject, delIdProject, reqIdProject, updateIdProject } from './service'
+import { Table, Tag, Divider, Form, Select, Button, Input, DatePicker, message, Modal, Icon } from 'antd'
+import { reqProjects, reqUserInfo, reqTags, addProject, delIdProject } from './service'
 
 const statusOptions = [
   {
@@ -33,85 +35,90 @@ const statusColorMap = {
 }
 
 class Project extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      projects: [],
-      userInfo: null,
-      tags: null,
-      selectedTags: [],
-      loading: false,
-      proName: '',
-      proId: null,
-      modalType: '',
-      drawerVisible: false,
-      editable: false,
-      columns: [
-        {
-          title: '项目名称',
-          dataIndex: 'name',
-          key: 'name',
-          render: dataIndex => <span className={s.proName} onClick={() => this.showDrawer(dataIndex)}>{dataIndex}</span>
-        },
-        {
-          title: '项目状态',
-          dataIndex: 'status',
-          key: 'status',
-          render: dataIndex => <Tag color={statusColorMap[dataIndex]}>{statusMap[dataIndex]}</Tag>
-        },
-        {
-          title: '开始日期',
-          dataIndex: 'start_date',
-          key: 'start_date',
-          render: dataIndex => dataIndex ? null : <span>---</span>
-        },
-        {
-          title: '结束日期',
-          dataIndex: 'endDate',
-          key: 'endDate',
-          render: dataIndex => dataIndex ? null : <span>---</span>
-        },
-        {
-          title: '创建人',
-          dataIndex: 'created',
-          key: 'created',
-          render: dataIndex => <span>x {dataIndex} x</span>
-        },
-        {
-          title: '标签',
-          dataIndex: 'tags',
-          key: 'tags',
-          render: dataIndex => {
-            if (dataIndex && this.state.tags) {
-              const idArr = dataIndex.split(',').map(Number)
-              const tagsArr = [].slice.call(this.state.tags)
-              const renderArr = tagsArr.filter(item => idArr.includes(item.id))
-              if (renderArr) {
-                return renderArr.map(tag => <Tag key={tag.id} color={tag.color}>{tag.name}</Tag>)
-              }
-            } else {
-              return (
-                <span>---</span>
-              )
-            }
+  state = {
+    projects: {},
+    userInfo: null,
+    tags: [],
+    selectedTags: [],
+    loading: false,
+    proName: '',
+    proId: null,
+    modalType: '',
+    drawerVisible: false,
+    editable: false,
+    columns: [
+      {
+        title: '项目名称',
+        dataIndex: 'name',
+        width: 120,
+        key: 'name',
+        render: dataIndex => <div className={s.proName} onClick={() => this.showDrawer(dataIndex)}>{dataIndex}</div>
+      },
+      {
+        title: '项目状态',
+        dataIndex: 'status',
+        width: 120,
+        key: 'status',
+        render: dataIndex => dataIndex ? <Tag color={statusColorMap[dataIndex]}>{statusMap[dataIndex]}</Tag> : <Tag color='#2db7f5'>未设定</Tag>
+      },
+      {
+        title: '创建日期',
+        dataIndex: 'createdAt',
+        width: 120,
+        key: 'createdAt',
+        render: dataIndex => {
+          if (dataIndex) {
+            return <div>{moment(dataIndex).format('YYYY/MM/DD')}</div>
+          } else {
+            return <div>未设定</div>
           }
-        },
-        {
-          title: '操作',
-          dataIndex: 'id',
-          key: 'operate',
-          render: id => {
+        }
+      },
+      {
+        title: '创建人',
+        dataIndex: 'userId',
+        width: 120,
+        key: 'userId',
+        // TODO: 创建人id映射
+        render: dataIndex => <div className={s.proName}>{dataIndex}</div>
+      },
+      {
+        title: '标签',
+        dataIndex: 'tags',
+        width: 120,
+        key: 'tags',
+        render: dataIndex => {
+          const { tags } = this.state
+          if (dataIndex) {
+            const idArr = dataIndex.split(',')
+            const tagsArr = [].slice.call(tags)
+            const renderArr = tagsArr.filter(item => idArr.includes(item.id))
+            if (renderArr) {
+              return renderArr.map(tag => <Tag key={tag.id} color={tag.color}>{tag.name}</Tag>)
+            }
+          } else {
             return (
-              <>
-                <span className={s.operate} onClick={() => this.setState({ proId: id, drawerVisible: true, editable: true })}>编辑</span>
-                <Divider type='vertical' />
-                <span className={s.operate} onClick={() => this.handleDelPro(id)}>删除</span>
-              </>
+              <Tag color='gray'>未设定</Tag>
             )
           }
-        },
-      ]
-    }
+        }
+      },
+      {
+        title: '操作',
+        dataIndex: 'id',
+        width: 120,
+        key: 'operate',
+        render: id => {
+          return (
+            <>
+              <span className={s.operate} onClick={() => this.setState({ proId: id, drawerVisible: true, editable: true })}>编辑</span>
+              <Divider type='vertical' />
+              <span style={{ cursor: 'pointer', color: '#dd3e6e' }} onClick={() => this.handleDelPro(id)}>删除</span>
+            </>
+          )
+        }
+      },
+    ]
   }
 
   showCreateModal = () => this.setState({ modalType: 'create' })
@@ -123,7 +130,7 @@ class Project extends Component {
   showDrawer = (name) => {
     let proId
     const { projects } = this.state
-    for (let item of projects) {
+    for (let item of projects.lists) {
       if (item.name === name) {
         proId = item.id
         break
@@ -145,7 +152,7 @@ class Project extends Component {
   handleDelPro = async (id) => {
     let proName
     const { projects } = this.state
-    for (let item of projects) {
+    for (let item of projects.lists) {
       if (item.id === id) {
         proName = item.name
         break
@@ -155,7 +162,7 @@ class Project extends Component {
   }
 
   handleConfirm = async () => {
-    const { modalType, proName, userInfo } = this.state
+    const { modalType, proName, userInfo, selectedTags } = this.state
     if (modalType === 'delete') {
       delIdProject(this.state.proId).then(() => {
         message.success('删除成功')
@@ -164,7 +171,18 @@ class Project extends Component {
       })
     }
     if (modalType === 'create') {
-      const { selectedTags } = this.state
+      if (!proName) {
+        this.fun1()
+        return
+      }
+      if (proName.length > 20) {
+        this.fun2()
+        return
+      }
+      if (selectedTags.length > 3) {
+        this.fun3()
+        return
+      }
       const tagsStr = selectedTags.join(',')
       const product = { name: proName, status: 0, created: userInfo.id, tags: tagsStr }
       const result = await addProject(product)
@@ -175,6 +193,9 @@ class Project extends Component {
       }
     }
   }
+  fun1 = _.throttle(() => message.info({ top: 0, key: '1', content: '请填写需求名称' }), 3000)
+  fun2 = _.throttle(() => message.info({ top: 0, key: '1', content: '项目名称超过了20个字符' }), 3000)
+  fun3 = _.throttle(() => message.info({ top: 0, key: '1', content: '项目标签应该不多于3个' }), 3000)
 
   handleSearch = event => {
     event.preventDefault()
@@ -204,10 +225,14 @@ class Project extends Component {
     }
   }
 
+  handleChange = page => {
+    reqProjects(page).then(res => this.setState({ projects: res }))
+  }
+
   fetchData = async () => {
     const resData = await reqProjects()
     if (resData) {
-      this.setState({ projects: resData.lists, loading: false })
+      this.setState({ projects: resData, loading: false })
     }
   }
 
@@ -277,28 +302,29 @@ class Project extends Component {
         visible
         closable={false}
         footer={null}
-        className={s.modal}
         onCancel={(eve) => eve.stopPropagation()}>
         <div onClick={(eve) => eve.stopPropagation()} className={s.modalContainer}>
           {
-            modalType === 'delete' && <div className={s.modalTitle}>确认删除当前 "{`${this.state.proName}`}" 项目吗？</div>
+            modalType === 'delete' && <div className={s.modalTitle}>确认删除当前 <span style={{ color: "#dd3e6e" }}>{`${this.state.proName}`}</span> 项目吗？</div>
           }
           {
             modalType === 'create' && (
               <>
-                <div className={s.xxx}>
-                  <span>项目名称</span>
+                <div style={{ marginBottom: '20px' }}>
+                  <span style={{ fontWeight: 600 }}>项目名称</span>
+                  <div style={{ height: '8px' }}></div>
                   <Input
-                    placeholder='请输入项目名称'
+                    placeholder='请输入项目名称，不超过20个字符'
                     value={proName}
                     onChange={(e) => this.setState({ proName: e.target.value })} />
                 </div>
 
-                <div className={s.xxx}>
-                  <span>标签</span>
+                <div style={{ marginBottom: '10px' }}>
+                  <span style={{ fontWeight: 600 }}>标签</span>
+                  <div style={{ height: '8px' }}></div>
                   <Select
                     mode="multiple"
-                    placeholder='请选择标签'
+                    placeholder='请选择标签, 不超过三个'
                     style={{ width: '100%' }}
                     onChange={this.handleSelectTag}>
                     {this.state.tags && this.state.tags.map(
@@ -330,7 +356,6 @@ class Project extends Component {
 
   render() {
     const { columns, projects, drawerVisible, proId, editable, loading, modalType } = this.state
-
     return (
       <div className={s.project}>
         {
@@ -342,10 +367,10 @@ class Project extends Component {
         <Table
           className={s.table}
           loading={loading}
-          dataSource={projects}
+          dataSource={projects.lists}
           columns={columns}
           rowKey='id'
-          pagination />
+          pagination={{ total: projects.total, pageSize: projects.pageSize, hideOnSinglePage: true, onChange: this.handleChange }} />
         {/* </Card> */}
 
         {

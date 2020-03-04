@@ -1,8 +1,9 @@
 import ajax from '../../../services/ajax'
 
-export const reqIssues = () => ajax({
+export const reqIssues = page => ajax({
     method: 'get',
-    url: '/issues'
+    url: '/issues',
+    params: { page }
 }, true)
 
 export const reqIdIssue = id => ajax({
@@ -27,3 +28,14 @@ export const updateIdIssue = (id, data) => ajax({
     data
 }, true)
 
+
+export const reqUserInfo = () => ajax({
+    method: 'get',
+    url: '/userInfo'
+}, true)
+
+
+export const reqAllIters = () => ajax({
+    method: 'get',
+    url: '/iterations'
+}, true)

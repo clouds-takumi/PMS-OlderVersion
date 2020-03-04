@@ -22,3 +22,33 @@ export const statuOptions = [
     { id: 1, key: 1, name: '开发', event: '进行中', color: '#87d068' },
     { id: 2, key: 2, name: '发布', event: '已完成', color: '#f50' }
 ]
+
+// renderMenu = () => {
+//     return (
+//         <Menu className={s.menu}>
+//             {
+//                 statuOptions.map(statu => (
+//                     <Menu.Item key={statu.key} className={s.menuItem}>
+//                         <span>{statu.name}</span>
+//                         <Icon type="double-right" className={s.arrow} />
+//                         <Tag color={statu.color}>{statu.event}</Tag>
+//                     </Menu.Item>
+//                 ))
+//             }
+//         </Menu>
+//     )
+// }
+
+
+// title: '需求描述',
+// dataIndex: 'desc',
+// key: 'desc',
+// width: 120,
+// render: status => (
+//     <Dropdown overlay={this.renderMenu()} trigger={['click']}>
+//         <div style={{ cursor: 'pointer' }}>
+//             <Tag color={statusColorMap[status]} style={{ cursor: 'pointer' }}> {statusMap[status]}</Tag>
+//             <Icon type="down" />
+//         </div>
+//     </Dropdown>
+// )

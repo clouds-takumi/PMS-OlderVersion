@@ -57,7 +57,7 @@ class User extends Component {
           projects.map((item, index) => {
             if (index < 5) {
               return (
-                <Link key={item.id} to={item.path} className={s.eachpro}>
+                <Link key={item.id} to='p/p1' className={s.eachpro}>
                   <div className={s.proimg}></div>
                   <div className={s.proinfo}>
                     <div className={s.proname}>{item.name}</div>

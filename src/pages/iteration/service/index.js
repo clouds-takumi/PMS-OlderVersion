@@ -1,8 +1,14 @@
 import ajax from '../../../services/ajax'
 
-export const reqIters = () => ajax({
+export const reqAllProjects = () => ajax({
     method: 'get',
-    url: '/iterations'
+    url: '/projects'
+}, true)
+
+export const reqIters = page => ajax({
+    method: 'get',
+    url: '/iterations',
+    params: { page }
 }, true)
 
 export const reqIdIter = id => ajax({
@@ -27,3 +33,7 @@ export const updateIdIter = (id, data) => ajax({
     data
 }, true)
 
+export const reqUserInfo = () => ajax({
+    method: 'get',
+    url: '/userInfo'
+}, true)

@@ -30,7 +30,7 @@ const Login = (props) => {
           onChange={handleUsernameChange} />
       </div>
       <div className={s.loginLine}>
-        <Input.Password
+        <Input
           prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
           type='password'
           placeholder='密码'

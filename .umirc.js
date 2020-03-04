@@ -12,17 +12,15 @@ export default {
         { path: '/register', component: '../pages/register' },
         { path: '/user', component: '../pages/user' },
         { path: '/user/projects', component: '../pages/user/projects' },
-        { path: '/p/p1', component: '../pages/home' },
+        { path: '/p/p1', component: '../pages/backlog' },
         { path: '/p/p1/project', component: '../pages/project' },
         { path: '/p/p1/backlog', component: '../pages/backlog' },
         { path: '/p/p1/backlog/issues/:id', component: '../pages/backlog' },
         // { path: '/detail/:id', component: '../pages/detail' },
         { path: '/p/p1/iteration', component: '../pages/iteration' },
         { path: '/p/p1/issues', component: '../pages/issues' },
-        { path: '/p/p1/system/user', component: '../pages/system/user' },
-        { path: '/p/p1/system/tag', component: '../pages/system/tag' },
-        { path: '/404', component: '../pages/404' },
-        { path: '/offline', component: '../pages/offline' }
+        // { path: '/p/p1/system/user', component: '../pages/system/user' },
+        { path: '/p/p1/system/tag', component: '../pages/system/tag' }
       ]
     }
   ],

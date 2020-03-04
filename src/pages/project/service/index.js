@@ -10,9 +10,10 @@ export const reqTags = () => ajax({
     url: '/tags'
 }, true)
 
-export const reqProjects = () => ajax({
+export const reqProjects = page => ajax({
     method: 'get',
-    url: '/projects'
+    url: '/projects',
+    params: { page }
 }, true)
 
 export const reqIdProject = id => ajax({

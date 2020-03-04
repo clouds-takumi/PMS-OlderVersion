@@ -1,6 +1,7 @@
 import { Component } from 'react'
 import s from './index.less'
 import cn from 'classnames'
+import router from 'umi/router'
 import { Icon, Divider, Drawer, Input, Select, Tag, message } from 'antd'
 import { reqProjects, reqTags, reqUserInfo, addProject } from '../service'
 
@@ -20,6 +21,8 @@ class Projects extends Component {
     }
 
     goback = () => this.setState({ modalFlag: false })
+
+    routeChange = () => router.replace('/p/p1')
 
     handleNameChange = (e) => {
         let name = e.target.value
@@ -163,7 +166,7 @@ class Projects extends Component {
                         {
                             projects.map((item, index) => {
                                 return (
-                                    <div onClick={() => alert('jump')}>
+                                    <div onClick={this.routeChange}>
                                         <div className={s.mItem}>
                                             <div className={s.itemImg}>
                                                 <div>img</div>
