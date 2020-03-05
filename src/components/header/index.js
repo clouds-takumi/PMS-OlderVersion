@@ -8,6 +8,7 @@ class Header extends Component {
         this.state = {}
     }
     render() {
+        const { userInfo, handleLogout } = this.props
         return (
             <div className={s.headerContainer}>
                 <div className={s.leftWrap}>
@@ -23,22 +24,30 @@ class Header extends Component {
                             </Badge>
                         </div>
 
-                        <Dropdown
-                            trigger={['click', 'hover']}
-                            overlay={
-                                <Menu>
-                                    <Menu.Item onClick={this.handleLogout}>
-                                        <Icon type='logout' />
-                                        退出登录
+                        {
+                            userInfo && (
+                                <Dropdown
+                                    trigger={['click', 'hover']}
+                                    overlay={
+                                        <Menu>
+                                            <Menu.Item onClick={handleLogout}>
+                                                <Icon type='logout' />
+                                                退出登录
                                         </Menu.Item>
-                                </Menu>
-                            }>
-                            <div className={s.userInfo}>
-                                <Avatar size={28} className={s.avatar}>蒋猛</Avatar>
-                                <Icon type='down' className={s.headerArrow} />
-                            </div>
-                        </Dropdown>
+                                        </Menu>
+                                    }>
+                                    <div className={s.userInfo}>
+                                        {
+                                            userInfo.avatar
+                                                ? <Avatar size={28} className={s.avatar} src={userInfo.avatar}/>
+                                                : <Avatar size={28} >{userInfo.username}</Avatar>
+                                        }
+                                        <Icon type='down' className={s.headerArrow} />
+                                    </div>
+                                </Dropdown>
 
+                            )
+                        }
                     </div>
                 </div>
             </div>

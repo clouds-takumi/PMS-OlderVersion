@@ -1,0 +1,2 @@
+export const SIDERCOLLAPSED = 'SIDERCOLLAPSED'
+export const USERINFO = 'USERINFO'

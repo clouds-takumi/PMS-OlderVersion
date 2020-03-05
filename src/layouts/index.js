@@ -6,12 +6,16 @@ import store from '../redux/store'
 
 export default function ({ location: { pathname }, children }) {
 
-  if (pathname === '/login' || pathname === '/register' || pathname === '/') {
+  if (pathname === '/login' || pathname === '/register') {
     return <LoginLayout>{children}</LoginLayout>
   }
 
-  if (pathname.indexOf('/user') === 0) {
-    return <UserLayout>{children}</UserLayout>
+  if (pathname.indexOf('/user') === 0 || pathname === '/') {
+    return (
+      <Provider store={store}>
+        <UserLayout>{children}</UserLayout>
+      </Provider>
+    )
   }
 
   return (

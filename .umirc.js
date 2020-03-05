@@ -7,7 +7,7 @@ export default {
       path: '/',
       component: '../layouts/index',
       routes: [
-        { path: '/', component: '../pages/login' },
+        { path: '/', component: '../pages/user' },
         { path: '/login', component: '../pages/login' },
         { path: '/register', component: '../pages/register' },
         { path: '/user', component: '../pages/user' },

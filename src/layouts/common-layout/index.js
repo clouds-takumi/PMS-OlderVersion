@@ -1,9 +1,9 @@
 import { Component } from 'react'
 import menus from './menus.config'
-import { Layout, Menu, Icon, Badge, Avatar, Dropdown } from 'antd'
+import { Layout, Menu, Icon, Avatar, Dropdown } from 'antd'
 import s from './index.less'
 import cn from 'classnames'
-import Link from 'umi/link';
+import Link from 'umi/link'
 import { connect } from 'react-redux'
 import { changeSiderCollapsed, setUserInfo } from './redux/actions'
 import { getUserInfo } from './service'
@@ -101,6 +101,7 @@ class CommonLayout extends Component {
             <div className={s.headerLeft} onClick={() => handleCollapsed(!collapsed)}>
               <Icon type={collapsed ? 'menu-unfold' : 'menu-fold'} />
             </div>
+            <div style={{color:'#202d40'}}>{selectedKey.slice(3, 5)}项目 : {selectedKey.split('/')[selectedKey.split('/').length - 1]}</div>
             <div className={s.headerRight}>
               {/* <div className={s.headerBadge}>
                 <Badge count={5}>
@@ -114,7 +115,7 @@ class CommonLayout extends Component {
                     overlay={
                       <Menu>
                         <Menu.Item onClick={this.handleLogout}>
-                        <Icon type='logout' />
+                          <Icon type='logout' />
                           退出登录
                           </Menu.Item>
                       </Menu>

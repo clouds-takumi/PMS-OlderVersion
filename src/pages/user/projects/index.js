@@ -1,6 +1,7 @@
 import { Component } from 'react'
 import s from './index.less'
 import cn from 'classnames'
+import _ from 'lodash'
 import router from 'umi/router'
 import { Icon, Divider, Drawer, Input, Select, Tag, message } from 'antd'
 import { reqProjects, reqTags, reqUserInfo, addProject } from '../service'
@@ -20,7 +21,7 @@ class Projects extends Component {
         document.getElementsByTagName("title")[0].innerText = '项目列表'
     }
 
-    goback = () => this.setState({ modalFlag: false })
+    goback = () => this.setState({ modalFlag: false, projectName: '', selectedTags: [] })
 
     routeChange = () => router.replace('/p/p1')
 
@@ -42,16 +43,30 @@ class Projects extends Component {
 
     handleCreate = async () => {
         const { projectName, userInfo, selectedTags } = this.state
+        if (!projectName) {
+            this.fun1()
+            return
+        }
+        if (projectName.length > 20) {
+            this.fun2()
+            return
+        }
+        if (selectedTags.length > 3) {
+            this.fun3()
+            return
+        }
         const tagsStr = selectedTags.join(',')
         const product = { name: projectName, status: 0, created: userInfo.id, tags: tagsStr }
         const result = await addProject(product)
         if (result && result.id) {
             message.success('创建成功')
-            this.setState({ projectName: '', selectedTags: [] })
+            this.setState({ modalFlag: false, projectName: '', selectedTags: [] })
             this.fetchData()
         }
-        this.setState({ modalFlag: false })
     }
+    fun1 = _.throttle(() => message.info({ top: 0, key: '1', content: '请填写需求名称' }), 3000)
+    fun2 = _.throttle(() => message.info({ top: 0, key: '1', content: '项目名称超过了20个字符' }), 3000)
+    fun3 = _.throttle(() => message.info({ top: 0, key: '1', content: '项目标签应该不多于3个' }), 3000)
 
     fetchData = async () => {
         const resData = await reqProjects()

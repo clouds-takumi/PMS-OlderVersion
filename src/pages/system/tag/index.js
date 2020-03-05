@@ -1,7 +1,8 @@
 import { PureComponent } from 'react'
 import s from './index.less'
+import _ from 'lodash'
 import InputColor from 'react-input-color'
-import { Table, Divider, Tag, Button, message, Modal, Input, Popconfirm, Icon } from 'antd'
+import { Table, Divider, Tag, Button, Modal, Input, Popconfirm, Icon, message } from 'antd'
 import { reqTags, addTag, delIdTag, updataIdTag } from './service'
 
 const initialTagColor = '#5e72e4'
@@ -37,7 +38,7 @@ class Tags extends PureComponent {
                                     okText="确定"
                                     cancelText="取消"
                                 >
-                                    <span style={{ cursor: 'pointer' }}>删除</span>
+                                    <span style={{ cursor: 'pointer', color: '#f81d22' }}>删除</span>
                                 </Popconfirm>
                             </>
                         )
@@ -67,7 +68,11 @@ class Tags extends PureComponent {
         const { tagName, tagColor, tagId } = this.state
 
         if (!tagName) {
-            message.error('请输入标签名称')
+            this.fun1()
+            return
+        }
+        if (tagName.length > 10) {
+            this.fun2()
             return
         }
 
@@ -88,6 +93,8 @@ class Tags extends PureComponent {
             this.fetchData()
         }
     }
+    fun1 =  _.throttle(() => message.info({ top: 0, key: '1', content: '请填写标签名称' }), 3000)
+    fun2 = _.throttle(() => message.info({ top: 0, key: '1', content: '标签名称大于10个字符' }), 3000)
 
     handleTagnameChange = e => {
         this.setState({ tagName: e.target.value })
