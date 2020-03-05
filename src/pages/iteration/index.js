@@ -112,14 +112,21 @@ class Iteration extends PureComponent {
 
     closeDrawer = () => this.setState({ drawerVisible: false })
 
-    showDeleteModal = iteration => this.setState({ iterName: iteration.name, id: iteration.id, delFlag: true })
+    showDeleteModal = iteration => this.setState({
+        iterName: iteration.name, id: iteration.id, delFlag: true
+    })
 
     closeDeleteModal = () => this.setState({ delFlag: false, iterName: '' })
 
     showCreateModal = () => this.setState({ modalFlag: true })
 
-    showEditModal = iteration => this.setState({ modalFlag: true, iterName: iteration.name, id: iteration.id })
-
+    showEditModal = iteration => {
+        this.setState({
+            modalFlag: true, iterName: iteration.name,
+            id: iteration.id, projectId: iteration.projectId,
+            assignee: iteration.assignee, startDate: iteration.startDate
+        })
+    }
     closeModal = () => this.setState({ modalFlag: false, assignee: null, startDate: null, id: null, iterName: null, projectId: null })
 
     onEditorStateChange = editorState => this.setState({ editorState })
@@ -148,7 +155,7 @@ class Iteration extends PureComponent {
             } else {
                 const data = { ...this.state.issues, name: iterName, projectId, startDate, desc: tempDescStr, assignee }
                 if (id) {
-                    // const res = await updateIdIssue(id, data)
+                    const res = await updateIdIter(id, data)
                     this.setState({ modalFlag: false, assignee: null, startDate: null, id: null, iterName: null, projectId: null })
                     this.fetchData()
                     return
@@ -231,7 +238,7 @@ class Iteration extends PureComponent {
         </div>)
 
     renderModal = () => {
-        const { projects, userInfo, id, iterName, editorState, assignee } = this.state
+        const { projects, userInfo, id, iterName, editorState, assignee, projectId, startDate } = this.state
         return (
             <Modal
                 title={null}
@@ -278,7 +285,7 @@ class Iteration extends PureComponent {
                         <div>
                             <div className={s.rtitle}>所属项目<span style={{ color: 'red' }}> *</span></div>
                             <div style={{ display: 'flex' }}>
-                                <Select style={{ width: 120 }} placeholder='请选择所属项目' onChange={this.handleSelectPro} >
+                                <Select style={{ width: 120 }} defaultValue={projectId ? projectId : '请选择'} onChange={this.handleSelectPro} >
                                     {
                                         projects.map(pro => (
                                             <Select.Option key={pro.id} value={pro.id}>{pro.name}</Select.Option>
@@ -292,11 +299,9 @@ class Iteration extends PureComponent {
                         <div>
                             <div className={s.rtitle}>开始日期<span style={{ color: 'red' }}> *</span></div>
                             {
-                                id ? <DatePicker onChange={this.handleSelectDate} ></DatePicker>
+                                id ? <DatePicker onChange={this.handleSelectDate} placeholder={startDate}></DatePicker>
                                     : <DatePicker onChange={this.handleSelectDate} placeholder='请选择日期'></DatePicker>
                             }
-
-
                         </div>
                         <Divider type='horizontal' />
                         {/* 处理人 */}

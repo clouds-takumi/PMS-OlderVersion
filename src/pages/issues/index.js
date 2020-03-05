@@ -11,12 +11,6 @@ import _ from 'lodash'
 import moment from 'moment'
 import { reqUserInfo, reqAllIters, reqIssues, addIssue, delIdIssue, updateIdIssue } from './service'
 
-// TODO 提示信息 优化
-// TODO 详情逻辑 优化
-// TODO 获取全部数据（不是获取首页数据）
-// TODO 带规划页面
-// TODO 样式 优化
-
 const priorityMap = [
     { id: 1, name: '紧急' },
     { id: 2, name: '优先' },
@@ -63,9 +57,9 @@ class Issue extends PureComponent {
                 dataIndex: 'priority',
                 key: 'priority',
                 width: 120,
-                render: dataIndex => priorityMap.map(item => {
+                render: dataIndex => priorityMap.map((item, index) => {
                     if (item.id === dataIndex) {
-                        return <div key={item.id}>{item.name}</div>
+                        return <div key={index + 10}>{item.name}</div>
                     } else {
                         return null
                     }
@@ -105,9 +99,9 @@ class Issue extends PureComponent {
                 render: dataIndex => {
                     if (dataIndex) {
                         if (this.state.iters) {
-                            return this.state.iters.map(item => {
+                            return this.state.iters.map((item, index) => {
                                 if (item.id === dataIndex) {
-                                    return <div>{item.name}</div>
+                                    return <div key={index}>{item.name}</div>
                                 } else {
                                     return null
                                 }
@@ -142,13 +136,14 @@ class Issue extends PureComponent {
         ]
     }
 
-    issueEdit = ({ id, name, desc, assignee, priority, deadline }) => this.setState({
+    issueEdit = ({ id, name, desc, assignee, priority, deadline, iterationId }) => this.setState({
         id,
         addFlag: true,
         issueName: name,
         assignee,
         priority,
-        deadline
+        deadline,
+        iter: iterationId
     })
 
     showDrawer = iteration => {
@@ -157,7 +152,7 @@ class Issue extends PureComponent {
     closeDrawer = () => this.setState({ drawerVisible: false })
 
     showCreateModal = () => this.setState({ addFlag: true })
-    closeAddModal = () => this.setState({ addFlag: false, issueName: '', id: null, assignee: null, priority: null, deadline: null })
+    closeAddModal = () => this.setState({ addFlag: false, issueName: '', id: null, assignee: null, priority: null, deadline: null, iter: null })
 
     onEditorStateChange = editorState => this.setState({ editorState })
 
@@ -169,7 +164,7 @@ class Issue extends PureComponent {
     handleSure = async () => {
         const { issueName, editorState, assignee, priority, deadline, id, iter } = this.state
         const tempDescStr = draftToHtml(convertToRaw(editorState.getCurrentContent()))
-        // deadline 又问题
+        // TODO: data添加deadline一直有bug，添加了就报错。      迭代那边添加开始日期不会出现这样的报错
         const data = { name: issueName, priority, desc: tempDescStr, assignee, iterationId: iter }
         if (!issueName) {
             this.fun1()
@@ -228,7 +223,6 @@ class Issue extends PureComponent {
         this.fetchData()
         reqUserInfo().then(res => this.setState({ userInfo: res }))
         reqAllIters().then(res => { this.setState({ iters: res.lists }) })
-        // TODO: 获取全部数据，而不是一页数据，迭代那里也是这样的问题
     }
 
     rendertitle = () => (
@@ -238,7 +232,7 @@ class Issue extends PureComponent {
     )
 
     renderAddModal = () => {
-        const { issueName, editorState, userInfo, id, assignee, iters } = this.state
+        const { issueName, editorState, userInfo, id, assignee, iters, priority, deadline, iter } = this.state
         return (
             <Modal
                 title={null}
@@ -285,7 +279,7 @@ class Issue extends PureComponent {
                         <div>
                             <div className={s.rtitle}>所属迭代</div>
                             <div style={{ display: 'flex' }}>
-                                <Select style={{ width: 120 }} onChange={this.handleSelectIter} placeholder='请选择'>
+                                <Select style={{ width: 120 }} onChange={this.handleSelectIter} defaultValue={iter ? iter : '请选择'}>
                                     {
                                         iters.map(iter => (
                                             <Select.Option key={iter.id} value={iter.id}>{iter.name}</Select.Option>
@@ -297,7 +291,7 @@ class Issue extends PureComponent {
                         <Divider type='horizontal' />
                         {/* 处理人 */}
                         <div>
-                            <div className={s.rtitle}>处理人</div>
+                            <div className={s.rtitle}>负责人</div>
                             <div style={{ display: 'flex' }}>
                                 <Select defaultValue={assignee ? assignee : '未分配'} style={{ width: 120 }} onChange={this.handleSelectAss} >
                                     <Select.Option key={userInfo.id} value={userInfo.id}>{userInfo.username}</Select.Option>
@@ -309,7 +303,7 @@ class Issue extends PureComponent {
                         <div style={{ marginBottom: '20px' }}>
                             <div className={s.rtitle}>优先级<span style={{ color: 'red' }}> *</span></div>
                             <div style={{ display: 'flex' }}>
-                                <Select placeholder='请选择' style={{ width: 120 }} onChange={this.handleSelectPri} >
+                                <Select style={{ width: 120 }} defaultValue={priority ? priority : '请选择'} onChange={this.handleSelectPri} >
                                     {
                                         priorityMap.map(item => (
                                             <Select.Option key={item.id} value={item.id}>{item.name}</Select.Option>
@@ -322,7 +316,7 @@ class Issue extends PureComponent {
                         <div>
                             <div className={s.rtitle}>截止日期</div>
                             {
-                                id ? <DatePicker onChange={this.handleSelectDate} ></DatePicker>
+                                id ? <DatePicker onChange={this.handleSelectDate} placeholder={deadline ? deadline : '请选择'} ></DatePicker>
                                     : <DatePicker onChange={this.handleSelectDate} defaultValue={moment()}></DatePicker>
                             }
                         </div>
