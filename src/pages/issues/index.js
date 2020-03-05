@@ -152,7 +152,7 @@ class Issue extends PureComponent {
     closeDrawer = () => this.setState({ drawerVisible: false })
 
     showCreateModal = () => this.setState({ addFlag: true })
-    closeAddModal = () => this.setState({ addFlag: false, issueName: '', id: null, assignee: null, priority: null, deadline: null, iter: null })
+    closeAddModal = () => this.setState({ addFlag: false, issueName: '', id: null, assignee: null, priority: null, deadline: '', iter: null })
 
     onEditorStateChange = editorState => this.setState({ editorState })
 
@@ -163,9 +163,9 @@ class Issue extends PureComponent {
 
     handleSure = async () => {
         const { issueName, editorState, assignee, priority, deadline, id, iter } = this.state
+        console.log(deadline)
         const tempDescStr = draftToHtml(convertToRaw(editorState.getCurrentContent()))
-        // TODO: data添加deadline一直有bug，添加了就报错。      迭代那边添加开始日期不会出现这样的报错
-        const data = { name: issueName, priority, desc: tempDescStr, assignee, iterationId: iter }
+        const data = { name: issueName, priority, desc: tempDescStr, assignee, iterationId: iter, deadline }
         if (!issueName) {
             this.fun1()
             return
@@ -181,13 +181,13 @@ class Issue extends PureComponent {
                 }
                 if (id) {
                     const res = await updateIdIssue(id, data)
-                    this.setState({ addFlag: false, issueName: '', deadline: null, id: null, iter: null, assignee: null, priority: null })
+                    this.setState({ addFlag: false, issueName: '', deadline: '', id: null, iter: null, assignee: null, priority: null })
                     this.fetchData()
                     return
                 } else {
                     const res = await addIssue(data)
                     if (res) {
-                        this.setState({ addFlag: false, issueName: '', deadline: null, id: null, iter: null, assignee: null, priority: null })
+                        this.setState({ addFlag: false, issueName: '', deadline: '', id: null, iter: null, assignee: null, priority: null })
                         this.fetchData()
                     }
                     return
@@ -317,7 +317,7 @@ class Issue extends PureComponent {
                             <div className={s.rtitle}>截止日期</div>
                             {
                                 id ? <DatePicker onChange={this.handleSelectDate} placeholder={deadline ? deadline : '请选择'} ></DatePicker>
-                                    : <DatePicker onChange={this.handleSelectDate} defaultValue={moment()}></DatePicker>
+                                    : <DatePicker onChange={this.handleSelectDate} defaultValue='请选择'></DatePicker>
                             }
                         </div>
                     </div>
