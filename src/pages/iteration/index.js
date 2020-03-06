@@ -3,9 +3,9 @@ import s from './index.less'
 import cn from 'classnames'
 import _ from 'lodash'
 import moment from 'moment'
-import { Table, Divider, Tag, Button, Icon, message, Modal, Input, DatePicker, Select } from 'antd'
+import { Table, Divider, Button, Icon, message, Modal, Input, DatePicker, Select } from 'antd'
 import DrawContainer from '../../components/drawer_container'
-import { reqIters, reqUserInfo, reqAllProjects, addIter, delIdIter, updateIdIter } from './service'
+import { reqIters, reqUserInfo, reqAllProjects, addIter, delIdIter, updateIdIter, reqIdIter } from './service'
 import { EditorState, convertToRaw } from 'draft-js'
 import { Editor } from 'react-draft-wysiwyg'
 import draftToHtml from 'draftjs-to-html'
@@ -26,6 +26,7 @@ class Iteration extends PureComponent {
         delFlag: false,
         drawerVisible: false,
         modalFlag: '',
+        curIteration: {},
         columns: [
             {
                 title: '迭代名称',
@@ -108,7 +109,12 @@ class Iteration extends PureComponent {
         ]
     }
 
-    showDrawer = iteration => { this.setState({ drawerVisible: true, id: iteration.id }) }
+    showDrawer = iteration => {
+        reqIdIter(iteration.id).then(res => {
+            this.setState({ curIteration: res })
+            this.setState({ drawerVisible: true, id: iteration.id })
+        })
+    }
 
     closeDrawer = () => this.setState({ drawerVisible: false })
 
@@ -187,6 +193,11 @@ class Iteration extends PureComponent {
             this.fetchData()
             this.setState({ drawerVisible: false, delFlag: false })
         })
+    }
+
+    updateCurIter = async (id, data) => {
+        const res = await updateIdIter(id, data)
+        this.fetchData()
     }
 
     handleChange = page => {
@@ -320,7 +331,7 @@ class Iteration extends PureComponent {
     }
 
     render() {
-        const { iterations, columns, loading, id, delFlag, drawerVisible, modalFlag } = this.state
+        const { iterations, columns, loading, id, delFlag, drawerVisible, modalFlag, curIteration } = this.state
         return (
             <>
                 {
@@ -349,9 +360,11 @@ class Iteration extends PureComponent {
                     <DrawContainer
                         type='Iteration'
                         id={id}
+                        data={curIteration}
                         visible={drawerVisible}
                         closeDrawer={this.closeDrawer}
-                        delOperation={this.delCurIter} />
+                        delOperation={this.delCurIter}
+                        updateOperation={this.updateCurIter} />
                 }
             </>
         )

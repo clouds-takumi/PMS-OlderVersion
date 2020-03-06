@@ -9,7 +9,7 @@ import draftToHtml from 'draftjs-to-html'
 // import htmlToDraft from 'html-to-draftjs'
 import _ from 'lodash'
 import moment from 'moment'
-import { reqUserInfo, reqAllIters, reqIssues, addIssue, delIdIssue, updateIdIssue } from './service'
+import { reqUserInfo, reqAllIters, reqIssues, addIssue, delIdIssue, updateIdIssue, reqIdIssue } from './service'
 
 const priorityMap = [
     { id: 1, name: '紧急' },
@@ -32,12 +32,13 @@ class Issue extends PureComponent {
         priority: 0, // *
         deadline: '',
         iter: null,
+        curIssue: {},
         columns: [
             {
                 title: '需求标题',
                 width: 120,
                 key: 'name',
-                render: iteration => <div className={s.issName} onClick={() => this.showDrawer(iteration)}>{iteration.name}</div>
+                render: issues => <div className={s.issName} onClick={() => this.showDrawer(issues)}>{issues.name}</div>
             },
             {
                 title: '负责人',
@@ -146,8 +147,12 @@ class Issue extends PureComponent {
         iter: iterationId
     })
 
-    showDrawer = iteration => {
-        this.setState({ drawerVisible: true, id: iteration.id })
+    showDrawer = issues => {
+        reqIdIssue(issues.id).then(res => {
+            this.setState({ curIssue: res })
+            this.setState({ drawerVisible: true, id: issues.id })
+        })
+
     }
     closeDrawer = () => this.setState({ drawerVisible: false })
 
@@ -209,6 +214,11 @@ class Issue extends PureComponent {
 
     handleChange = page => {
         reqIssues(page).then(res => this.setState({ issues: res }))
+    }
+
+    updateCurIssue = async (id, data) => {
+        const res = await updateIdIssue(id, data)
+        this.fetchData()
     }
 
     fetchData = async () => {
@@ -327,7 +337,7 @@ class Issue extends PureComponent {
     }
 
     render() {
-        const { issues, columns, id, drawerVisible, addFlag } = this.state
+        const { issues, columns, id, drawerVisible, addFlag, curIssue } = this.state
         return (
             <div style={{ marginTop: '20px' }}>
                 {
@@ -353,9 +363,11 @@ class Issue extends PureComponent {
                     <DrawContainer
                         type='Issue'
                         id={id}
+                        data={curIssue}
                         visible={drawerVisible}
                         closeDrawer={this.closeDrawer}
-                        delOperation={this.delCurIssue} />
+                        delOperation={this.delCurIssue}
+                        updateOperation={this.updateCurIssue} />
                 }
             </div>
         )
